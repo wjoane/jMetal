@@ -51,16 +51,16 @@ public class WASFGAMeasuresRunner3D extends AbstractAlgorithmRunner {
       problemName = args[0] ;
       referenceParetoFront = args[1] ;
     } else {
-      problemName = "org.uma.jmetal.problem.multiobjective.dtlz.DTLZ5";
-      referenceParetoFront = "" ;
+      problemName = "org.uma.jmetal.problem.multiobjective.dtlz.DTLZ2";
+      referenceParetoFront = "jmetal-problem/src/test/resources/pareto_fronts/DTLZ2.3D.pf" ;
     }
 
     problem = ProblemUtils.<DoubleSolution> loadProblem(problemName);
-  
-    referencePoint = new ArrayList<>() ;
-    referencePoint.add(0.0);
-    referencePoint.add(0.0);
-    referencePoint.add(0.0);
+    
+    referencePoint = new ArrayList<>();
+    referencePoint.add(0.5);
+		referencePoint.add(0.5);
+		referencePoint.add(0.5);
 
     double crossoverProbability = 0.9 ;
     double crossoverDistributionIndex = 20.0 ;
@@ -72,7 +72,17 @@ public class WASFGAMeasuresRunner3D extends AbstractAlgorithmRunner {
 
     selection = new BinaryTournamentSelection<DoubleSolution>(new RankingAndCrowdingDistanceComparator<DoubleSolution>());
 
-    algorithm = new WASFGAMeasures<DoubleSolution>(problem, 100, 550, crossover, mutation, selection,new SequentialSolutionListEvaluator<DoubleSolution>(),referencePoint) ;
+    algorithm = new WASFGAMeasures<DoubleSolution>(
+    				problem,
+						100,
+						250,
+						crossover,
+						mutation,
+						selection,
+						new SequentialSolutionListEvaluator<DoubleSolution>(),
+						referencePoint,
+						//"/home/ajnebro/Softw/jMetal/jMetal/jmetal-core/src/main/resources/mombi2-weights/weight/weight_02D_152.sld") ;
+		"MOEAD_Weights/W3D_100.dat") ;
 
     
     /* Measure management */
@@ -89,6 +99,7 @@ public class WASFGAMeasuresRunner3D extends AbstractAlgorithmRunner {
     chart.addFrontChart(1, 2);
     //chart.setVarChart(0, 1);
     chart.setReferencePoint(referencePoint);
+
     chart.initChart();
 
     solutionListMeasure.register(new ChartListener(chart));
