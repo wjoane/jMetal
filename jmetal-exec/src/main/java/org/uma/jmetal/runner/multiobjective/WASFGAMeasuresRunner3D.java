@@ -51,16 +51,16 @@ public class WASFGAMeasuresRunner3D extends AbstractAlgorithmRunner {
       problemName = args[0] ;
       referenceParetoFront = args[1] ;
     } else {
-      problemName = "org.uma.jmetal.problem.multiobjective.dtlz.DTLZ2";
-      referenceParetoFront = "jmetal-problem/src/test/resources/pareto_fronts/DTLZ2.3D.pf" ;
+      problemName = "org.uma.jmetal.problem.multiobjective.dtlz.DTLZ7";
+      referenceParetoFront = "jmetal-problem/src/test/resources/pareto_fronts/DTLZ7.3D.pf" ;
     }
 
     problem = ProblemUtils.<DoubleSolution> loadProblem(problemName);
     
     referencePoint = new ArrayList<>();
-    referencePoint.add(0.5);
-		referencePoint.add(0.5);
-		referencePoint.add(0.5);
+    referencePoint.add(0.0);
+		referencePoint.add(0.0);
+		referencePoint.add(0.0);
 
     double crossoverProbability = 0.9 ;
     double crossoverDistributionIndex = 20.0 ;
