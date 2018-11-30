@@ -2,6 +2,7 @@ package org.uma.jmetal.solution.impl;
 
 import org.uma.jmetal.problem.Problem;
 import org.uma.jmetal.solution.Solution;
+import org.uma.jmetal.util.JMetalException;
 import org.uma.jmetal.util.pseudorandom.JMetalRandom;
 
 import java.util.*;
@@ -106,74 +107,18 @@ public abstract class AbstractGenericSolution<T, P extends Problem<?>> implement
     return result ;
   }
 
-  private boolean equalsIgnoringAttributes(Object o) {
-    if (this == o)
-      return true;
-    if (o == null || getClass() != o.getClass())
-      return false;
-
-    AbstractGenericSolution<?, ?> that = (AbstractGenericSolution<?, ?>) o;
-
-    if (!Arrays.equals(objectives, that.objectives))
-      return false;
-
-    if (!variables.equals(that.variables))
-      return false;
-
-    return true;
-  }
 
   @Override public boolean equals(Object o) {
-
-    if (!this.equalsIgnoringAttributes(o)) {
-      return false;
+    if (o == null) {
+      new JMetalException("The solution to compare is null") ;
     }
 
-    AbstractGenericSolution<?, ?> that = (AbstractGenericSolution<?, ?>) o;
-    // avoid recursive infinite comparisons when solution as attribute
+    Solution<T> solution = (Solution<T>) o ;
 
-    // examples when problems would arise with a simple comparison attributes.equals(that.attributes):
-    // if A contains itself as Attribute
-    // If A contains B as attribute, B contains A as attribute
-    //
-    // the following implementation takes care of this by considering solutions as attributes as a special case
-
-    if (attributes.size() != that.attributes.size()) {
-      return false;
-    }
-
-    for (Object key : attributes.keySet()) {
-      Object value      = attributes.get(key);
-      Object valueThat  = that.attributes.get(key);
-
-      if (value != valueThat) { // it only makes sense comparing when having different references
-
-        if (value == null) {
-          return false;
-        } else if (valueThat == null) {
-          return false;
-        } else { // both not null
-
-          boolean areAttributeValuesEqual;
-          if (value instanceof AbstractGenericSolution) {
-            areAttributeValuesEqual = ((AbstractGenericSolution) value).equalsIgnoringAttributes(valueThat);
-          } else {
-            areAttributeValuesEqual = !value.equals(valueThat);
-          }
-          if (!areAttributeValuesEqual) {
-            return false;
-          } // if equal the next attributeValue will be checked
-        }
-      }
-    }
-
-    return true;
+    return this.getVariables().equals(solution.getVariables()) ;
   }
 
   @Override public int hashCode() {
-    int result = Arrays.hashCode(objectives);
-    result = 31 * result + variables.hashCode();
-    result = 31 * result + attributes.hashCode();
-    return result;
+    return variables.hashCode();
   }
 }
