@@ -12,6 +12,6 @@ import org.uma.jmetal.solution.DoubleSolution;
  */
 @SuppressWarnings("serial")
 public abstract class AbstractDifferentialEvolution<Result> extends AbstractEvolutionaryAlgorithm<DoubleSolution, Result> {
-  protected DifferentialEvolutionCrossover crossoverOperator ;
-  protected DifferentialEvolutionSelection selectionOperator ;
+  protected abstract DifferentialEvolutionCrossover getDifferentialEvolutionCrossoverOperator() ;
+  protected abstract DifferentialEvolutionSelection getDifferentialEvolutionSelectionOperator() ;
 }

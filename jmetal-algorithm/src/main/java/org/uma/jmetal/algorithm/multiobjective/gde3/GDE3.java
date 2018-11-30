@@ -25,6 +25,9 @@ public class GDE3 extends AbstractDifferentialEvolution<List<DoubleSolution>> {
   protected int evaluations;
   private int maxPopulationSize ;
 
+  private DifferentialEvolutionCrossover crossoverOperator ;
+  private DifferentialEvolutionSelection selectionOperator ;
+
   protected Comparator<DoubleSolution> dominanceComparator;
 
   protected Ranking<DoubleSolution> ranking;
@@ -220,4 +223,14 @@ public class GDE3 extends AbstractDifferentialEvolution<List<DoubleSolution>> {
   @Override public String getDescription() {
     return "Generalized Differential Evolution version 3" ;
   }
-} 
+
+  @Override
+  protected DifferentialEvolutionCrossover getDifferentialEvolutionCrossoverOperator() {
+    return crossoverOperator;
+  }
+
+  @Override
+  protected DifferentialEvolutionSelection getDifferentialEvolutionSelectionOperator() {
+    return selectionOperator;
+  }
+}

@@ -23,6 +23,8 @@ public class DifferentialEvolution extends AbstractDifferentialEvolution<DoubleS
   private int maxEvaluations;
   private SolutionListEvaluator<DoubleSolution> evaluator;
   private Comparator<DoubleSolution> comparator;
+  private DifferentialEvolutionCrossover crossoverOperator ;
+  private DifferentialEvolutionSelection selectionOperator ;
 
   private int evaluations;
 
@@ -125,6 +127,16 @@ public class DifferentialEvolution extends AbstractDifferentialEvolution<DoubleS
     Collections.sort(getPopulation(), comparator) ;
 
     return getPopulation().get(0);
+  }
+
+  @Override
+  protected DifferentialEvolutionCrossover getDifferentialEvolutionCrossoverOperator() {
+    return crossoverOperator;
+  }
+
+  @Override
+  protected DifferentialEvolutionSelection getDifferentialEvolutionSelectionOperator() {
+    return selectionOperator;
   }
 
   @Override public String getName() {
