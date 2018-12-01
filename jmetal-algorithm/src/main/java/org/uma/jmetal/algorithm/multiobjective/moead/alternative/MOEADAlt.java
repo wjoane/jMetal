@@ -1,16 +1,20 @@
-package org.uma.jmetal.algorithm.multiobjective.moead.alt;
+package org.uma.jmetal.algorithm.multiobjective.moead.alternative;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.IntStream;
-import org.uma.jmetal.algorithm.impl.AbstractDifferentialEvolution;
 import org.uma.jmetal.algorithm.impl.AbstractEvolutionaryAlgorithm;
 import org.uma.jmetal.algorithm.multiobjective.moead.util.MOEADUtils;
+import org.uma.jmetal.measure.Measurable;
+import org.uma.jmetal.measure.MeasureManager;
+import org.uma.jmetal.measure.impl.BasicMeasure;
+import org.uma.jmetal.measure.impl.SimpleMeasureManager;
 import org.uma.jmetal.operator.MutationOperator;
 import org.uma.jmetal.operator.SelectionOperator;
 import org.uma.jmetal.operator.impl.crossover.DifferentialEvolutionCrossover;
 import org.uma.jmetal.operator.impl.mutation.PolynomialMutation;
-import org.uma.jmetal.operator.impl.selection.DifferentialEvolutionSelection;
 import org.uma.jmetal.operator.impl.selection.NaryRandomSelection;
 import org.uma.jmetal.problem.DoubleProblem;
 import org.uma.jmetal.solution.DoubleSolution;
@@ -20,13 +24,17 @@ import org.uma.jmetal.util.evaluator.SolutionListEvaluator;
 import org.uma.jmetal.util.evaluator.impl.SequentialSolutionListEvaluator;
 import org.uma.jmetal.util.neighborhood.impl.WeightVectorNeighborhood;
 import org.uma.jmetal.util.pseudorandom.JMetalRandom;
+import org.uma.jmetal.util.terminationcondition.TerminationCondition;
+import org.uma.jmetal.util.terminationcondition.impl.TerminationByEvaluations;
 
 /**
  * Alternative implementation of MOEA/D. We have redesigned the code to allow MOEA/D to inherit from
- * the {@link AbstractDifferentialEvolution} class. The result is a more modular, reusable and
+ * the {@link AbstractEvolutionaryAlgorithm} class. The result is a more modular, reusable and
  * extensive code.
  */
-public class MOEADAlt extends AbstractEvolutionaryAlgorithm<DoubleSolution, List<DoubleSolution>> {
+public class MOEADAlt
+    extends AbstractEvolutionaryAlgorithm<DoubleSolution, List<DoubleSolution>>
+    implements Measurable {
 
   protected enum NeighborType {NEIGHBOR, POPULATION}
 
@@ -34,6 +42,7 @@ public class MOEADAlt extends AbstractEvolutionaryAlgorithm<DoubleSolution, List
   private int maxEvaluations;
   private int populationSize;
   private AggregativeFunction aggregativeFunction;
+  private TerminationCondition terminationCondition ;
 
   private WeightVectorNeighborhood<DoubleSolution> weightVectorNeighborhood;
 
@@ -52,32 +61,53 @@ public class MOEADAlt extends AbstractEvolutionaryAlgorithm<DoubleSolution, List
 
   private Permutation permutation;
 
+  private SimpleMeasureManager measureManager ;
+  private BasicMeasure<Map<String, Object>> algorithmDataMeasure ;
+
+  private Map<String, Object> algorithmStatusData ;
+
   public MOEADAlt(DoubleProblem problem, int populationSize, int maxEvaluations) {
-    this(problem, populationSize, maxEvaluations, new Tschebyscheff());
+    this(problem, populationSize, 0.9, 2, 20, new Tschebyscheff(),
+        new TerminationByEvaluations(150000),
+        new DifferentialEvolutionCrossover(1.0, 0.5, "rand/1/bin"),
+        new PolynomialMutation(1.0 / problem.getNumberOfVariables(), 20.0));
   }
 
-  public MOEADAlt(DoubleProblem problem, int populationSize, int maxEvaluations,
-      AggregativeFunction aggregativeFunction) {
+  public MOEADAlt(
+      DoubleProblem problem,
+      int populationSize,
+      double neighborhoodSelectionProbability,
+      int maximumNumberOfReplacedSolutions,
+      int neighborSize,
+      AggregativeFunction aggregativeFunction,
+      TerminationCondition terminationCondition,
+      DifferentialEvolutionCrossover differentialEvolutionCrossover,
+      MutationOperator<DoubleSolution> mutationOperator) {
     this.problem = problem;
     this.populationSize = populationSize;
-    this.maxEvaluations = maxEvaluations;
     this.aggregativeFunction = aggregativeFunction;
+    this.terminationCondition = terminationCondition ;
 
-    neighborhoodSelectionProbability = 0.9;
-    maximumNumberOfReplacedSolutions = 2;
-    neighborSize = 20;
+    this.neighborhoodSelectionProbability = neighborhoodSelectionProbability;
+    this.maximumNumberOfReplacedSolutions = maximumNumberOfReplacedSolutions;
+    this.neighborSize = neighborSize ;
 
-    crossoverOperator = new DifferentialEvolutionCrossover(1.0, 0.5, "rand/1/bin");
+    crossoverOperator = differentialEvolutionCrossover ;
     selectionOperator = new NaryRandomSelection<>(2);
-    mutationOperator = new PolynomialMutation(1.0 / problem.getNumberOfVariables(), 20.0);
+    this.mutationOperator = mutationOperator ;
 
     evaluator = new SequentialSolutionListEvaluator<>();
 
     weightVectorNeighborhood = new WeightVectorNeighborhood<DoubleSolution>(
         populationSize,
-        neighborSize);
+        this.neighborSize);
 
     permutation = new Permutation(populationSize);
+
+    algorithmStatusData = new HashMap<String, Object>();
+    algorithmDataMeasure = new BasicMeasure<>() ;
+    measureManager = new SimpleMeasureManager() ;
+    measureManager.setPushMeasure("ALGORITHM_DATA", algorithmDataMeasure);
   }
 
   @Override
@@ -86,16 +116,24 @@ public class MOEADAlt extends AbstractEvolutionaryAlgorithm<DoubleSolution, List
     for (DoubleSolution solution : population) {
       aggregativeFunction.update(solution.getObjectives());
     }
+
+    algorithmStatusData.put("EVALUATIONS", evaluations) ;
+    algorithmStatusData.put("POPULATION", population) ;
+    algorithmDataMeasure.push(algorithmStatusData);
   }
 
   @Override
   protected void updateProgress() {
     evaluations++;
+
+    algorithmStatusData.put("EVALUATIONS", evaluations) ;
+    algorithmStatusData.put("POPULATION", population) ;
+    algorithmDataMeasure.push(algorithmStatusData);
   }
 
   @Override
   protected boolean isStoppingConditionReached() {
-    return evaluations >= maxEvaluations;
+    return terminationCondition.check(algorithmStatusData);
   }
 
   @Override
@@ -124,7 +162,7 @@ public class MOEADAlt extends AbstractEvolutionaryAlgorithm<DoubleSolution, List
     } else {
       matingPool = selectionOperator.execute(population);
     }
-    
+
     matingPool.add(population.get(currentSubproblem));
 
     return matingPool;
@@ -244,5 +282,10 @@ public class MOEADAlt extends AbstractEvolutionaryAlgorithm<DoubleSolution, List
 
       return next;
     }
+  }
+
+  @Override
+  public MeasureManager getMeasureManager() {
+    return measureManager;
   }
 }

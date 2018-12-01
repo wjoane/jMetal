@@ -3,19 +3,13 @@ package org.uma.jmetal.runner.multiobjective;
 import java.io.FileNotFoundException;
 import java.util.List;
 import org.uma.jmetal.algorithm.Algorithm;
-import org.uma.jmetal.algorithm.multiobjective.moead.AbstractMOEAD;
-import org.uma.jmetal.algorithm.multiobjective.moead.MOEADBuilder;
-import org.uma.jmetal.algorithm.multiobjective.moead.alt.MOEADAlt;
-import org.uma.jmetal.operator.MutationOperator;
-import org.uma.jmetal.operator.impl.crossover.DifferentialEvolutionCrossover;
-import org.uma.jmetal.operator.impl.mutation.PolynomialMutation;
+import org.uma.jmetal.algorithm.multiobjective.moead.alternative.MOEADAlt;
 import org.uma.jmetal.problem.DoubleProblem;
 import org.uma.jmetal.solution.DoubleSolution;
 import org.uma.jmetal.util.AbstractAlgorithmRunner;
 import org.uma.jmetal.util.AlgorithmRunner;
 import org.uma.jmetal.util.JMetalLogger;
 import org.uma.jmetal.util.ProblemUtils;
-import org.uma.jmetal.util.pseudorandom.JMetalRandom;
 
 /**
  * Class for configuring and running the MOEA/D algorithm
@@ -47,7 +41,7 @@ public class MOEADAltRunner extends AbstractAlgorithmRunner {
 
     problem = (DoubleProblem)ProblemUtils.<DoubleSolution> loadProblem(problemName);
 
-    algorithm = new MOEADAlt(problem, 100, 150000) ;
+    algorithm = new MOEADAlt(problem, 300, 150000) ;
 
     AlgorithmRunner algorithmRunner = new AlgorithmRunner.Executor(algorithm)
         .execute() ;
