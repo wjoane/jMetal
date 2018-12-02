@@ -66,12 +66,7 @@ public class MOEADAlt
 
   private Map<String, Object> algorithmStatusData ;
 
-  public MOEADAlt(DoubleProblem problem, int populationSize, int maxEvaluations) {
-    this(problem, populationSize, 0.9, 2, 20, new Tschebyscheff(),
-        new TerminationByEvaluations(150000),
-        new DifferentialEvolutionCrossover(1.0, 0.5, "rand/1/bin"),
-        new PolynomialMutation(1.0 / problem.getNumberOfVariables(), 20.0));
-  }
+  private long initComputingTime ;
 
   public MOEADAlt(
       DoubleProblem problem,
@@ -119,6 +114,7 @@ public class MOEADAlt
 
     algorithmStatusData.put("EVALUATIONS", evaluations) ;
     algorithmStatusData.put("POPULATION", population) ;
+    algorithmStatusData.put("COMPUTING_TIME", System.currentTimeMillis() - initComputingTime) ;
     algorithmDataMeasure.push(algorithmStatusData);
   }
 
@@ -128,6 +124,7 @@ public class MOEADAlt
 
     algorithmStatusData.put("EVALUATIONS", evaluations) ;
     algorithmStatusData.put("POPULATION", population) ;
+    algorithmStatusData.put("COMPUTING_TIME", System.currentTimeMillis() - initComputingTime) ;
     algorithmDataMeasure.push(algorithmStatusData);
   }
 
@@ -138,6 +135,7 @@ public class MOEADAlt
 
   @Override
   protected List<DoubleSolution> createInitialPopulation() {
+    initComputingTime = System.currentTimeMillis() ;
     List<DoubleSolution> population = new ArrayList<>();
     IntStream.range(0, populationSize)
         .forEach(i -> population.add(problem.createSolution()));
