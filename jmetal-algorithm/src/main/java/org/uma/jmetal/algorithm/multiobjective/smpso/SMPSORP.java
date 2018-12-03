@@ -13,6 +13,8 @@
 
 package org.uma.jmetal.algorithm.multiobjective.smpso;
 
+import java.util.HashMap;
+import java.util.Map;
 import org.uma.jmetal.algorithm.impl.AbstractParticleSwarmOptimization;
 import org.uma.jmetal.measure.Measurable;
 import org.uma.jmetal.measure.MeasureManager;
@@ -32,6 +34,7 @@ import org.uma.jmetal.util.solutionattribute.impl.GenericSolutionAttribute;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import org.uma.jmetal.util.terminationcondition.TerminationCondition;
 
 /**
  * This class implements the SMPSORP algorithm described in:
@@ -60,10 +63,11 @@ public class SMPSORP
   private double weightMin;
   private double changeVelocity1;
   private double changeVelocity2;
-
+  private double inertiaWeight ;
   protected int swarmSize;
-  protected int maxIterations;
-  protected int iterations;
+  protected int evaluations;
+
+  protected TerminationCondition terminationCondition ;
 
   private GenericSolutionAttribute<DoubleSolution, DoubleSolution> localBest;
   private double[][] speed;
@@ -81,19 +85,24 @@ public class SMPSORP
   protected SolutionListEvaluator<DoubleSolution> evaluator;
 
   protected List<List<Double>> referencePoints ;
-  protected CountingMeasure currentIteration ;
+
   protected SimpleMeasureManager measureManager ;
-  protected BasicMeasure<List<DoubleSolution>> solutionListMeasure ;
+  protected BasicMeasure<Map<String, Object>> algorithmDataMeasure ;
+  protected Map<String, Object> algorithmStatusData ;
+  protected long initComputingTime ;
+
 
   private List<DoubleSolution> referencePointSolutions ;
 
   /**
    * Constructor
    */
-  public SMPSORP(DoubleProblem problem, int swarmSize,
+  public SMPSORP(DoubleProblem problem,
+      int swarmSize,
+                 TerminationCondition terminationCondition,
                  List<ArchiveWithReferencePoint<DoubleSolution>> leaders,
                  List<List<Double>> referencePoints,
-                 MutationOperator<DoubleSolution> mutationOperator, int maxIterations, double r1Min, double r1Max,
+                 MutationOperator<DoubleSolution> mutationOperator, double inertiaWeight, double r1Min, double r1Max,
                  double r2Min, double r2Max, double c1Min, double c1Max, double c2Min, double c2Max,
                  double weightMin, double weightMax, double changeVelocity1, double changeVelocity2,
                  SolutionListEvaluator<DoubleSolution> evaluator) {
@@ -101,9 +110,9 @@ public class SMPSORP
     this.swarmSize = swarmSize;
     this.leaders = leaders;
     this.mutation = mutationOperator;
-    this.maxIterations = maxIterations;
     this.referencePoints = referencePoints ;
 
+    this.inertiaWeight = inertiaWeight ;
     this.r1Max = r1Max;
     this.r1Min = r1Min;
     this.r2Max = r2Max;
@@ -119,6 +128,7 @@ public class SMPSORP
 
     randomGenerator = JMetalRandom.getInstance();
     this.evaluator = evaluator;
+    this.terminationCondition = terminationCondition ;
 
     dominanceComparator = new DominanceComparator<DoubleSolution>();
     localBest = new GenericSolutionAttribute<DoubleSolution, DoubleSolution>();
@@ -131,13 +141,10 @@ public class SMPSORP
       deltaMin[i] = -deltaMax[i];
     }
 
-    currentIteration = new CountingMeasure(0) ;
-    solutionListMeasure = new BasicMeasure<>() ;
-
+    algorithmStatusData = new HashMap<String, Object>();
+    algorithmDataMeasure = new BasicMeasure<>() ;
     measureManager = new SimpleMeasureManager() ;
-    measureManager.setPushMeasure("currentPopulation", solutionListMeasure);
-    measureManager.setPushMeasure("currentIteration", currentIteration);
-
+    measureManager.setPushMeasure("ALGORITHM_DATA", algorithmDataMeasure);
 
     referencePointSolutions = new ArrayList<>() ;
     for (int i = 0; i < referencePoints.size(); i++) {
@@ -156,23 +163,41 @@ public class SMPSORP
     }
   }
 
-  @Override protected void initProgress() {
-    iterations = 1;
-    currentIteration.reset(1);
-    updateLeadersDensityEstimator();
-  }
-
-  @Override protected void updateProgress() {
-    iterations += 1;
-    currentIteration.increment(1); ;
+  @Override
+  protected void initProgress() {
+    evaluations = swarmSize;
     updateLeadersDensityEstimator();
 
-    solutionListMeasure.push(getResult()) ;
+    updateStatusData();
+    algorithmDataMeasure.push(algorithmStatusData);
   }
 
-  @Override protected boolean isStoppingConditionReached() {
-    return iterations >= maxIterations;
+  @Override
+  protected void updateProgress() {
+    evaluations += swarmSize ;
+    updateLeadersDensityEstimator();
+
+    updateStatusData();
+    algorithmDataMeasure.push(algorithmStatusData);
   }
+
+  @Override
+  protected boolean isStoppingConditionReached() {
+    return terminationCondition.check(algorithmStatusData);
+  }
+
+  @Override
+  public void run() {
+    initComputingTime = System.currentTimeMillis() ;
+    super.run();
+  }
+
+  private void updateStatusData() {
+    algorithmStatusData.put("EVALUATIONS", evaluations) ;
+    algorithmStatusData.put("POPULATION", getResult()) ;
+    algorithmStatusData.put("COMPUTING_TIME", System.currentTimeMillis() - initComputingTime) ;
+  }
+
 
   @Override protected List<DoubleSolution> createInitialSwarm() {
     List<DoubleSolution> swarm = new ArrayList<>(swarmSize);
@@ -234,7 +259,7 @@ public class SMPSORP
 
       for (int var = 0; var < particle.getNumberOfVariables(); var++) {
         speed[i][var] = velocityConstriction(constrictionCoefficient(c1, c2) * (
-                inertiaWeight(iterations, maxIterations, wmax, wmin) * speed[i][var] +
+                inertiaWeight * speed[i][var] +
                     c1 * r1 * (bestParticle.getVariableValue(var) - particle.getVariableValue(var)) +
                     c2 * r2 * (bestGlobal.getVariableValue(var) - particle.getVariableValue(var))),
             deltaMax, deltaMin, var);
@@ -348,10 +373,6 @@ public class SMPSORP
     } else {
       return 2 / (2 - rho - Math.sqrt(Math.pow(rho, 2.0) - 4.0 * rho));
     }
-  }
-
-  private double inertiaWeight(int iter, int miter, double wma, double wmin) {
-    return wma;
   }
 
   @Override public String getName() {

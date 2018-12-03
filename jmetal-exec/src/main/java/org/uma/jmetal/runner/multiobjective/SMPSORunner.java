@@ -1,5 +1,6 @@
 package org.uma.jmetal.runner.multiobjective;
 
+import org.knowm.xchart.BitmapEncoder;
 import org.uma.jmetal.algorithm.Algorithm;
 import org.uma.jmetal.algorithm.multiobjective.smpso.SMPSO;
 import org.uma.jmetal.algorithm.multiobjective.smpso.SMPSOBuilder;
@@ -18,6 +19,7 @@ import org.uma.jmetal.util.algorithmobserver.RealTimeChartObserver;
 import org.uma.jmetal.util.archive.BoundedArchive;
 import org.uma.jmetal.util.archive.impl.CrowdingDistanceArchive;
 import org.uma.jmetal.util.evaluator.impl.SequentialSolutionListEvaluator;
+import org.uma.jmetal.util.terminationcondition.TerminationCondition;
 import org.uma.jmetal.util.terminationcondition.impl.TerminationByEvaluations;
 
 import java.util.List;
@@ -63,17 +65,24 @@ public class SMPSORunner extends AbstractAlgorithmRunner {
     double mutationDistributionIndex = 20.0 ;
     mutation = new PolynomialMutation(mutationProbability, mutationDistributionIndex) ;
 
+    //TerminationCondition terminationCondition = new TerminationByComputingTime(1000);
+    TerminationCondition terminationCondition = new TerminationByEvaluations(25000) ;
+    //TerminationCondition terminationCondition = new TerminationByKeyboard();
+    //TerminationCondition terminationCondition = new TerminationByQualityIndicator<DoubleSolution>
+    //  (referenceParetoFront, 0.99) ;
+
     algorithm = new SMPSOBuilder(problem,
-            new TerminationByEvaluations(25000),
+            terminationCondition,
             archive)
         .setMutation(mutation)
         .setSwarmSize(100)
         .setSolutionListEvaluator(new SequentialSolutionListEvaluator<DoubleSolution>())
         .build();
 
-    new RealTimeChartObserver(algorithm, "SMPSO", 80, referenceParetoFront) ;
+    RealTimeChartObserver<DoubleSolution> realTimeChartObserver =
+        new RealTimeChartObserver<DoubleSolution>(algorithm, "SMPSO", 80, referenceParetoFront) ;
     new EvaluationObserver(algorithm) ;
-    new QualityIndicatorChartObserver(algorithm, "SMPSO", 80, referenceParetoFront) ;
+    new QualityIndicatorChartObserver(algorithm, "Hypervolume", 80, referenceParetoFront) ;
 
     AlgorithmRunner algorithmRunner = new AlgorithmRunner.Executor(algorithm)
         .execute();
@@ -83,9 +92,13 @@ public class SMPSORunner extends AbstractAlgorithmRunner {
 
     JMetalLogger.logger.info("Total execution time: " + computingTime + "ms");
 
+    realTimeChartObserver.getChart().saveChart("NSGAII." + problemName, BitmapEncoder.BitmapFormat.PNG);
+
     printFinalSolutionSet(population);
     if (!referenceParetoFront.equals("")) {
       printQualityIndicators(population, referenceParetoFront) ;
     }
+
+    System.exit(0);
   }
 }

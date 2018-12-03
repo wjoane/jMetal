@@ -15,6 +15,7 @@ import org.uma.jmetal.util.AlgorithmRunner;
 import org.uma.jmetal.util.JMetalException;
 import org.uma.jmetal.util.JMetalLogger;
 import org.uma.jmetal.util.ProblemUtils;
+import org.uma.jmetal.util.algorithmobserver.RealTimeChartObserver;
 import org.uma.jmetal.util.archivewithreferencepoint.ArchiveWithReferencePoint;
 import org.uma.jmetal.util.archivewithreferencepoint.impl.CrowdingDistanceArchiveWithReferencePoint;
 import org.uma.jmetal.util.chartcontainer.ChartContainerWithReferencePoints;
@@ -26,6 +27,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import org.uma.jmetal.util.terminationcondition.TerminationCondition;
+import org.uma.jmetal.util.terminationcondition.impl.TerminationByEvaluations;
 
 public class SMPSORPWithMultipleReferencePointsAndChartsRunner {
   /**
@@ -40,7 +43,7 @@ public class SMPSORPWithMultipleReferencePointsAndChartsRunner {
    */
   public static void main(String[] args) throws JMetalException, IOException {
     DoubleProblem problem;
-    Algorithm<List<DoubleSolution>> algorithm;
+    SMPSORP algorithm;
     MutationOperator<DoubleSolution> mutation;
     String referenceParetoFront = "" ;
 
@@ -51,8 +54,8 @@ public class SMPSORPWithMultipleReferencePointsAndChartsRunner {
       problemName = args[0] ;
       referenceParetoFront = args[1] ;
     } else {
-      problemName = "org.uma.jmetal.problem.multiobjective.zdt.ZDT1" ;
-      referenceParetoFront = "jmetal-problem/src/test/resources/pareto_fronts/ZDT1.pf" ;
+      problemName = "org.uma.jmetal.problem.multiobjective.zdt.ZDT4" ;
+      referenceParetoFront = "jmetal-problem/src/test/resources/pareto_fronts/ZDT4.pf" ;
     }
 
     problem = (DoubleProblem) ProblemUtils.<DoubleSolution> loadProblem(problemName);
@@ -67,9 +70,7 @@ public class SMPSORPWithMultipleReferencePointsAndChartsRunner {
     double mutationDistributionIndex = 20.0 ;
     mutation = new PolynomialMutation(mutationProbability, mutationDistributionIndex) ;
 
-    int maxIterations = 250;
     int swarmSize = 100 ;
-
     List<ArchiveWithReferencePoint<DoubleSolution>> archivesWithReferencePoints = new ArrayList<>();
 
     for (int i = 0 ; i < referencePoints.size(); i++) {
@@ -78,12 +79,19 @@ public class SMPSORPWithMultipleReferencePointsAndChartsRunner {
               swarmSize/referencePoints.size(), referencePoints.get(i))) ;
     }
 
+    //TerminationCondition terminationCondition = new TerminationByComputingTime(1000);
+    TerminationCondition terminationCondition = new TerminationByEvaluations(25000) ;
+    //TerminationCondition terminationCondition = new TerminationByKeyboard();
+    //TerminationCondition terminationCondition = new TerminationByQualityIndicator<DoubleSolution>
+    //  (referenceParetoFront, 0.99) ;
+
     algorithm = new SMPSORP(problem,
             swarmSize,
+            terminationCondition,
             archivesWithReferencePoints,
             referencePoints,
             mutation,
-            maxIterations,
+            0.1,
             0.0, 1.0,
             0.0, 1.0,
             2.5, 1.5,
@@ -92,27 +100,14 @@ public class SMPSORPWithMultipleReferencePointsAndChartsRunner {
             -1.0, -1.0,
             new SequentialSolutionListEvaluator<>() );
 
-    /* Measure management */
-    MeasureManager measureManager = ((SMPSORP) algorithm).getMeasureManager();
 
-    BasicMeasure<List<DoubleSolution>> solutionListMeasure = (BasicMeasure<List<DoubleSolution>>) measureManager
-            .<List<DoubleSolution>>getPushMeasure("currentPopulation");
-    CountingMeasure iterationMeasure = (CountingMeasure) measureManager.<Long>getPushMeasure("currentIteration");
-
-    ChartContainerWithReferencePoints chart = new ChartContainerWithReferencePoints(algorithm.getName(), 80);
-    chart.setFrontChart(0, 1, referenceParetoFront);
-    chart.setReferencePoint(referencePoints);
-    chart.initChart();
-
-    solutionListMeasure.register(new ChartListener(chart));
-    iterationMeasure.register(new IterationListener(chart));
-
-    /* End of measure management */
+    RealTimeChartObserver observer = new RealTimeChartObserver(algorithm, "SMPSO/RP", 80, referenceParetoFront) ;
+    observer.setReferencePointList(referencePoints);
 
     AlgorithmRunner algorithmRunner = new AlgorithmRunner.Executor(algorithm)
             .execute() ;
 
-    chart.saveChart("SMPSORP", BitmapEncoder.BitmapFormat.PNG);
+    observer.getChart().saveChart("SMPSORP", BitmapEncoder.BitmapFormat.PNG);
     List<DoubleSolution> population = algorithm.getResult() ;
     long computingTime = algorithmRunner.getComputingTime() ;
 
@@ -133,51 +128,5 @@ public class SMPSORPWithMultipleReferencePointsAndChartsRunner {
     }
 
     System.exit(0);
-  }
-
-  private static class ChartListener implements MeasureListener<List<DoubleSolution>> {
-    private ChartContainerWithReferencePoints chart;
-    private int iteration = 0;
-
-    public ChartListener(ChartContainerWithReferencePoints chart) {
-      this.chart = chart;
-      this.chart.getFrontChart().setTitle("Iteration: " + this.iteration);
-    }
-
-    private void refreshChart(List<DoubleSolution> solutionList) {
-      if (this.chart != null) {
-        iteration++;
-        this.chart.getFrontChart().setTitle("Iteration: " + this.iteration);
-        this.chart.updateFrontCharts(solutionList);
-        this.chart.refreshCharts();
-
-        new SolutionListOutput(solutionList)
-            .setSeparator("\t")
-            .setVarFileOutputContext(new DefaultFileOutputContext("VAR." + iteration + ".tsv"))
-            .setFunFileOutputContext(new DefaultFileOutputContext("FUN." + iteration + ".tsv"))
-            .print();
-      }
-    }
-
-    @Override
-    synchronized public void measureGenerated(List<DoubleSolution> solutions) {
-      refreshChart(solutions);
-    }
-  }
-
-  private static class IterationListener implements MeasureListener<Long> {
-    ChartContainerWithReferencePoints chart;
-
-    public IterationListener(ChartContainerWithReferencePoints chart) {
-      this.chart = chart;
-      this.chart.getFrontChart().setTitle("Iteration: " + 0);
-    }
-
-    @Override
-    synchronized public void measureGenerated(Long iteration) {
-      if (this.chart != null) {
-        this.chart.getFrontChart().setTitle("Iteration: " + iteration);
-      }
-    }
   }
 }

@@ -19,6 +19,8 @@ import org.uma.jmetal.util.fileoutput.impl.DefaultFileOutputContext;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import org.uma.jmetal.util.terminationcondition.TerminationCondition;
+import org.uma.jmetal.util.terminationcondition.impl.TerminationByEvaluations;
 
 public class SMPSORPWithMultipleReferencePointsRunner {
   /**
@@ -53,7 +55,6 @@ public class SMPSORPWithMultipleReferencePointsRunner {
     double mutationDistributionIndex = 20.0;
     mutation = new PolynomialMutation(mutationProbability, mutationDistributionIndex);
 
-    int maxIterations = 250;
     int swarmSize = 100;
 
     List<ArchiveWithReferencePoint<DoubleSolution>> archivesWithReferencePoints = new ArrayList<>();
@@ -64,12 +65,17 @@ public class SMPSORPWithMultipleReferencePointsRunner {
                       swarmSize / referencePoints.size(), referencePoints.get(i)));
     }
 
+    //TerminationCondition terminationCondition = new TerminationByComputingTime(1000);
+    TerminationCondition terminationCondition = new TerminationByEvaluations(175000) ;
+    //TerminationCondition terminationCondition = new TerminationByKeyboard();
+
     algorithm = new SMPSORP(problem,
             swarmSize,
+            terminationCondition,
             archivesWithReferencePoints,
             referencePoints,
             mutation,
-            maxIterations,
+            0.1,
             0.0, 1.0,
             0.0, 1.0,
             2.5, 1.5,

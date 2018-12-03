@@ -1,5 +1,6 @@
 package org.uma.jmetal.runner.multiobjective;
 
+import org.knowm.xchart.BitmapEncoder;
 import org.uma.jmetal.algorithm.Algorithm;
 import org.uma.jmetal.algorithm.multiobjective.smpso.SMPSO;
 import org.uma.jmetal.algorithm.multiobjective.smpso.SMPSOBuilder;
@@ -77,17 +78,20 @@ public class SMPSOHvRunner extends AbstractAlgorithmRunner {
         .setSolutionListEvaluator(new SequentialSolutionListEvaluator<DoubleSolution>())
         .build();
 
-    new RealTimeChartObserver(algorithm, "SMPSO", 80, referenceParetoFront) ;
+    RealTimeChartObserver<DoubleSolution> realTimeChartObserver =
+        new RealTimeChartObserver<DoubleSolution>(algorithm, "SMPSO", 80, referenceParetoFront) ;
     new EvaluationObserver(algorithm) ;
     new QualityIndicatorChartObserver(algorithm, "SMPSO", 80, referenceParetoFront) ;
 
     AlgorithmRunner algorithmRunner = new AlgorithmRunner.Executor(algorithm)
         .execute();
 
-    List<DoubleSolution> population = ((SMPSO)algorithm).getResult();
+    List<DoubleSolution> population = algorithm.getResult();
     long computingTime = algorithmRunner.getComputingTime();
 
     JMetalLogger.logger.info("Total execution time: " + computingTime + "ms");
+
+    realTimeChartObserver.getChart().saveChart("NSGAII." + problemName, BitmapEncoder.BitmapFormat.PNG);
 
     printFinalSolutionSet(population);
     if (!referenceParetoFront.equals("")) {

@@ -13,8 +13,10 @@ import org.uma.jmetal.problem.DoubleProblem;
 import org.uma.jmetal.problem.multiobjective.ebes.Ebes;
 import org.uma.jmetal.solution.DoubleSolution;
 import org.uma.jmetal.util.JMetalException;
+import org.uma.jmetal.util.algorithmobserver.RealTimeChartObserver;
 import org.uma.jmetal.util.archivewithreferencepoint.ArchiveWithReferencePoint;
 import org.uma.jmetal.util.archivewithreferencepoint.impl.CrowdingDistanceArchiveWithReferencePoint;
+import org.uma.jmetal.util.chartcontainer.ChartContainer;
 import org.uma.jmetal.util.chartcontainer.ChartContainerWithReferencePoints;
 import org.uma.jmetal.util.evaluator.impl.SequentialSolutionListEvaluator;
 import org.uma.jmetal.util.fileoutput.SolutionListOutput;
@@ -25,6 +27,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
+import org.uma.jmetal.util.terminationcondition.TerminationCondition;
+import org.uma.jmetal.util.terminationcondition.impl.TerminationByEvaluations;
 
 public class SMPSORPChangingTheReferencePointsAndChartsRunner {
 
@@ -42,7 +46,7 @@ public class SMPSORPChangingTheReferencePointsAndChartsRunner {
    */
   public static void main(String[] args) throws JMetalException, IOException, InterruptedException {
     DoubleProblem problem;
-    Algorithm<List<DoubleSolution>> algorithm;
+    SMPSORP algorithm;
     MutationOperator<DoubleSolution> mutation;
     String referenceParetoFront ;
 
@@ -68,12 +72,17 @@ public class SMPSORPChangingTheReferencePointsAndChartsRunner {
                       swarmSize/referencePoints.size(), referencePoints.get(i))) ;
     }
 
+    //TerminationCondition terminationCondition = new TerminationByComputingTime(1000);
+    TerminationCondition terminationCondition = new TerminationByEvaluations(25000) ;
+    //TerminationCondition terminationCondition = new TerminationByKeyboard();
+
     algorithm = new SMPSORP(problem,
         swarmSize,
+        terminationCondition,
         archivesWithReferencePoints,
         referencePoints,
         mutation,
-        maxIterations,
+        0.1,
         0.0, 1.0,
         0.0, 1.0,
         2.5, 1.5,
@@ -82,26 +91,11 @@ public class SMPSORPChangingTheReferencePointsAndChartsRunner {
         -1.0, -1.0,
         new SequentialSolutionListEvaluator<>());
 
-    /* Measure management */
-    MeasureManager measureManager = ((SMPSORP) algorithm).getMeasureManager();
-
-    BasicMeasure<List<DoubleSolution>> solutionListMeasure = (BasicMeasure<List<DoubleSolution>>) measureManager
-        .<List<DoubleSolution>>getPushMeasure("currentPopulation");
-    CountingMeasure iterationMeasure = (CountingMeasure) measureManager.<Long>getPushMeasure(
-        "currentIteration");
-
-    ChartContainerWithReferencePoints chart = new ChartContainerWithReferencePoints(algorithm.getName(), 300);
-    chart.setFrontChart(0, 1, referenceParetoFront);
-    chart.setReferencePoint(referencePoints);
-    chart.initChart();
-
-    solutionListMeasure.register(new ChartListener(chart));
-    iterationMeasure.register(new IterationListener(chart));
-
-    /* End of measure management */
+    RealTimeChartObserver observer = new RealTimeChartObserver<DoubleSolution>(algorithm, "SMPSO/RP", 80, referenceParetoFront) ;
+    observer.setReferencePointList(referencePoints);
 
     Thread algorithmThread = new Thread(algorithm);
-    ChangeReferencePoint changeReferencePoint = new ChangeReferencePoint(algorithm, referencePoints, archivesWithReferencePoints, chart) ;
+    ChangeReferencePoint changeReferencePoint = new ChangeReferencePoint(algorithm, referencePoints, archivesWithReferencePoints, observer.getChart()) ;
 
     Thread changePointsThread = new Thread(changeReferencePoint) ;
 
@@ -110,7 +104,7 @@ public class SMPSORPChangingTheReferencePointsAndChartsRunner {
 
     algorithmThread.join();
 
-    chart.saveChart("RSMPSO", BitmapEncoder.BitmapFormat.PNG);
+    //chart.saveChart("RSMPSO", BitmapEncoder.BitmapFormat.PNG);
     List<DoubleSolution> population = algorithm.getResult();
 
     new SolutionListOutput(population)
@@ -131,48 +125,8 @@ public class SMPSORPChangingTheReferencePointsAndChartsRunner {
     System.exit(0);
   }
 
-  private static class ChartListener implements MeasureListener<List<DoubleSolution>> {
-    private ChartContainerWithReferencePoints chart;
-    private int iteration = 0;
-
-    public ChartListener(ChartContainerWithReferencePoints chart) {
-      this.chart = chart;
-      this.chart.getFrontChart().setTitle("Iteration: " + this.iteration);
-    }
-
-    private void refreshChart(List<DoubleSolution> solutionList) {
-      if (this.chart != null) {
-        iteration++;
-        this.chart.getFrontChart().setTitle("Iteration: " + this.iteration);
-        this.chart.updateFrontCharts(solutionList);
-        this.chart.refreshCharts();
-      }
-    }
-
-    @Override
-    synchronized public void measureGenerated(List<DoubleSolution> solutions) {
-      refreshChart(solutions);
-    }
-  }
-
-  private static class IterationListener implements MeasureListener<Long> {
-    ChartContainerWithReferencePoints chart;
-
-    public IterationListener(ChartContainerWithReferencePoints chart) {
-      this.chart = chart;
-      this.chart.getFrontChart().setTitle("Iteration: " + 0);
-    }
-
-    @Override
-    synchronized public void measureGenerated(Long iteration) {
-      if (this.chart != null) {
-        this.chart.getFrontChart().setTitle("Iteration: " + iteration);
-      }
-    }
-  }
-
   private static class ChangeReferencePoint implements Runnable {
-    ChartContainerWithReferencePoints chart ;
+    ChartContainer chart ;
     List<List<Double>> referencePoints;
     List<ArchiveWithReferencePoint<DoubleSolution>> archivesWithReferencePoints;
     SMPSORP algorithm ;
@@ -181,7 +135,7 @@ public class SMPSORPChangingTheReferencePointsAndChartsRunner {
             Algorithm<List<DoubleSolution>> algorithm,
         List<List<Double>> referencePoints,
         List<ArchiveWithReferencePoint<DoubleSolution>> archivesWithReferencePoints,
-            ChartContainerWithReferencePoints chart)
+            ChartContainer chart)
         throws InterruptedException {
       this.referencePoints = referencePoints;
       this.archivesWithReferencePoints = archivesWithReferencePoints;
