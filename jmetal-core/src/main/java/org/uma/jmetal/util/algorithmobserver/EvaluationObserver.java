@@ -1,6 +1,7 @@
 package org.uma.jmetal.util.algorithmobserver;
 
 import org.uma.jmetal.measure.Measurable;
+import org.uma.jmetal.measure.Measure;
 import org.uma.jmetal.measure.MeasureListener;
 import org.uma.jmetal.measure.MeasureManager;
 import org.uma.jmetal.measure.impl.BasicMeasure;
@@ -11,38 +12,31 @@ import java.io.FileNotFoundException;
 import java.util.List;
 import java.util.Map;
 
-public class RealTimeChartObserver implements MeasureListener<Map<String, Object>> {
-  private ChartContainer chart;
-  private MeasureManager measureManager ;
+public class EvaluationObserver implements MeasureListener<Map<String, Object>> {
+  private Integer maxEvaluations ;
 
-  public RealTimeChartObserver(Measurable measurable, String legend) {
-    this(measurable, legend, "") ;
+  public EvaluationObserver(Measurable measurable) {
+    this(measurable, null);
   }
 
-  public RealTimeChartObserver(Measurable measurable, String legend, String referenceFrontName) {
+  public EvaluationObserver(Measurable measurable, Integer maxEvaluations) {
+    this.maxEvaluations = maxEvaluations ;
+    MeasureManager measureManager = measurable.getMeasureManager() ;
+
     measureManager = measurable.getMeasureManager() ;
     BasicMeasure<Map<String, Object>> observedData =  (BasicMeasure<Map<String, Object>>)measureManager
             .<Map<String, Object>>getPushMeasure("ALGORITHM_DATA");
 
     observedData.register(this);
-
-    chart = new ChartContainer(legend) ;
-    try {
-      chart.setFrontChart(0, 1, referenceFrontName);
-    } catch (FileNotFoundException e) {
-      e.printStackTrace();
-    }
-    chart.initChart();
   }
 
   @Override
   public void measureGenerated(Map<String, Object> data) {
     int evaluations = (int)data.get("EVALUATIONS") ;
-    List<? extends Solution<?>> population = (List<? extends Solution<?>>) data.get("POPULATION");
-    if (this.chart != null) {
-      this.chart.getFrontChart().setTitle("Iteration: " + evaluations);
-      this.chart.updateFrontCharts(population);
-      this.chart.refreshCharts();
+    if (maxEvaluations == null) {
+      System.out.println("Evaluations: " + evaluations) ;
+    } else {
+      System.out.println("Evaluations: " + evaluations + " from " + maxEvaluations);
     }
   }
 }

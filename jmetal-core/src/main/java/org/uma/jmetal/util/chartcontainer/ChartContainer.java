@@ -4,6 +4,7 @@ import org.knowm.xchart.*;
 import org.knowm.xchart.BitmapEncoder.BitmapFormat;
 import org.knowm.xchart.XYSeries.XYSeriesRenderStyle;
 import org.uma.jmetal.solution.DoubleSolution;
+import org.uma.jmetal.solution.Solution;
 import org.uma.jmetal.util.front.imp.ArrayFront;
 import org.uma.jmetal.util.front.util.FrontUtils;
 
@@ -20,7 +21,7 @@ import java.util.concurrent.TimeUnit;
  * @author Jorge Rodriguez Ordonez
  */
 
-public class ChartContainer {
+public class ChartContainer<S extends Solution<?>> {
     private Map<String, XYChart> charts;
     private XYChart frontChart;
     private XYChart varChart;
@@ -99,7 +100,7 @@ public class ChartContainer {
         this.sw.displayChartMatrix(this.name);
     }
 
-    public void updateFrontCharts(List<DoubleSolution> solutionList) {
+    public void updateFrontCharts(List<S> solutionList) {
         if (this.frontChart != null) {
             this.frontChart.updateXYSeries(this.name,
                                            this.getSolutionsForObjective(solutionList, this.objective1),
@@ -109,10 +110,11 @@ public class ChartContainer {
 
         if (this.varChart != null) {
             this.varChart.updateXYSeries(this.name,
-                                         this.getVariableValues(solutionList, this.variable1),
-                                         this.getVariableValues(solutionList, this.variable2),
+                                         this.getVariableValues((List<DoubleSolution>)solutionList, this.variable1),
+                                         this.getVariableValues((List<DoubleSolution>)solutionList, this.variable2),
                                          null);
         }
+
     }
 
     public void refreshCharts() {
@@ -199,7 +201,7 @@ public class ChartContainer {
         return values;
     }
 
-    private double[] getSolutionsForObjective(List<DoubleSolution> solutionList, int objective) {
+    private double[] getSolutionsForObjective(List<S> solutionList, int objective) {
         double[] result = new double[solutionList.size()];
         for (int i = 0; i < solutionList.size(); i++) {
             result[i] = solutionList.get(i).getObjective(objective);
