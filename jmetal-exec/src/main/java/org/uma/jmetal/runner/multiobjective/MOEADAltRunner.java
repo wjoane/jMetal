@@ -57,10 +57,10 @@ public class MOEADAltRunner extends AbstractAlgorithmRunner {
     AggregativeFunction aggregativeFunction = new Tschebyscheff() ;
 
     //TerminationCondition terminationCondition = new TerminationByComputingTime(1000);
-    //TerminationCondition terminationCondition = new TerminationByEvaluations(150000) ;
+    //TerminationCondition terminationCondition = new TerminationByEvaluations(175000) ;
     //TerminationCondition terminationCondition = new TerminationByKeyboard();
     TerminationCondition terminationCondition = new TerminationByQualityIndicator<DoubleSolution>
-        ("jmetal-problem/src/test/resources/pareto_fronts/LZ09_F2.pf", 0.95) ;
+        ("jmetal-problem/src/test/resources/pareto_fronts/LZ09_F2.pf", 0.99) ;
 
     algorithm = new MOEADAlt(problem,
         populationSize,
