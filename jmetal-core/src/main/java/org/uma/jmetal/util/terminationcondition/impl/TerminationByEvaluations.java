@@ -4,6 +4,12 @@ import org.uma.jmetal.util.terminationcondition.TerminationCondition;
 
 import java.util.Map;
 
+/**
+ * Class that allows to check the termination condition based on a maximum number of indicated
+ * evaluations.
+ *
+ *  @author Antonio J. Nebro <antonio@lcc.uma.es>
+ */
 public class TerminationByEvaluations implements TerminationCondition {
   private int maximumNumberOfEvaluations ;
 

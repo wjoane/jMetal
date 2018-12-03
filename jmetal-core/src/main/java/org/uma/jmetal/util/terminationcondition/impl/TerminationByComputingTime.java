@@ -8,12 +8,16 @@ import java.util.Map;
 /**
  * Class that allows to check the termination condition when the computing time of an algorithm
  * gets higher than a given threshold.
+ *
+ *  @author Antonio J. Nebro <antonio@lcc.uma.es>
  */
 public class TerminationByComputingTime implements TerminationCondition {
   private long maxComputingTime ;
+  private int evaluations ;
 
   public TerminationByComputingTime(int maxComputingTime) {
     this.maxComputingTime = maxComputingTime ;
+    this.evaluations = 0 ;
   }
 
   @Override
@@ -22,9 +26,14 @@ public class TerminationByComputingTime implements TerminationCondition {
 
     boolean result = currentComputingTime >= maxComputingTime ;
     if (result) {
-      JMetalLogger.logger.info("Evaluations: " + (int)algorithmStatusData.get("EVALUATIONS"));
+      this.evaluations = (int)algorithmStatusData.get("EVALUATIONS") ;
+      JMetalLogger.logger.info("Evaluations: " + evaluations);
     }
 
     return result ;
+  }
+
+  public int getEvaluations() {
+    return evaluations ;
   }
 }

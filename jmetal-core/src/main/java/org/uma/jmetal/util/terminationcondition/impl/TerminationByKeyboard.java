@@ -6,11 +6,18 @@ import org.uma.jmetal.util.terminationcondition.TerminationCondition;
 import java.util.Map;
 import java.util.Scanner;
 
+/**
+ * Class that allows to check the termination condition based on introducing a character by keyboard.
+ *
+ *  @author Antonio J. Nebro <antonio@lcc.uma.es>
+ */
 public class TerminationByKeyboard implements TerminationCondition {
   public boolean keyHit ;
+  private int evaluations ;
 
   public TerminationByKeyboard() {
     keyHit = false;
+    evaluations = 0 ;
 
     KeyboardReader keyboardReader = new KeyboardReader(this) ;
     keyboardReader.start();
@@ -19,7 +26,8 @@ public class TerminationByKeyboard implements TerminationCondition {
   @Override
   public boolean check(Map<String, Object> algorithmStatusData) {
     if (keyHit) {
-      JMetalLogger.logger.info("Evaluations: " + (int)algorithmStatusData.get("EVALUATIONS"));
+      this.evaluations = (int)algorithmStatusData.get("EVALUATIONS") ;
+      JMetalLogger.logger.info("Evaluations: " + evaluations);
     }
     return keyHit ;
   }
@@ -41,5 +49,9 @@ public class TerminationByKeyboard implements TerminationCondition {
 
       terminationByKeyboard.keyHit = true ;
     }
+  }
+
+  public int getEvaluations() {
+    return evaluations ;
   }
 }
