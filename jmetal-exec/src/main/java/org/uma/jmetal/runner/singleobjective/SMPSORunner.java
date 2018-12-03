@@ -16,6 +16,7 @@ import org.uma.jmetal.util.evaluator.impl.SequentialSolutionListEvaluator;
 import org.uma.jmetal.util.fileoutput.SolutionListOutput;
 import org.uma.jmetal.util.fileoutput.impl.DefaultFileOutputContext;
 import org.uma.jmetal.util.pseudorandom.impl.MersenneTwisterGenerator;
+import org.uma.jmetal.util.terminationcondition.impl.TerminationByEvaluations;
 
 import java.util.List;
 
@@ -47,11 +48,9 @@ public class SMPSORunner extends AbstractAlgorithmRunner {
     double mutationDistributionIndex = 20.0 ;
     mutation = new PolynomialMutation(mutationProbability, mutationDistributionIndex) ;
 
-    algorithm = new SMPSOBuilder(problem, archive)
+    algorithm = new SMPSOBuilder(problem, new TerminationByEvaluations(25000), archive)
         .setMutation(mutation)
-        .setMaxIterations(25)
         .setSwarmSize(100)
-        .setRandomGenerator(new MersenneTwisterGenerator())
         .setSolutionListEvaluator(new SequentialSolutionListEvaluator<DoubleSolution>())
         .build();
 

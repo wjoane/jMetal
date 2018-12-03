@@ -1,8 +1,5 @@
 package org.uma.jmetal.runner.multiobjective;
 
-import java.io.FileNotFoundException;
-import java.util.List;
-import org.uma.jmetal.algorithm.Algorithm;
 import org.uma.jmetal.algorithm.multiobjective.moead.alternative.MOEADAlt;
 import org.uma.jmetal.operator.impl.crossover.DifferentialEvolutionCrossover;
 import org.uma.jmetal.operator.impl.mutation.PolynomialMutation;
@@ -14,14 +11,16 @@ import org.uma.jmetal.util.JMetalLogger;
 import org.uma.jmetal.util.ProblemUtils;
 import org.uma.jmetal.util.aggregativefunction.AggregativeFunction;
 import org.uma.jmetal.util.aggregativefunction.impl.Tschebyscheff;
+import org.uma.jmetal.util.algorithmobserver.EvaluationObserver;
+import org.uma.jmetal.util.algorithmobserver.RealTimeChartObserver;
 import org.uma.jmetal.util.terminationcondition.TerminationCondition;
-import org.uma.jmetal.util.terminationcondition.impl.TerminationByComputingTime;
 import org.uma.jmetal.util.terminationcondition.impl.TerminationByEvaluations;
-import org.uma.jmetal.util.terminationcondition.impl.TerminationByKeyboard;
-import org.uma.jmetal.util.terminationcondition.impl.TerminationByQualityIndicator;
+
+import java.io.FileNotFoundException;
+import java.util.List;
 
 /**
- * Class for configuring and running the MOEA/D algorithm
+ * Class for configuring and running the MOEA/D algorithm (version {@link MOEADAlt}
  *
  * @author Antonio J. Nebro <antonio@lcc.uma.es>
  */
@@ -34,7 +33,7 @@ public class MOEADAltRunner extends AbstractAlgorithmRunner {
    */
   public static void main(String[] args) throws FileNotFoundException {
     DoubleProblem problem;
-    Algorithm<List<DoubleSolution>> algorithm;
+    MOEADAlt algorithm;
 
     String problemName;
     String referenceParetoFront = "";
@@ -57,10 +56,10 @@ public class MOEADAltRunner extends AbstractAlgorithmRunner {
     AggregativeFunction aggregativeFunction = new Tschebyscheff() ;
 
     //TerminationCondition terminationCondition = new TerminationByComputingTime(1000);
-    //TerminationCondition terminationCondition = new TerminationByEvaluations(175000) ;
+    TerminationCondition terminationCondition = new TerminationByEvaluations(175000) ;
     //TerminationCondition terminationCondition = new TerminationByKeyboard();
-    TerminationCondition terminationCondition = new TerminationByQualityIndicator<DoubleSolution>
-        ("jmetal-problem/src/test/resources/pareto_fronts/LZ09_F2.pf", 0.99) ;
+    //TerminationCondition terminationCondition = new TerminationByQualityIndicator<DoubleSolution>
+      //  ("jmetal-problem/src/test/resources/pareto_fronts/LZ09_F2.pf", 0.99) ;
 
     algorithm = new MOEADAlt(problem,
         populationSize,
@@ -71,6 +70,9 @@ public class MOEADAltRunner extends AbstractAlgorithmRunner {
         terminationCondition,
         new DifferentialEvolutionCrossover(1.0, 0.5, "rand/1/bin"),
         new PolynomialMutation(1.0 / problem.getNumberOfVariables(), 20.0));
+
+    new RealTimeChartObserver(algorithm, "MOEA/D", 1,"jmetal-problem/src/test/resources/pareto_fronts/LZ09_F2.pf") ;
+    new EvaluationObserver(algorithm) ;
 
     AlgorithmRunner algorithmRunner = new AlgorithmRunner.Executor(algorithm)
         .execute();

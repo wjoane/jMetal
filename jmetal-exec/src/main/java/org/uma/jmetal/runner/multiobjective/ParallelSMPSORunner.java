@@ -14,6 +14,7 @@ import org.uma.jmetal.util.archive.BoundedArchive;
 import org.uma.jmetal.util.archive.impl.CrowdingDistanceArchive;
 import org.uma.jmetal.util.evaluator.SolutionListEvaluator;
 import org.uma.jmetal.util.evaluator.impl.MultithreadedSolutionListEvaluator;
+import org.uma.jmetal.util.terminationcondition.impl.TerminationByEvaluations;
 
 import java.util.List;
 
@@ -62,9 +63,9 @@ public class ParallelSMPSORunner extends AbstractAlgorithmRunner {
 
     evaluator = new MultithreadedSolutionListEvaluator<DoubleSolution>(0, problem) ;
 
-    algorithm = new SMPSOBuilder(problem, archive)
+    algorithm = new SMPSOBuilder(problem,
+            new TerminationByEvaluations(25000), archive)
             .setMutation(mutation)
-            .setMaxIterations(250)
             .setSwarmSize(100)
             .setSolutionListEvaluator(evaluator)
             .build();

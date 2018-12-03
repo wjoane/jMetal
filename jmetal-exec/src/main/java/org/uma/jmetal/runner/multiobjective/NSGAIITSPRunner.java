@@ -19,6 +19,7 @@ import org.uma.jmetal.util.comparator.RankingAndCrowdingDistanceComparator;
 import org.uma.jmetal.util.fileoutput.SolutionListOutput;
 import org.uma.jmetal.util.fileoutput.impl.DefaultFileOutputContext;
 import org.uma.jmetal.util.pseudorandom.JMetalRandom;
+import org.uma.jmetal.util.terminationcondition.impl.TerminationByEvaluations;
 
 import java.io.IOException;
 import java.util.List;
@@ -64,9 +65,10 @@ public class NSGAIITSPRunner extends AbstractAlgorithmRunner {
 
  */
     int populationSize = 100;
-    algorithm = new NSGAIIBuilder<PermutationSolution<Integer>>(problem, crossover, mutation, populationSize)
+    int maxEvaluations = 100000 ;
+    algorithm = new NSGAIIBuilder<PermutationSolution<Integer>>(problem, populationSize,
+            new TerminationByEvaluations(maxEvaluations),crossover, mutation)
             .setSelectionOperator(selection)
-            .setMaxEvaluations(10000)
             .build() ;
 
     AlgorithmRunner algorithmRunner = new AlgorithmRunner.Executor(algorithm)

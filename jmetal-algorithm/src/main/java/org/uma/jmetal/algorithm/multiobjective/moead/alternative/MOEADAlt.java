@@ -1,10 +1,5 @@
 package org.uma.jmetal.algorithm.multiobjective.moead.alternative;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.IntStream;
 import org.uma.jmetal.algorithm.impl.AbstractEvolutionaryAlgorithm;
 import org.uma.jmetal.algorithm.multiobjective.moead.util.MOEADUtils;
 import org.uma.jmetal.measure.Measurable;
@@ -14,23 +9,32 @@ import org.uma.jmetal.measure.impl.SimpleMeasureManager;
 import org.uma.jmetal.operator.MutationOperator;
 import org.uma.jmetal.operator.SelectionOperator;
 import org.uma.jmetal.operator.impl.crossover.DifferentialEvolutionCrossover;
-import org.uma.jmetal.operator.impl.mutation.PolynomialMutation;
 import org.uma.jmetal.operator.impl.selection.NaryRandomSelection;
 import org.uma.jmetal.problem.DoubleProblem;
 import org.uma.jmetal.solution.DoubleSolution;
 import org.uma.jmetal.util.aggregativefunction.AggregativeFunction;
-import org.uma.jmetal.util.aggregativefunction.impl.Tschebyscheff;
 import org.uma.jmetal.util.evaluator.SolutionListEvaluator;
 import org.uma.jmetal.util.evaluator.impl.SequentialSolutionListEvaluator;
 import org.uma.jmetal.util.neighborhood.impl.WeightVectorNeighborhood;
 import org.uma.jmetal.util.pseudorandom.JMetalRandom;
 import org.uma.jmetal.util.terminationcondition.TerminationCondition;
-import org.uma.jmetal.util.terminationcondition.impl.TerminationByEvaluations;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.IntStream;
 
 /**
  * Alternative implementation of MOEA/D. We have redesigned the code to allow MOEA/D to inherit from
  * the {@link AbstractEvolutionaryAlgorithm} class. The result is a more modular, reusable and
- * extensive code.
+ * extensive code. Features:
+ * 1.- Class {@link WeightVectorNeighborhood} is used for weight management
+ * 2.- The aggregative function is based on the {@link AggregativeFunction} interface, and it is a parameter of the
+ * algorithm.
+ * 3.- MOEADAlt implements the {@link Measurable} interface, so it becomes an observable entity.
+ * 4.- A map is used to provide external entities (observers) with information of the algorithm at the end of
+ * each iteration
  */
 public class MOEADAlt
     extends AbstractEvolutionaryAlgorithm<DoubleSolution, List<DoubleSolution>>
@@ -39,7 +43,6 @@ public class MOEADAlt
   protected enum NeighborType {NEIGHBOR, POPULATION}
 
   private int evaluations;
-  private int maxEvaluations;
   private int populationSize;
   private AggregativeFunction aggregativeFunction;
   private TerminationCondition terminationCondition ;
@@ -63,9 +66,7 @@ public class MOEADAlt
 
   private SimpleMeasureManager measureManager ;
   private BasicMeasure<Map<String, Object>> algorithmDataMeasure ;
-
   private Map<String, Object> algorithmStatusData ;
-
   private long initComputingTime ;
 
   public MOEADAlt(
@@ -112,9 +113,7 @@ public class MOEADAlt
       aggregativeFunction.update(solution.getObjectives());
     }
 
-    algorithmStatusData.put("EVALUATIONS", evaluations) ;
-    algorithmStatusData.put("POPULATION", population) ;
-    algorithmStatusData.put("COMPUTING_TIME", System.currentTimeMillis() - initComputingTime) ;
+    updateStatusData();
     algorithmDataMeasure.push(algorithmStatusData);
   }
 
@@ -122,10 +121,14 @@ public class MOEADAlt
   protected void updateProgress() {
     evaluations++;
 
+    updateStatusData();
+    algorithmDataMeasure.push(algorithmStatusData);
+  }
+
+  private void updateStatusData() {
     algorithmStatusData.put("EVALUATIONS", evaluations) ;
     algorithmStatusData.put("POPULATION", population) ;
     algorithmStatusData.put("COMPUTING_TIME", System.currentTimeMillis() - initComputingTime) ;
-    algorithmDataMeasure.push(algorithmStatusData);
   }
 
   @Override

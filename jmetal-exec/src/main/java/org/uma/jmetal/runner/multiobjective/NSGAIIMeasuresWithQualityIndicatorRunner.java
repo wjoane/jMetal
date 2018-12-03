@@ -24,12 +24,9 @@ import org.uma.jmetal.util.JMetalLogger;
 import org.uma.jmetal.util.ProblemUtils;
 import org.uma.jmetal.util.comparator.RankingAndCrowdingDistanceComparator;
 import org.uma.jmetal.util.front.imp.ArrayFront;
-import org.uma.jmetal.util.front.util.FrontUtils;
-import org.uma.jmetal.util.point.PointSolution;
-import org.uma.jmetal.util.point.impl.ArrayPoint;
+import org.uma.jmetal.util.terminationcondition.impl.TerminationByEvaluations;
 
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -76,9 +73,9 @@ public class NSGAIIMeasuresWithQualityIndicatorRunner extends AbstractAlgorithmR
     int maxEvaluations = 25000 ;
     int populationSize = 100 ;
 
-    algorithm = new NSGAIIBuilder<DoubleSolution>(problem, crossover, mutation, populationSize)
+    algorithm = new NSGAIIBuilder<DoubleSolution>(problem, populationSize,
+            new TerminationByEvaluations(maxEvaluations),crossover, mutation)
         .setSelectionOperator(selection)
-        .setMaxEvaluations(maxEvaluations)
         .setVariant(NSGAIIBuilder.NSGAIIVariant.Measures)
         .build() ;
 

@@ -12,6 +12,7 @@ import org.uma.jmetal.problem.Problem;
 import org.uma.jmetal.solution.DoubleSolution;
 import org.uma.jmetal.util.JMetalException;
 import org.uma.jmetal.util.evaluator.impl.MultithreadedSolutionListEvaluator;
+import org.uma.jmetal.util.terminationcondition.impl.TerminationByEvaluations;
 
 import java.util.List;
 
@@ -46,7 +47,8 @@ public class NSGAIIBuilderTest {
     mutation = new PolynomialMutation(mutationProbability, mutationDistributionIndex) ;
 
     int populationSize  = 100 ;
-    builder = new NSGAIIBuilder<DoubleSolution>(problem, crossover, mutation, populationSize);
+    builder = new NSGAIIBuilder<DoubleSolution>(problem, populationSize,
+            new TerminationByEvaluations(200),crossover, mutation);
   }
 
   @After public void cleanup() {
@@ -65,7 +67,6 @@ public class NSGAIIBuilderTest {
 
   @Test public void testDefaultConfiguration() {
     assertEquals(100, builder.getPopulationSize());
-    assertEquals(25000, builder.getMaxIterations());
 
     SBXCrossover crossover = (SBXCrossover) builder.getCrossoverOperator();
     assertEquals(0.9, crossover.getCrossoverProbability(), EPSILON);
@@ -75,20 +76,6 @@ public class NSGAIIBuilderTest {
     assertEquals(1.0 / NUMBER_OF_VARIABLES_OF_THE_MOCKED_PROBLEM, mutation.getMutationProbability(),
         EPSILON);
     assertEquals(20.0, mutation.getDistributionIndex(), EPSILON);
-  }
-
-  //@Test(expected = JMetalException.class)
-  //public void setNegativePopulationSize() {
-  //  builder.setPopulationSize(-1);
-  //}
-
-  @Test public void setPositiveMaxNumberOfIterations() {
-    builder.setMaxEvaluations(20000);
-    assertEquals(20000, builder.getMaxIterations());
-  }
-
-  @Test(expected = JMetalException.class) public void setNegativeMaxNumberOfIterations() {
-    builder.setMaxEvaluations(-100);
   }
 
   @Test public void setNewSelectionOperator() {

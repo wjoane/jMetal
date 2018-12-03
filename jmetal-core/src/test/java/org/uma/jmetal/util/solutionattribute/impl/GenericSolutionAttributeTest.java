@@ -1,12 +1,12 @@
 package org.uma.jmetal.util.solutionattribute.impl;
 
-import java.util.Collections;
-import java.util.List;
 import org.junit.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.uma.jmetal.solution.Solution;
 
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;

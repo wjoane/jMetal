@@ -18,6 +18,7 @@ import org.uma.jmetal.util.JMetalLogger;
 import org.uma.jmetal.util.comparator.RankingAndCrowdingDistanceComparator;
 import org.uma.jmetal.util.fileoutput.SolutionListOutput;
 import org.uma.jmetal.util.fileoutput.impl.DefaultFileOutputContext;
+import org.uma.jmetal.util.terminationcondition.impl.TerminationByEvaluations;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
@@ -68,9 +69,10 @@ public class NSGAIIBigDataRunner extends AbstractAlgorithmRunner {
     selection = new BinaryTournamentSelection<DoubleSolution>(new RankingAndCrowdingDistanceComparator<DoubleSolution>());
 
     int populationSize = 20 ;
-    algorithm = new NSGAIIBuilder<DoubleSolution>(problem, crossover, mutation, populationSize)
+    int maxEvaluations = 25000 ;
+    algorithm = new NSGAIIBuilder<DoubleSolution>(problem, populationSize,
+            new TerminationByEvaluations(maxEvaluations),crossover, mutation)
         .setSelectionOperator(selection)
-        .setMaxEvaluations(50000)
         .build() ;
 
     AlgorithmRunner algorithmRunner = new AlgorithmRunner.Executor(algorithm)

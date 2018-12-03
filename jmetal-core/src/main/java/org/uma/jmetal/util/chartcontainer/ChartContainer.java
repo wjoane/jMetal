@@ -4,14 +4,15 @@ import org.knowm.xchart.*;
 import org.knowm.xchart.BitmapEncoder.BitmapFormat;
 import org.knowm.xchart.XYSeries.XYSeriesRenderStyle;
 import org.uma.jmetal.solution.DoubleSolution;
+import org.uma.jmetal.solution.Solution;
 import org.uma.jmetal.util.front.imp.ArrayFront;
 import org.uma.jmetal.util.front.util.FrontUtils;
 
 import java.awt.*;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -20,7 +21,7 @@ import java.util.concurrent.TimeUnit;
  * @author Jorge Rodriguez Ordonez
  */
 
-public class ChartContainer {
+public class ChartContainer<S extends Solution<?>> {
     private Map<String, XYChart> charts;
     private XYChart frontChart;
     private XYChart varChart;
@@ -33,6 +34,7 @@ public class ChartContainer {
     private int variable2;
     private Map<String, List<Integer>> iterations;
     private Map<String, List<Double>> indicatorValues;
+    private List<String> referencePointName ;
 
     public ChartContainer(String name) {
         this(name, 0);
@@ -44,6 +46,7 @@ public class ChartContainer {
         this.charts = new LinkedHashMap<String, XYChart>();
         this.iterations = new HashMap<String, List<Integer>>();
         this.indicatorValues = new HashMap<String, List<Double>>();
+        referencePointName = new ArrayList<>() ;
     }
 
     public void setFrontChart(int objective1, int objective2) throws FileNotFoundException {
@@ -68,14 +71,35 @@ public class ChartContainer {
 
         this.charts.put("Front", this.frontChart);
     }
-    
-    public void setReferencePoint(List<Double> referencePoint){
-        double rp1 = referencePoint.get(this.objective1);
-        double rp2 = referencePoint.get(this.objective2);
-        XYSeries referencePointSeries = this.frontChart.addSeries("Reference Point ["+ rp1 + ", " + rp2 + "]",
-                                                                  new double[] { rp1 },
-                                                                  new double[] { rp2 });
-        referencePointSeries.setMarkerColor(Color.green);
+
+    public synchronized void setReferencePoint(List<List<Double>> referencePoint){
+        for (int i = 0; i < referencePoint.size(); i++) {
+            double rp1 = referencePoint.get(i).get(this.objective1);
+            double rp2 = referencePoint.get(i).get(this.objective2);
+
+            referencePointName.add("Reference Point [" + rp1 + ", " + rp2 + "]") ;
+
+            XYSeries referencePointSeries = this.frontChart.addSeries(referencePointName.get(i),
+                    new double[] { rp1 },
+                    new double[] { rp2 });
+            referencePointSeries.setMarkerColor(Color.green);
+        }
+    }
+
+    public synchronized void updateReferencePoint(List<List<Double>> referencePoint){
+        for (int i = 0; i < referencePoint.size(); i++) {
+            double rp1 = referencePoint.get(i).get(this.objective1);
+            double rp2 = referencePoint.get(i).get(this.objective2);
+
+            this.frontChart.removeSeries(referencePointName.get(i)) ;
+
+            referencePointName.set(i, "Reference Point [" + rp1 + ", " + rp2 + "]") ;
+
+            XYSeries referencePointSeries = this.frontChart.addSeries(referencePointName.get(i),
+                    new double[] { rp1 },
+                    new double[] { rp2 });
+            referencePointSeries.setMarkerColor(Color.green);
+        }
     }
 
     public void setVarChart(int variable1, int variable2) {
@@ -99,7 +123,7 @@ public class ChartContainer {
         this.sw.displayChartMatrix(this.name);
     }
 
-    public void updateFrontCharts(List<DoubleSolution> solutionList) {
+    public void updateFrontCharts(List<S> solutionList) {
         if (this.frontChart != null) {
             this.frontChart.updateXYSeries(this.name,
                                            this.getSolutionsForObjective(solutionList, this.objective1),
@@ -109,10 +133,11 @@ public class ChartContainer {
 
         if (this.varChart != null) {
             this.varChart.updateXYSeries(this.name,
-                                         this.getVariableValues(solutionList, this.variable1),
-                                         this.getVariableValues(solutionList, this.variable2),
+                                         this.getVariableValues((List<DoubleSolution>)solutionList, this.variable1),
+                                         this.getVariableValues((List<DoubleSolution>)solutionList, this.variable2),
                                          null);
         }
+
     }
 
     public void refreshCharts() {
@@ -199,7 +224,7 @@ public class ChartContainer {
         return values;
     }
 
-    private double[] getSolutionsForObjective(List<DoubleSolution> solutionList, int objective) {
+    private double[] getSolutionsForObjective(List<S> solutionList, int objective) {
         double[] result = new double[solutionList.size()];
         for (int i = 0; i < solutionList.size(); i++) {
             result[i] = solutionList.get(i).getObjective(objective);

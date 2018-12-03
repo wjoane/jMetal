@@ -18,6 +18,7 @@ import org.uma.jmetal.util.front.Front;
 import org.uma.jmetal.util.front.imp.ArrayFront;
 import org.uma.jmetal.util.solutionattribute.Ranking;
 import org.uma.jmetal.util.solutionattribute.impl.DominanceRanking;
+import org.uma.jmetal.util.terminationcondition.TerminationCondition;
 
 import java.util.Comparator;
 import java.util.List;
@@ -40,11 +41,11 @@ public class NSGAIIMeasures<S extends Solution<?>> extends NSGAII<S> implements 
   /**
    * Constructor
    */
-  public NSGAIIMeasures(Problem<S> problem, int maxIterations, int populationSize,
-                        int matingPoolSize, int offspringPopulationSize,
+  public NSGAIIMeasures(Problem<S> problem, int populationSize,
+                        int matingPoolSize, int offspringPopulationSize, TerminationCondition terminationCondition,
                         CrossoverOperator<S> crossoverOperator, MutationOperator<S> mutationOperator,
                         SelectionOperator<List<S>, S> selectionOperator, Comparator<S> dominanceComparator, SolutionListEvaluator<S> evaluator) {
-    super(problem, maxIterations, populationSize, matingPoolSize, offspringPopulationSize,
+    super(problem, populationSize, matingPoolSize, offspringPopulationSize, terminationCondition,
             crossoverOperator, mutationOperator, selectionOperator, dominanceComparator, evaluator) ;
 
     referenceFront = new ArrayFront() ;
@@ -66,10 +67,6 @@ public class NSGAIIMeasures<S extends Solution<?>> extends NSGAII<S> implements 
               new PISAHypervolume<S>(referenceFront).evaluate(
                   SolutionListUtils.getNondominatedSolutions(getPopulation())));
     }
-  }
-
-  @Override protected boolean isStoppingConditionReached() {
-    return evaluations.get() >= maxEvaluations;
   }
 
   @Override

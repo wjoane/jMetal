@@ -1,6 +1,7 @@
 package org.uma.jmetal.runner.multiobjective;
 
 import org.uma.jmetal.algorithm.Algorithm;
+import org.uma.jmetal.algorithm.multiobjective.nsgaii.NSGAII;
 import org.uma.jmetal.algorithm.multiobjective.nsgaii.NSGAIIBuilder;
 import org.uma.jmetal.operator.CrossoverOperator;
 import org.uma.jmetal.operator.MutationOperator;
@@ -12,7 +13,12 @@ import org.uma.jmetal.problem.DoubleProblem;
 import org.uma.jmetal.problem.Problem;
 import org.uma.jmetal.solution.DoubleSolution;
 import org.uma.jmetal.util.*;
+import org.uma.jmetal.util.algorithmobserver.EvaluationObserver;
+import org.uma.jmetal.util.algorithmobserver.QualityIndicatorChartObserver;
+import org.uma.jmetal.util.algorithmobserver.RealTimeChartObserver;
 import org.uma.jmetal.util.comparator.RankingAndCrowdingDistanceComparator;
+import org.uma.jmetal.util.terminationcondition.TerminationCondition;
+import org.uma.jmetal.util.terminationcondition.impl.TerminationByEvaluations;
 
 import java.io.FileNotFoundException;
 import java.util.List;
@@ -31,7 +37,7 @@ public class NSGAIIRunner extends AbstractAlgorithmRunner {
    */
   public static void main(String[] args) throws JMetalException, FileNotFoundException {
     Problem<DoubleSolution> problem;
-    Algorithm<List<DoubleSolution>> algorithm;
+    NSGAII<DoubleSolution> algorithm;
     CrossoverOperator<DoubleSolution> crossover;
     MutationOperator<DoubleSolution> mutation;
     SelectionOperator<List<DoubleSolution>, DoubleSolution> selection;
@@ -61,11 +67,20 @@ public class NSGAIIRunner extends AbstractAlgorithmRunner {
     selection = new BinaryTournamentSelection<DoubleSolution>(
             new RankingAndCrowdingDistanceComparator<DoubleSolution>());
 
+    //TerminationCondition terminationCondition = new TerminationByComputingTime(1000);
+    TerminationCondition terminationCondition = new TerminationByEvaluations(175000) ;
+    //TerminationCondition terminationCondition = new TerminationByKeyboard();
+    //TerminationCondition terminationCondition = new TerminationByQualityIndicator<DoubleSolution>
+    //  (referenceParetoFront, 0.99) ;
+
     int populationSize = 100 ;
-    algorithm = new NSGAIIBuilder<DoubleSolution>(problem, crossover, mutation, populationSize)
+    algorithm = new NSGAIIBuilder<DoubleSolution>(problem, populationSize, terminationCondition, crossover, mutation)
             .setSelectionOperator(selection)
-            .setMaxEvaluations(25000)
             .build();
+
+    new RealTimeChartObserver(algorithm, "NSGA-II", 80, referenceParetoFront) ;
+    new EvaluationObserver(algorithm) ;
+    new QualityIndicatorChartObserver(algorithm, "NSGA-II", 80, referenceParetoFront) ;
 
     AlgorithmRunner algorithmRunner = new AlgorithmRunner.Executor(algorithm)
             .execute();

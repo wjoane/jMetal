@@ -1,6 +1,7 @@
 package org.uma.jmetal.runner.multiobjective;
 
 import org.uma.jmetal.algorithm.Algorithm;
+import org.uma.jmetal.algorithm.multiobjective.smpso.SMPSO;
 import org.uma.jmetal.algorithm.multiobjective.smpso.SMPSOBuilder;
 import org.uma.jmetal.operator.MutationOperator;
 import org.uma.jmetal.operator.impl.mutation.PolynomialMutation;
@@ -11,9 +12,13 @@ import org.uma.jmetal.util.AbstractAlgorithmRunner;
 import org.uma.jmetal.util.AlgorithmRunner;
 import org.uma.jmetal.util.JMetalLogger;
 import org.uma.jmetal.util.ProblemUtils;
+import org.uma.jmetal.util.algorithmobserver.EvaluationObserver;
+import org.uma.jmetal.util.algorithmobserver.QualityIndicatorChartObserver;
+import org.uma.jmetal.util.algorithmobserver.RealTimeChartObserver;
 import org.uma.jmetal.util.archive.BoundedArchive;
 import org.uma.jmetal.util.archive.impl.CrowdingDistanceArchive;
 import org.uma.jmetal.util.evaluator.impl.SequentialSolutionListEvaluator;
+import org.uma.jmetal.util.terminationcondition.impl.TerminationByEvaluations;
 
 import java.util.List;
 
@@ -34,7 +39,7 @@ public class SMPSORunner extends AbstractAlgorithmRunner {
    */
   public static void main(String[] args) throws Exception {
     DoubleProblem problem;
-    Algorithm<List<DoubleSolution>> algorithm;
+    SMPSO algorithm;
     MutationOperator<DoubleSolution> mutation;
 
     String referenceParetoFront = "" ;
@@ -46,11 +51,11 @@ public class SMPSORunner extends AbstractAlgorithmRunner {
       problemName = args[0] ;
       referenceParetoFront = args[1] ;
     } else {
-      problemName = "org.uma.jmetal.problem.multiobjective.zdt.ZDT1";
+      problemName = "org.uma.jmetal.problem.multiobjective.zdt.ZDT4";
       referenceParetoFront = "jmetal-problem/src/test/resources/pareto_fronts/ZDT1.pf" ;
     }
 
-    problem = new LZ09F2() ;
+    problem = (DoubleProblem) ProblemUtils.<DoubleSolution>loadProblem(problemName);
 
     BoundedArchive<DoubleSolution> archive = new CrowdingDistanceArchive<DoubleSolution>(100) ;
 
@@ -58,12 +63,17 @@ public class SMPSORunner extends AbstractAlgorithmRunner {
     double mutationDistributionIndex = 20.0 ;
     mutation = new PolynomialMutation(mutationProbability, mutationDistributionIndex) ;
 
-    algorithm = new SMPSOBuilder(problem, archive)
+    algorithm = new SMPSOBuilder(problem,
+            new TerminationByEvaluations(25000),
+            archive)
         .setMutation(mutation)
-        .setMaxIterations(250)
         .setSwarmSize(100)
         .setSolutionListEvaluator(new SequentialSolutionListEvaluator<DoubleSolution>())
         .build();
+
+    new RealTimeChartObserver(algorithm, "SMPSO", 80, referenceParetoFront) ;
+    new EvaluationObserver(algorithm) ;
+    new QualityIndicatorChartObserver(algorithm, "SMPSO", 80, referenceParetoFront) ;
 
     AlgorithmRunner algorithmRunner = new AlgorithmRunner.Executor(algorithm)
         .execute();

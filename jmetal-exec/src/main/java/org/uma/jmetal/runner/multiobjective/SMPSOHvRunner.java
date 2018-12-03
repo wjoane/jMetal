@@ -13,10 +13,14 @@ import org.uma.jmetal.util.AbstractAlgorithmRunner;
 import org.uma.jmetal.util.AlgorithmRunner;
 import org.uma.jmetal.util.JMetalLogger;
 import org.uma.jmetal.util.ProblemUtils;
+import org.uma.jmetal.util.algorithmobserver.EvaluationObserver;
+import org.uma.jmetal.util.algorithmobserver.QualityIndicatorChartObserver;
+import org.uma.jmetal.util.algorithmobserver.RealTimeChartObserver;
 import org.uma.jmetal.util.archive.BoundedArchive;
 import org.uma.jmetal.util.archive.impl.HypervolumeArchive;
 import org.uma.jmetal.util.evaluator.impl.SequentialSolutionListEvaluator;
 import org.uma.jmetal.util.pseudorandom.impl.MersenneTwisterGenerator;
+import org.uma.jmetal.util.terminationcondition.impl.TerminationByEvaluations;
 
 import java.util.List;
 
@@ -41,7 +45,7 @@ public class SMPSOHvRunner extends AbstractAlgorithmRunner {
    */
   public static void main(String[] args) throws Exception {
     DoubleProblem problem;
-    Algorithm<List<DoubleSolution>> algorithm;
+    SMPSO algorithm;
     MutationOperator<DoubleSolution> mutation;
 
     String referenceParetoFront = "" ;
@@ -54,10 +58,10 @@ public class SMPSOHvRunner extends AbstractAlgorithmRunner {
       referenceParetoFront = args[1] ;
     } else {
       problemName = "org.uma.jmetal.problem.multiobjective.dtlz.DTLZ1";
-      referenceParetoFront = "" ;
+      referenceParetoFront = "jmetal-problem/src/test/resources/pareto_fronts/DTLZ1.3D.pf" ;
     }
 
-    problem = new LZ09F2() ;
+    problem = (DoubleProblem) ProblemUtils.<DoubleSolution>loadProblem(problemName);
 
     BoundedArchive<DoubleSolution> archive =
         new HypervolumeArchive<DoubleSolution>(100, new PISAHypervolume<DoubleSolution>()) ;
@@ -66,13 +70,16 @@ public class SMPSOHvRunner extends AbstractAlgorithmRunner {
     double mutationDistributionIndex = 20.0 ;
     mutation = new PolynomialMutation(mutationProbability, mutationDistributionIndex) ;
 
-    algorithm = new SMPSOBuilder(problem, archive)
+    algorithm = new SMPSOBuilder(problem, new TerminationByEvaluations(75000),archive)
         .setMutation(mutation)
-        .setMaxIterations(1750)
         .setSwarmSize(100)
         .setRandomGenerator(new MersenneTwisterGenerator())
         .setSolutionListEvaluator(new SequentialSolutionListEvaluator<DoubleSolution>())
         .build();
+
+    new RealTimeChartObserver(algorithm, "SMPSO", 80, referenceParetoFront) ;
+    new EvaluationObserver(algorithm) ;
+    new QualityIndicatorChartObserver(algorithm, "SMPSO", 80, referenceParetoFront) ;
 
     AlgorithmRunner algorithmRunner = new AlgorithmRunner.Executor(algorithm)
         .execute();

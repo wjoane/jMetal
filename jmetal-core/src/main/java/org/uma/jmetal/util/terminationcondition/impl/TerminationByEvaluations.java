@@ -1,7 +1,8 @@
 package org.uma.jmetal.util.terminationcondition.impl;
 
-import java.util.Map;
 import org.uma.jmetal.util.terminationcondition.TerminationCondition;
+
+import java.util.Map;
 
 public class TerminationByEvaluations implements TerminationCondition {
   private int maximumNumberOfEvaluations ;

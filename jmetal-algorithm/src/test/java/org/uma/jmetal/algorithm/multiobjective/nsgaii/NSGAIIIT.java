@@ -16,13 +16,15 @@ import org.uma.jmetal.util.front.imp.ArrayFront;
 import org.uma.jmetal.util.front.util.FrontNormalizer;
 import org.uma.jmetal.util.front.util.FrontUtils;
 import org.uma.jmetal.util.point.PointSolution;
+import org.uma.jmetal.util.terminationcondition.TerminationCondition;
+import org.uma.jmetal.util.terminationcondition.impl.TerminationByEvaluations;
 
 import java.util.List;
 
 import static org.junit.Assert.assertTrue;
 
 public class NSGAIIIT {
-  Algorithm<List<DoubleSolution>> algorithm;
+  private Algorithm<List<DoubleSolution>> algorithm;
 
   @Test
   public void shouldTheAlgorithmReturnANumberOfSolutionsWhenSolvingASimpleProblem() throws Exception {
@@ -38,8 +40,11 @@ public class NSGAIIIT {
     double mutationDistributionIndex = 20.0 ;
     mutation = new PolynomialMutation(mutationProbability, mutationDistributionIndex) ;
 
+    TerminationCondition terminationCondition = new TerminationByEvaluations(25000) ;
+
     int populationSize = 100 ;
-    algorithm = new NSGAIIBuilder<DoubleSolution>(problem, crossover, mutation, populationSize).build() ;
+    algorithm = new NSGAIIBuilder<DoubleSolution>(problem, populationSize, terminationCondition, crossover, mutation)
+            .build() ;
 
     new AlgorithmRunner.Executor(algorithm).execute() ;
 
@@ -66,8 +71,11 @@ public class NSGAIIIT {
     double mutationDistributionIndex = 20.0 ;
     mutation = new PolynomialMutation(mutationProbability, mutationDistributionIndex) ;
 
-    int populationSize  = 100 ;
-    algorithm = new NSGAIIBuilder<DoubleSolution>(problem, crossover, mutation, populationSize).build() ;
+    TerminationCondition terminationCondition = new TerminationByEvaluations(25000) ;
+
+    int populationSize = 100 ;
+    algorithm = new NSGAIIBuilder<DoubleSolution>(problem, populationSize, terminationCondition, crossover, mutation)
+            .build() ;
 
     new AlgorithmRunner.Executor(algorithm).execute() ;
 

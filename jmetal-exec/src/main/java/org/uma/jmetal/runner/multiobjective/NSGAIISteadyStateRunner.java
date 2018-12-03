@@ -11,6 +11,7 @@ import org.uma.jmetal.operator.impl.selection.BinaryTournamentSelection;
 import org.uma.jmetal.problem.DoubleProblem;
 import org.uma.jmetal.solution.DoubleSolution;
 import org.uma.jmetal.util.*;
+import org.uma.jmetal.util.terminationcondition.impl.TerminationByEvaluations;
 
 import java.io.FileNotFoundException;
 import java.util.List;
@@ -61,9 +62,10 @@ public class NSGAIISteadyStateRunner extends AbstractAlgorithmRunner {
     selection = new BinaryTournamentSelection<DoubleSolution>();
 
     int populationSize = 100 ;
-    algorithm = new NSGAIIBuilder<DoubleSolution>(problem, crossover, mutation, populationSize)
+    int maxEvaluations = 25000 ;
+    algorithm = new NSGAIIBuilder<DoubleSolution>(problem, populationSize,
+            new TerminationByEvaluations(maxEvaluations),crossover, mutation)
             .setSelectionOperator(selection)
-            .setMaxEvaluations(25000)
             .setMatingPoolSize(2)
             .setOffspringPopulationSize(1)
             .setVariant(NSGAIIBuilder.NSGAIIVariant.SteadyStateNSGAII)

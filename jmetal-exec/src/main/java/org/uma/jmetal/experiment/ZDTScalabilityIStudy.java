@@ -20,6 +20,7 @@ import org.uma.jmetal.util.experiment.ExperimentBuilder;
 import org.uma.jmetal.util.experiment.component.*;
 import org.uma.jmetal.util.experiment.util.ExperimentAlgorithm;
 import org.uma.jmetal.util.experiment.util.ExperimentProblem;
+import org.uma.jmetal.util.terminationcondition.impl.TerminationByEvaluations;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -106,9 +107,9 @@ public class ZDTScalabilityIStudy {
         double mutationDistributionIndex = 20.0;
         Algorithm<List<DoubleSolution>> algorithm = new SMPSOBuilder(
                 (DoubleProblem) problemList.get(i).getProblem(),
+                new TerminationByEvaluations(25000),
                 new CrowdingDistanceArchive<DoubleSolution>(100))
                 .setMutation(new PolynomialMutation(mutationProbability, mutationDistributionIndex))
-                .setMaxIterations(250)
                 .setSwarmSize(100)
                 .setSolutionListEvaluator(new SequentialSolutionListEvaluator<DoubleSolution>())
                 .build();
@@ -118,10 +119,11 @@ public class ZDTScalabilityIStudy {
       for (int i = 0; i < problemList.size(); i++) {
         Algorithm<List<DoubleSolution>> algorithm = new NSGAIIBuilder<DoubleSolution>(
                 problemList.get(i).getProblem(),
+                100,
+                new TerminationByEvaluations(25000),
                 new SBXCrossover(1.0, 20.0),
                 new PolynomialMutation(1.0 / problemList.get(i).getProblem().getNumberOfVariables(),
-                        20.0),
-                100)
+                        20.0))
                 .build();
         algorithms.add(new ExperimentAlgorithm<>(algorithm, problemList.get(i), run));
       }

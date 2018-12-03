@@ -23,10 +23,10 @@ import org.uma.jmetal.operator.impl.mutation.PolynomialMutation;
 import org.uma.jmetal.operator.impl.selection.BinaryTournamentSelection;
 import org.uma.jmetal.problem.DoubleProblem;
 import org.uma.jmetal.problem.Problem;
-import org.uma.jmetal.problem.multiobjective.zdt.ZDT1;
 import org.uma.jmetal.solution.DoubleSolution;
 import org.uma.jmetal.util.*;
 import org.uma.jmetal.util.comparator.RankingAndCrowdingDistanceComparator;
+import org.uma.jmetal.util.terminationcondition.impl.TerminationByEvaluations;
 
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
@@ -129,9 +129,9 @@ public class RNSGAIIRunner extends AbstractAlgorithmRunner {
 
     double epsilon= 0.0045;
 
-    algorithm = new RNSGAIIBuilder<DoubleSolution>(problem, crossover, mutation, referencePoint, epsilon)
+    algorithm = new RNSGAIIBuilder<DoubleSolution>(problem, new TerminationByEvaluations(25000),
+            crossover, mutation, referencePoint, epsilon)
         .setSelectionOperator(selection)
-        .setMaxEvaluations(25000)
         .setPopulationSize(100)
         .build() ;
 

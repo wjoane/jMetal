@@ -1,9 +1,10 @@
 package org.uma.jmetal.util.terminationcondition.impl;
 
-import java.util.Map;
-import java.util.Scanner;
 import org.uma.jmetal.util.JMetalLogger;
 import org.uma.jmetal.util.terminationcondition.TerminationCondition;
+
+import java.util.Map;
+import java.util.Scanner;
 
 public class TerminationByKeyboard implements TerminationCondition {
   public boolean keyHit ;
