@@ -24,12 +24,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class WASFGARunner extends AbstractAlgorithmRunner {
+
   /**
    * @param args Command line arguments.
-   * @throws JMetalException
-   * @throws FileNotFoundException
-   * Invoking command:
-  java org.uma.jmetal.runner.multiobjective.WASFGABinaryRunner problemName [referenceFront]
+   * @throws FileNotFoundException Invoking command: java org.uma.jmetal.runner.multiobjective.WASFGABinaryRunner
+   * problemName [referenceFront]
    */
   public static void main(String[] args) throws JMetalException, IOException {
     Algorithm<List<PermutationSolution<Integer>>> algorithm;
@@ -40,13 +39,14 @@ public class WASFGARunner extends AbstractAlgorithmRunner {
 
     problem = new MultiobjectiveTSP("/tspInstances/kroA100.tsp", "/tspInstances/kroB100.tsp");
 
-    crossover = new PMXCrossover(0.9) ;
+    crossover = new PMXCrossover(0.9);
 
-    double mutationProbability = 0.2 ;
-    mutation = new PermutationSwapMutation<Integer>(mutationProbability) ;
+    double mutationProbability = 0.2;
+    mutation = new PermutationSwapMutation<Integer>(mutationProbability);
 
-    selection = new BinaryTournamentSelection<PermutationSolution<Integer>>(new RankingAndCrowdingDistanceComparator<PermutationSolution<Integer>>());
-    String referenceParetoFront = "" ;
+    selection = new BinaryTournamentSelection<PermutationSolution<Integer>>(
+        new RankingAndCrowdingDistanceComparator<PermutationSolution<Integer>>());
+    String referenceParetoFront = "";
     List<Double> referencePoint = null;
 
     //problem = ProblemUtils.<DoubleSolution> loadProblem(problemName);
@@ -66,21 +66,23 @@ public class WASFGARunner extends AbstractAlgorithmRunner {
 
     selection = new BinaryTournamentSelection<DoubleSolution>(new RankingAndCrowdingDistanceComparator<DoubleSolution>());*/
 
-double epsilon = 0.01 ;
-    algorithm = new WASFGA<PermutationSolution<Integer>>(problem, 100, 250, crossover, mutation, selection,
-            new SequentialSolutionListEvaluator<PermutationSolution<Integer>>(),epsilon, referencePoint) ;
+    double epsilon = 0.01;
+    algorithm = new WASFGA<PermutationSolution<Integer>>(problem, 100, 250, crossover, mutation,
+        selection,
+        new SequentialSolutionListEvaluator<PermutationSolution<Integer>>(), epsilon,
+        referencePoint);
 
     AlgorithmRunner algorithmRunner = new AlgorithmRunner.Executor(algorithm)
-            .execute() ;
+        .execute();
 
-    List<PermutationSolution<Integer>> population = algorithm.getResult() ;
-    long computingTime = algorithmRunner.getComputingTime() ;
+    List<PermutationSolution<Integer>> population = algorithm.getResult();
+    long computingTime = algorithmRunner.getComputingTime();
 
     JMetalLogger.logger.info("Total execution time: " + computingTime + "ms");
 
     printFinalSolutionSet(population);
     if (!referenceParetoFront.equals("")) {
-      printQualityIndicators(population, referenceParetoFront) ;
+      printQualityIndicators(population, referenceParetoFront);
     }
   }
 }

@@ -68,7 +68,6 @@ public class NSGAIISteadyStateRunner extends AbstractAlgorithmRunner {
             .setSelectionOperator(selection)
             .setMatingPoolSize(2)
             .setOffspringPopulationSize(1)
-            .setVariant(NSGAIIBuilder.NSGAIIVariant.SteadyStateNSGAII)
             .build();
 
     AlgorithmRunner algorithmRunner = new AlgorithmRunner.Executor(algorithm)
