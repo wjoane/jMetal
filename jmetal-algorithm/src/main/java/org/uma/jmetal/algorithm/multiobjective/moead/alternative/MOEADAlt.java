@@ -30,7 +30,13 @@ import org.uma.jmetal.util.terminationcondition.impl.TerminationByEvaluations;
 /**
  * Alternative implementation of MOEA/D. We have redesigned the code to allow MOEA/D to inherit from
  * the {@link AbstractEvolutionaryAlgorithm} class. The result is a more modular, reusable and
- * extensive code.
+ * extensive code. Features:
+ * 1.- Class {@link WeightVectorNeighborhood} is used for weight management
+ * 2.- The aggregative function is based on the {@link AggregativeFunction} interface, and it is a parameter of the
+ * algorithm.
+ * 3.- MOEADAlt implements the {@link Measurable} interface, so it becomes an observable entity.
+ * 4.- A map is used to provide external entities (observers) with information of the algorithm at the end of
+ * each iteration
  */
 public class MOEADAlt
     extends AbstractEvolutionaryAlgorithm<DoubleSolution, List<DoubleSolution>>
@@ -39,7 +45,6 @@ public class MOEADAlt
   protected enum NeighborType {NEIGHBOR, POPULATION}
 
   private int evaluations;
-  private int maxEvaluations;
   private int populationSize;
   private AggregativeFunction aggregativeFunction;
   private TerminationCondition terminationCondition ;
@@ -112,9 +117,7 @@ public class MOEADAlt
       aggregativeFunction.update(solution.getObjectives());
     }
 
-    algorithmStatusData.put("EVALUATIONS", evaluations) ;
-    algorithmStatusData.put("POPULATION", population) ;
-    algorithmStatusData.put("COMPUTING_TIME", System.currentTimeMillis() - initComputingTime) ;
+    updateStatusData();
     algorithmDataMeasure.push(algorithmStatusData);
   }
 
@@ -122,10 +125,14 @@ public class MOEADAlt
   protected void updateProgress() {
     evaluations++;
 
+    updateStatusData();
+    algorithmDataMeasure.push(algorithmStatusData);
+  }
+
+  private void updateStatusData() {
     algorithmStatusData.put("EVALUATIONS", evaluations) ;
     algorithmStatusData.put("POPULATION", population) ;
     algorithmStatusData.put("COMPUTING_TIME", System.currentTimeMillis() - initComputingTime) ;
-    algorithmDataMeasure.push(algorithmStatusData);
   }
 
   @Override

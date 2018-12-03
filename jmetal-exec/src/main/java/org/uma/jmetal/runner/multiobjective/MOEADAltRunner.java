@@ -21,7 +21,7 @@ import org.uma.jmetal.util.terminationcondition.impl.TerminationByKeyboard;
 import org.uma.jmetal.util.terminationcondition.impl.TerminationByQualityIndicator;
 
 /**
- * Class for configuring and running the MOEA/D algorithm
+ * Class for configuring and running the MOEA/D algorithm (version {@link MOEADAlt}
  *
  * @author Antonio J. Nebro <antonio@lcc.uma.es>
  */
@@ -57,10 +57,10 @@ public class MOEADAltRunner extends AbstractAlgorithmRunner {
     AggregativeFunction aggregativeFunction = new Tschebyscheff() ;
 
     //TerminationCondition terminationCondition = new TerminationByComputingTime(1000);
-    //TerminationCondition terminationCondition = new TerminationByEvaluations(175000) ;
+    TerminationCondition terminationCondition = new TerminationByEvaluations(175000) ;
     //TerminationCondition terminationCondition = new TerminationByKeyboard();
-    TerminationCondition terminationCondition = new TerminationByQualityIndicator<DoubleSolution>
-        ("jmetal-problem/src/test/resources/pareto_fronts/LZ09_F2.pf", 0.99) ;
+    //TerminationCondition terminationCondition = new TerminationByQualityIndicator<DoubleSolution>
+      //  ("jmetal-problem/src/test/resources/pareto_fronts/LZ09_F2.pf", 0.99) ;
 
     algorithm = new MOEADAlt(problem,
         populationSize,
