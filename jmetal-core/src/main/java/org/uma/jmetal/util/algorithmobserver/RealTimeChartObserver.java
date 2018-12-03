@@ -11,8 +11,8 @@ import java.io.FileNotFoundException;
 import java.util.List;
 import java.util.Map;
 
-public class RealTimeChartObserver implements MeasureListener<Map<String, Object>> {
-  private ChartContainer chart;
+public class RealTimeChartObserver<S extends Solution<?>> implements MeasureListener<Map<String, Object>> {
+  private ChartContainer<S> chart;
 
 
   public RealTimeChartObserver(Measurable measurable, String legend, int delay) {
@@ -26,7 +26,7 @@ public class RealTimeChartObserver implements MeasureListener<Map<String, Object
 
     observedData.register(this);
 
-    chart = new ChartContainer(legend, delay) ;
+    chart = new ChartContainer<S>(legend, delay) ;
     try {
       chart.setFrontChart(0, 1, referenceFrontName);
     } catch (FileNotFoundException e) {
@@ -42,11 +42,15 @@ public class RealTimeChartObserver implements MeasureListener<Map<String, Object
   @Override
   public void measureGenerated(Map<String, Object> data) {
     int evaluations = (int)data.get("EVALUATIONS") ;
-    List<? extends Solution<?>> population = (List<? extends Solution<?>>) data.get("POPULATION");
+    List<S> population = (List<S>) data.get("POPULATION");
     if (this.chart != null) {
       this.chart.getFrontChart().setTitle("Evaluation: " + evaluations);
       this.chart.updateFrontCharts(population);
       this.chart.refreshCharts();
     }
+  }
+
+  public ChartContainer getChart() {
+    return chart ;
   }
 }
