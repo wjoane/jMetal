@@ -30,7 +30,7 @@ public class RNSGAII<S extends Solution<?>> extends NSGAII<S> implements
 
   private List<Double> interestPoint;
   private double epsilon;
-  
+
   /**
    * Constructor
    */
