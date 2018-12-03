@@ -1,7 +1,5 @@
 package org.uma.jmetal.runner.multiobjective;
 
-import java.io.FileNotFoundException;
-import java.util.List;
 import org.uma.jmetal.algorithm.Algorithm;
 import org.uma.jmetal.algorithm.multiobjective.moead.alternative.MOEADAlt;
 import org.uma.jmetal.operator.impl.crossover.DifferentialEvolutionCrossover;
@@ -15,10 +13,10 @@ import org.uma.jmetal.util.ProblemUtils;
 import org.uma.jmetal.util.aggregativefunction.AggregativeFunction;
 import org.uma.jmetal.util.aggregativefunction.impl.Tschebyscheff;
 import org.uma.jmetal.util.terminationcondition.TerminationCondition;
-import org.uma.jmetal.util.terminationcondition.impl.TerminationByComputingTime;
 import org.uma.jmetal.util.terminationcondition.impl.TerminationByEvaluations;
-import org.uma.jmetal.util.terminationcondition.impl.TerminationByKeyboard;
-import org.uma.jmetal.util.terminationcondition.impl.TerminationByQualityIndicator;
+
+import java.io.FileNotFoundException;
+import java.util.List;
 
 /**
  * Class for configuring and running the MOEA/D algorithm (version {@link MOEADAlt}

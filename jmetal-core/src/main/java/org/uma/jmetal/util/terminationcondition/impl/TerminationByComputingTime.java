@@ -1,8 +1,9 @@
 package org.uma.jmetal.util.terminationcondition.impl;
 
-import java.util.Map;
 import org.uma.jmetal.util.JMetalLogger;
 import org.uma.jmetal.util.terminationcondition.TerminationCondition;
+
+import java.util.Map;
 
 /**
  * Class that allows to check the termination condition when the computing time of an algorithm
