@@ -66,9 +66,7 @@ public class MOEADAlt
 
   private SimpleMeasureManager measureManager ;
   private BasicMeasure<Map<String, Object>> algorithmDataMeasure ;
-
   private Map<String, Object> algorithmStatusData ;
-
   private long initComputingTime ;
 
   public MOEADAlt(

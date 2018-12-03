@@ -1,6 +1,5 @@
 package org.uma.jmetal.runner.multiobjective;
 
-import org.uma.jmetal.algorithm.Algorithm;
 import org.uma.jmetal.algorithm.multiobjective.moead.alternative.MOEADAlt;
 import org.uma.jmetal.operator.impl.crossover.DifferentialEvolutionCrossover;
 import org.uma.jmetal.operator.impl.mutation.PolynomialMutation;
@@ -12,6 +11,8 @@ import org.uma.jmetal.util.JMetalLogger;
 import org.uma.jmetal.util.ProblemUtils;
 import org.uma.jmetal.util.aggregativefunction.AggregativeFunction;
 import org.uma.jmetal.util.aggregativefunction.impl.Tschebyscheff;
+import org.uma.jmetal.util.algorithmobserver.EvaluationObserver;
+import org.uma.jmetal.util.algorithmobserver.RealTimeChartObserver;
 import org.uma.jmetal.util.terminationcondition.TerminationCondition;
 import org.uma.jmetal.util.terminationcondition.impl.TerminationByEvaluations;
 
@@ -32,7 +33,7 @@ public class MOEADAltRunner extends AbstractAlgorithmRunner {
    */
   public static void main(String[] args) throws FileNotFoundException {
     DoubleProblem problem;
-    Algorithm<List<DoubleSolution>> algorithm;
+    MOEADAlt algorithm;
 
     String problemName;
     String referenceParetoFront = "";
@@ -69,6 +70,9 @@ public class MOEADAltRunner extends AbstractAlgorithmRunner {
         terminationCondition,
         new DifferentialEvolutionCrossover(1.0, 0.5, "rand/1/bin"),
         new PolynomialMutation(1.0 / problem.getNumberOfVariables(), 20.0));
+
+    new RealTimeChartObserver(algorithm, "MOEA/D", 1,"jmetal-problem/src/test/resources/pareto_fronts/LZ09_F2.pf") ;
+    new EvaluationObserver(algorithm) ;
 
     AlgorithmRunner algorithmRunner = new AlgorithmRunner.Executor(algorithm)
         .execute();

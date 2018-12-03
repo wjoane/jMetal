@@ -17,7 +17,7 @@ import java.util.Map;
 
 public class TerminationByQualityIndicator<S extends Solution<?>> implements TerminationCondition {
   private Hypervolume<PointSolution> hypervolume;
-  private double qualilyDegree ;
+  private double qualityDegree ;
   private double referenceFrontHypervolume ;
 
   public TerminationByQualityIndicator(String referenceParetoFront, double qualityDegree) throws FileNotFoundException {
@@ -26,7 +26,7 @@ public class TerminationByQualityIndicator<S extends Solution<?>> implements Ter
     hypervolume = new PISAHypervolume<PointSolution>(referenceFront) ;
     referenceFrontHypervolume = ((PISAHypervolume<PointSolution>) hypervolume).evaluate(FrontUtils
         .convertFrontToSolutionList(referenceFront)) ;
-    this.qualilyDegree = qualityDegree ;
+    this.qualityDegree = qualityDegree ;
 
   }
 
@@ -37,7 +37,7 @@ public class TerminationByQualityIndicator<S extends Solution<?>> implements Ter
 
     double hypervolumeValue = hypervolume.evaluate(FrontUtils.convertFrontToSolutionList(arrayFront));
 
-    boolean result = qualilyDegree * referenceFrontHypervolume < hypervolumeValue ;
+    boolean result = qualityDegree * referenceFrontHypervolume < hypervolumeValue ;
     if (result) {
       JMetalLogger.logger.info("Evaluations: " + (int)algorithmStatusData.get("EVALUATIONS"));
     }
