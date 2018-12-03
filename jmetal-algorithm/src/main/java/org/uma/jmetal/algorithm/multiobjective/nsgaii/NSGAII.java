@@ -1,6 +1,10 @@
 package org.uma.jmetal.algorithm.multiobjective.nsgaii;
 
 import org.uma.jmetal.algorithm.impl.AbstractGeneticAlgorithm;
+import org.uma.jmetal.measure.Measurable;
+import org.uma.jmetal.measure.MeasureManager;
+import org.uma.jmetal.measure.impl.BasicMeasure;
+import org.uma.jmetal.measure.impl.SimpleMeasureManager;
 import org.uma.jmetal.operator.CrossoverOperator;
 import org.uma.jmetal.operator.MutationOperator;
 import org.uma.jmetal.operator.SelectionOperator;
@@ -11,15 +15,13 @@ import org.uma.jmetal.util.SolutionListUtils;
 import org.uma.jmetal.util.comparator.DominanceComparator;
 import org.uma.jmetal.util.evaluator.SolutionListEvaluator;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author Antonio J. Nebro <antonio@lcc.uma.es>
  */
 @SuppressWarnings("serial")
-public class NSGAII<S extends Solution<?>> extends AbstractGeneticAlgorithm<S, List<S>> {
+public class NSGAII<S extends Solution<?>> extends AbstractGeneticAlgorithm<S, List<S>> implements Measurable {
   protected final int maxEvaluations;
 
   protected final SolutionListEvaluator<S> evaluator;
@@ -29,6 +31,11 @@ public class NSGAII<S extends Solution<?>> extends AbstractGeneticAlgorithm<S, L
 
   protected int matingPoolSize;
   protected int offspringPopulationSize ;
+
+  private SimpleMeasureManager measureManager ;
+  private BasicMeasure<Map<String, Object>> algorithmDataMeasure ;
+  private Map<String, Object> algorithmStatusData ;
+  private long initComputingTime ;
 
   /**
    * Constructor
@@ -61,14 +68,37 @@ public class NSGAII<S extends Solution<?>> extends AbstractGeneticAlgorithm<S, L
 
     this.matingPoolSize = matingPoolSize ;
     this.offspringPopulationSize = offspringPopulationSize ;
+
+    algorithmStatusData = new HashMap<String, Object>();
+    algorithmDataMeasure = new BasicMeasure<>() ;
+    measureManager = new SimpleMeasureManager() ;
+    measureManager.setPushMeasure("ALGORITHM_DATA", algorithmDataMeasure);
+  }
+
+  @Override
+  public void run() {
+    initComputingTime = System.currentTimeMillis() ;
+    super.run();
+  }
+
+  private void updateStatusData() {
+    algorithmStatusData.put("EVALUATIONS", evaluations) ;
+    algorithmStatusData.put("POPULATION", population) ;
+    algorithmStatusData.put("COMPUTING_TIME", System.currentTimeMillis() - initComputingTime) ;
   }
 
   @Override protected void initProgress() {
     evaluations = getMaxPopulationSize();
+
+    updateStatusData();
+    algorithmDataMeasure.push(algorithmStatusData);
   }
 
   @Override protected void updateProgress() {
     evaluations += offspringPopulationSize ;
+
+    updateStatusData();
+    algorithmDataMeasure.push(algorithmStatusData);
   }
 
   @Override protected boolean isStoppingConditionReached() {
@@ -155,5 +185,10 @@ public class NSGAII<S extends Solution<?>> extends AbstractGeneticAlgorithm<S, L
 
   @Override public String getDescription() {
     return "Nondominated Sorting Genetic Algorithm version II" ;
+  }
+
+  @Override
+  public MeasureManager getMeasureManager() {
+    return measureManager;
   }
 }
