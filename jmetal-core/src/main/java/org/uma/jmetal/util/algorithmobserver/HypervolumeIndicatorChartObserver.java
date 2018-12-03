@@ -18,16 +18,37 @@ import java.io.FileNotFoundException;
 import java.util.List;
 import java.util.Map;
 
-public class QualityIndicatorChartObserver implements MeasureListener<Map<String, Object>> {
+/**
+ * This observer draws a chart with the values of the hypervolume indicator during the execution
+ * of an algorithm. It requires a two pairs in the map used in the measureGenerated() method:
+ * - (EVALUATIONS, int)
+ * - (POPULATION, List<Solution>)
+ *
+ * @author Antonio J. Nebro <antonio@lcc.uma.es>
+ */
+public class HypervolumeIndicatorChartObserver implements MeasureListener<Map<String, Object>> {
   private ChartContainer chart;
   private Hypervolume<PointSolution> hypervolume;
   private int evaluations ;
 
-  public QualityIndicatorChartObserver(Measurable measurable, String legend, int delay) {
+  /**
+   * Constructor
+   * @param measurable Measurable algorithm
+   * @param legend Legend to be included in the chart
+   * @param delay Display delay
+   */
+  public HypervolumeIndicatorChartObserver(Measurable measurable, String legend, int delay) {
     this(measurable, legend, delay, "") ;
   }
 
-  public QualityIndicatorChartObserver(Measurable measurable, String legend, int delay, String referenceFrontName) {
+  /**
+   * Constructor.
+   * @param measurable Measurable algorithm
+   * @param legend Legend to be included in the chart
+   * @param delay Display delay
+   * @param referenceFrontName File name containing a reference front, needed to compute the hypervolume
+   */
+  public HypervolumeIndicatorChartObserver(Measurable measurable, String legend, int delay, String referenceFrontName) {
     MeasureManager measureManager = measurable.getMeasureManager() ;
     BasicMeasure<Map<String, Object>> observedData =  (BasicMeasure<Map<String, Object>>)measureManager
             .<Map<String, Object>>getPushMeasure("ALGORITHM_DATA");
@@ -48,6 +69,10 @@ public class QualityIndicatorChartObserver implements MeasureListener<Map<String
     chart.initChart();
   }
 
+  /**
+   * This method computes the hypervolume of the solution list (population) and prints it in the screen.
+   * @param data Map of pairs (key, value)
+   */
   @Override
   public void measureGenerated(Map<String, Object> data) {
     this.evaluations = (int)data.get("EVALUATIONS") ;

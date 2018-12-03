@@ -12,6 +12,12 @@ import java.io.FileNotFoundException;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * This observer prints the current evaluation number of an algorithm. It requires a pair
+ * (EVALUATIONS, int) in the map used in the measureGenerated() method.
+ *
+ * @author Antonio J. Nebro <antonio@lcc.uma.es>
+ */
 public class EvaluationObserver implements MeasureListener<Map<String, Object>> {
   private Integer maxEvaluations ;
   private int evaluations ;
@@ -20,17 +26,26 @@ public class EvaluationObserver implements MeasureListener<Map<String, Object>> 
     this(measurable, null);
   }
 
+  /**
+   * Constructor
+   * @param measurable Measurable algorithm
+   * @param maxEvaluations Optional field that, if present, is used to be printed with the evaluation
+   * value.
+   */
   public EvaluationObserver(Measurable measurable, Integer maxEvaluations) {
     this.maxEvaluations = maxEvaluations ;
     MeasureManager measureManager = measurable.getMeasureManager() ;
 
-    measureManager = measurable.getMeasureManager() ;
     BasicMeasure<Map<String, Object>> observedData =  (BasicMeasure<Map<String, Object>>)measureManager
             .<Map<String, Object>>getPushMeasure("ALGORITHM_DATA");
 
     observedData.register(this);
   }
 
+  /**
+   * This method gets the evaluation number from the dada map and prints it in the screen.
+   * @param data Map of pairs (key, value)
+   */
   @Override
   public void measureGenerated(Map<String, Object> data) {
     this.evaluations = (int)data.get("EVALUATIONS") ;

@@ -1,13 +1,11 @@
 package org.uma.jmetal.runner.multiobjective;
 
 import org.knowm.xchart.BitmapEncoder;
-import org.uma.jmetal.algorithm.Algorithm;
 import org.uma.jmetal.algorithm.multiobjective.smpso.SMPSO;
 import org.uma.jmetal.algorithm.multiobjective.smpso.SMPSOBuilder;
 import org.uma.jmetal.operator.MutationOperator;
 import org.uma.jmetal.operator.impl.mutation.PolynomialMutation;
 import org.uma.jmetal.problem.DoubleProblem;
-import org.uma.jmetal.problem.multiobjective.lz09.LZ09F2;
 import org.uma.jmetal.qualityindicator.impl.hypervolume.PISAHypervolume;
 import org.uma.jmetal.solution.DoubleSolution;
 import org.uma.jmetal.util.AbstractAlgorithmRunner;
@@ -15,7 +13,7 @@ import org.uma.jmetal.util.AlgorithmRunner;
 import org.uma.jmetal.util.JMetalLogger;
 import org.uma.jmetal.util.ProblemUtils;
 import org.uma.jmetal.util.algorithmobserver.EvaluationObserver;
-import org.uma.jmetal.util.algorithmobserver.QualityIndicatorChartObserver;
+import org.uma.jmetal.util.algorithmobserver.HypervolumeIndicatorChartObserver;
 import org.uma.jmetal.util.algorithmobserver.RealTimeChartObserver;
 import org.uma.jmetal.util.archive.BoundedArchive;
 import org.uma.jmetal.util.archive.impl.HypervolumeArchive;
@@ -81,7 +79,7 @@ public class SMPSOHvRunner extends AbstractAlgorithmRunner {
     RealTimeChartObserver<DoubleSolution> realTimeChartObserver =
         new RealTimeChartObserver<DoubleSolution>(algorithm, "SMPSO", 80, referenceParetoFront) ;
     new EvaluationObserver(algorithm) ;
-    new QualityIndicatorChartObserver(algorithm, "SMPSO", 80, referenceParetoFront) ;
+    new HypervolumeIndicatorChartObserver(algorithm, "SMPSO", 80, referenceParetoFront) ;
 
     AlgorithmRunner algorithmRunner = new AlgorithmRunner.Executor(algorithm)
         .execute();

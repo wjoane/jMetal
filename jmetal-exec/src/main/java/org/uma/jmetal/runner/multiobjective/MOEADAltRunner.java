@@ -12,6 +12,7 @@ import org.uma.jmetal.util.ProblemUtils;
 import org.uma.jmetal.util.aggregativefunction.AggregativeFunction;
 import org.uma.jmetal.util.aggregativefunction.impl.Tschebyscheff;
 import org.uma.jmetal.util.algorithmobserver.EvaluationObserver;
+import org.uma.jmetal.util.algorithmobserver.HypervolumeIndicatorChartObserver;
 import org.uma.jmetal.util.algorithmobserver.RealTimeChartObserver;
 import org.uma.jmetal.util.terminationcondition.TerminationCondition;
 import org.uma.jmetal.util.terminationcondition.impl.TerminationByEvaluations;
@@ -73,6 +74,7 @@ public class MOEADAltRunner extends AbstractAlgorithmRunner {
 
     new RealTimeChartObserver(algorithm, "MOEA/D", 1,"jmetal-problem/src/test/resources/pareto_fronts/LZ09_F2.pf") ;
     new EvaluationObserver(algorithm) ;
+    new HypervolumeIndicatorChartObserver(algorithm, "Hypervolume", 80, referenceParetoFront) ;
 
     AlgorithmRunner algorithmRunner = new AlgorithmRunner.Executor(algorithm)
         .execute();

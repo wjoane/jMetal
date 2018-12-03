@@ -2,7 +2,6 @@ package org.uma.jmetal.runner.multiobjective;
 
 import java.io.IOException;
 import org.knowm.xchart.BitmapEncoder;
-import org.uma.jmetal.algorithm.Algorithm;
 import org.uma.jmetal.algorithm.multiobjective.nsgaii.NSGAII;
 import org.uma.jmetal.algorithm.multiobjective.nsgaii.NSGAIIBuilder;
 import org.uma.jmetal.operator.CrossoverOperator;
@@ -16,7 +15,7 @@ import org.uma.jmetal.problem.Problem;
 import org.uma.jmetal.solution.DoubleSolution;
 import org.uma.jmetal.util.*;
 import org.uma.jmetal.util.algorithmobserver.EvaluationObserver;
-import org.uma.jmetal.util.algorithmobserver.QualityIndicatorChartObserver;
+import org.uma.jmetal.util.algorithmobserver.HypervolumeIndicatorChartObserver;
 import org.uma.jmetal.util.algorithmobserver.RealTimeChartObserver;
 import org.uma.jmetal.util.comparator.RankingAndCrowdingDistanceComparator;
 import org.uma.jmetal.util.terminationcondition.TerminationCondition;
@@ -83,7 +82,7 @@ public class NSGAIIRunner extends AbstractAlgorithmRunner {
     RealTimeChartObserver<DoubleSolution> realTimeChartObserver =
         new RealTimeChartObserver<DoubleSolution>(algorithm, "NSGA-II", 80, referenceParetoFront) ;
     new EvaluationObserver(algorithm) ;
-    new QualityIndicatorChartObserver(algorithm, "Hypervolume", 80, referenceParetoFront) ;
+    new HypervolumeIndicatorChartObserver(algorithm, "Hypervolume", 80, referenceParetoFront) ;
 
     AlgorithmRunner algorithmRunner = new AlgorithmRunner.Executor(algorithm)
             .execute();
