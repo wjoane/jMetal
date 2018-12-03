@@ -60,7 +60,7 @@ public class SMPSORunner extends AbstractAlgorithmRunner {
 
     algorithm = new SMPSOBuilder(problem, archive)
         .setMutation(mutation)
-        .setMaxIterations(1500)
+        .setMaxIterations(250)
         .setSwarmSize(100)
         .setSolutionListEvaluator(new SequentialSolutionListEvaluator<DoubleSolution>())
         .build();
