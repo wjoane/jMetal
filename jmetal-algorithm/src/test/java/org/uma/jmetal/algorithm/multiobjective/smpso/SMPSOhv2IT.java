@@ -11,6 +11,7 @@ import org.uma.jmetal.qualityindicator.impl.hypervolume.WFGHypervolume;
 import org.uma.jmetal.solution.DoubleSolution;
 import org.uma.jmetal.util.archive.BoundedArchive;
 import org.uma.jmetal.util.archive.impl.HypervolumeArchive;
+import org.uma.jmetal.util.terminationcondition.impl.TerminationByEvaluations;
 
 import java.util.List;
 
@@ -30,7 +31,7 @@ public class SMPSOhv2IT {
   public void shouldTheAlgorithmReturnANumberOfSolutionsWhenSolvingASimpleProblem() throws Exception {
     DoubleProblem problem = new ZDT4() ;
 
-    algorithm = new SMPSOBuilder(problem, archive).build() ;
+    algorithm = new SMPSOBuilder(problem, new TerminationByEvaluations(25000),archive).build() ;
 
     algorithm.run();
 
@@ -47,7 +48,7 @@ public class SMPSOhv2IT {
   public void shouldTheHypervolumeHaveAMininumValue() throws Exception {
     DoubleProblem problem = new ZDT4() ;
 
-    algorithm = new SMPSOBuilder(problem, archive).build() ;
+    algorithm = new SMPSOBuilder(problem, new TerminationByEvaluations(25000), archive).build() ;
 
     algorithm.run();
 

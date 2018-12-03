@@ -107,9 +107,9 @@ public class ZDTScalabilityIStudy {
         double mutationDistributionIndex = 20.0;
         Algorithm<List<DoubleSolution>> algorithm = new SMPSOBuilder(
                 (DoubleProblem) problemList.get(i).getProblem(),
+                new TerminationByEvaluations(25000),
                 new CrowdingDistanceArchive<DoubleSolution>(100))
                 .setMutation(new PolynomialMutation(mutationProbability, mutationDistributionIndex))
-                .setMaxIterations(250)
                 .setSwarmSize(100)
                 .setSolutionListEvaluator(new SequentialSolutionListEvaluator<DoubleSolution>())
                 .build();

@@ -10,24 +10,30 @@ import org.uma.jmetal.qualityindicator.impl.hypervolume.PISAHypervolume;
 import org.uma.jmetal.solution.DoubleSolution;
 import org.uma.jmetal.util.AlgorithmRunner;
 import org.uma.jmetal.util.archive.impl.CrowdingDistanceArchive;
+import org.uma.jmetal.util.fileoutput.SolutionListOutput;
+import org.uma.jmetal.util.fileoutput.impl.DefaultFileOutputContext;
 import org.uma.jmetal.util.front.Front;
 import org.uma.jmetal.util.front.imp.ArrayFront;
 import org.uma.jmetal.util.front.util.FrontNormalizer;
 import org.uma.jmetal.util.front.util.FrontUtils;
 import org.uma.jmetal.util.point.PointSolution;
+import org.uma.jmetal.util.terminationcondition.impl.TerminationByEvaluations;
 
 import java.util.List;
 
 import static org.junit.Assert.assertTrue;
 
 public class SMPSOIT {
-  Algorithm<List<DoubleSolution>> algorithm;
 
   @Test
   public void shouldTheAlgorithmReturnANumberOfSolutionsWhenSolvingASimpleProblem() throws Exception {
+    SMPSO algorithm;
+
     DoubleProblem problem = new ZDT4() ;
 
-    algorithm = new SMPSOBuilder(problem, new CrowdingDistanceArchive<DoubleSolution>(100)).build() ;
+    algorithm = new SMPSOBuilder(problem,
+            new TerminationByEvaluations(25000),
+            new CrowdingDistanceArchive<DoubleSolution>(100)).build() ;
 
     algorithm.run();
 
@@ -42,9 +48,14 @@ public class SMPSOIT {
 
   @Test
   public void shouldTheHypervolumeHaveAMininumValue() throws Exception {
+    SMPSO algorithm;
+
     DoubleProblem problem = new ZDT4() ;
 
-    algorithm = new SMPSOBuilder(problem, new CrowdingDistanceArchive<DoubleSolution>(100)).build() ;
+    algorithm = new SMPSOBuilder(problem,
+            new TerminationByEvaluations(25000),
+            new CrowdingDistanceArchive<DoubleSolution>(100))
+            .build() ;
     algorithm.run();
 
     List<DoubleSolution> population = algorithm.getResult();
@@ -56,14 +67,19 @@ public class SMPSOIT {
 
     double hv = (Double)hypervolume.evaluate(population) ;
 
-    assertTrue(hv > 0.64) ;
+    assertTrue(hv > 0.65) ;
   }
 
   @Test
   public void shouldTheAlgorithmReturnAGoodQualityFrontWhenSolvingAConstrainedProblem() throws Exception {
+    SMPSO algorithm;
+
     ConstrEx problem = new ConstrEx() ;
 
-    algorithm = new SMPSOBuilder(problem, new CrowdingDistanceArchive<DoubleSolution>(100)).build() ;
+    algorithm = new SMPSOBuilder(problem,
+            new TerminationByEvaluations(25000),
+            new CrowdingDistanceArchive<DoubleSolution>(100))
+            .build() ;
 
     new AlgorithmRunner.Executor(algorithm).execute() ;
 

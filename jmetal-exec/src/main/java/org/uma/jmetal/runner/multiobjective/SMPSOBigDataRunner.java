@@ -16,6 +16,7 @@ import org.uma.jmetal.util.archive.impl.CrowdingDistanceArchive;
 import org.uma.jmetal.util.fileoutput.SolutionListOutput;
 import org.uma.jmetal.util.fileoutput.impl.DefaultFileOutputContext;
 import org.uma.jmetal.util.pseudorandom.JMetalRandom;
+import org.uma.jmetal.util.terminationcondition.impl.TerminationByEvaluations;
 
 import java.util.List;
 
@@ -57,9 +58,8 @@ public class SMPSOBigDataRunner extends AbstractAlgorithmRunner {
     double mutationDistributionIndex = 20.0 ;
     mutation = new PolynomialMutation(mutationProbability, mutationDistributionIndex) ;
 
-    algorithm = new SMPSOBuilder(problem, archive)
+    algorithm = new SMPSOBuilder(problem, new TerminationByEvaluations(25000), archive)
             .setMutation(mutation)
-            .setMaxIterations(250)
             .setSwarmSize(20)
      //       .setRandomGenerator(new MersenneTwisterGenerator())
             .build();
