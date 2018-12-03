@@ -14,6 +14,7 @@ import org.uma.jmetal.solution.Solution;
 import org.uma.jmetal.util.SolutionListUtils;
 import org.uma.jmetal.util.comparator.DominanceComparator;
 import org.uma.jmetal.util.evaluator.SolutionListEvaluator;
+import org.uma.jmetal.util.terminationcondition.TerminationCondition;
 
 import java.util.*;
 
@@ -22,7 +23,7 @@ import java.util.*;
  */
 @SuppressWarnings("serial")
 public class NSGAII<S extends Solution<?>> extends AbstractGeneticAlgorithm<S, List<S>> implements Measurable {
-  protected final int maxEvaluations;
+  protected final TerminationCondition terminationCondition ;
 
   protected final SolutionListEvaluator<S> evaluator;
 
@@ -32,31 +33,33 @@ public class NSGAII<S extends Solution<?>> extends AbstractGeneticAlgorithm<S, L
   protected int matingPoolSize;
   protected int offspringPopulationSize ;
 
-  private SimpleMeasureManager measureManager ;
-  private BasicMeasure<Map<String, Object>> algorithmDataMeasure ;
-  private Map<String, Object> algorithmStatusData ;
-  private long initComputingTime ;
+  protected SimpleMeasureManager measureManager ;
+  protected BasicMeasure<Map<String, Object>> algorithmDataMeasure ;
+  protected Map<String, Object> algorithmStatusData ;
+  protected long initComputingTime ;
 
   /**
    * Constructor
    */
-  public NSGAII(Problem<S> problem, int maxEvaluations, int populationSize,
+  public NSGAII(Problem<S> problem, int populationSize,
                 int matingPoolSize, int offspringPopulationSize,
+      TerminationCondition terminationCondition,
       CrossoverOperator<S> crossoverOperator, MutationOperator<S> mutationOperator,
       SelectionOperator<List<S>, S> selectionOperator, SolutionListEvaluator<S> evaluator) {
-    this(problem, maxEvaluations, populationSize, matingPoolSize, offspringPopulationSize,
+    this(problem, populationSize, matingPoolSize, offspringPopulationSize, terminationCondition,
             crossoverOperator, mutationOperator, selectionOperator, new DominanceComparator<S>(), evaluator);
   }
   /**
    * Constructor
    */
-  public NSGAII(Problem<S> problem, int maxEvaluations, int populationSize,
+  public NSGAII(Problem<S> problem, int populationSize,
                 int matingPoolSize, int offspringPopulationSize,
+                TerminationCondition terminationCondition,
                 CrossoverOperator<S> crossoverOperator, MutationOperator<S> mutationOperator,
       SelectionOperator<List<S>, S> selectionOperator, Comparator<S> dominanceComparator,
                 SolutionListEvaluator<S> evaluator) {
     super(problem);
-    this.maxEvaluations = maxEvaluations;
+    this.terminationCondition = terminationCondition ;
     setMaxPopulationSize(populationSize); ;
 
     this.crossoverOperator = crossoverOperator;
@@ -102,7 +105,7 @@ public class NSGAII<S extends Solution<?>> extends AbstractGeneticAlgorithm<S, L
   }
 
   @Override protected boolean isStoppingConditionReached() {
-    return evaluations >= maxEvaluations;
+    return terminationCondition.check(algorithmStatusData);
   }
 
   @Override protected List<S> evaluatePopulation(List<S> population) {

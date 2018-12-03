@@ -12,6 +12,8 @@ import org.uma.jmetal.util.comparator.DominanceComparator;
 import org.uma.jmetal.util.comparator.RankingAndCrowdingDistanceComparator;
 import org.uma.jmetal.util.evaluator.SolutionListEvaluator;
 import org.uma.jmetal.util.evaluator.impl.SequentialSolutionListEvaluator;
+import org.uma.jmetal.util.terminationcondition.TerminationCondition;
+import org.uma.jmetal.util.terminationcondition.impl.TerminationByEvaluations;
 
 import java.util.Comparator;
 import java.util.List;
@@ -26,7 +28,7 @@ public class NSGAIIBuilder<S extends Solution<?>> implements AlgorithmBuilder<NS
    * NSGAIIBuilder class
    */
   private final Problem<S> problem;
-  private int maxEvaluations;
+  private TerminationCondition terminationCondition ;
   private int populationSize;
   protected int matingPoolSize;
   protected int offspringPopulationSize ;
@@ -42,10 +44,13 @@ public class NSGAIIBuilder<S extends Solution<?>> implements AlgorithmBuilder<NS
   /**
    * NSGAIIBuilder constructor
    */
-  public NSGAIIBuilder(Problem<S> problem, CrossoverOperator<S> crossoverOperator,
-      MutationOperator<S> mutationOperator, int populationSize) {
+  public NSGAIIBuilder(Problem<S> problem,
+                       int populationSize,
+                       TerminationCondition terminationCondition,
+                       CrossoverOperator<S> crossoverOperator,
+                       MutationOperator<S> mutationOperator) {
     this.problem = problem;
-    maxEvaluations = 25000;
+    this.terminationCondition = terminationCondition ;
     this.populationSize = populationSize;
     matingPoolSize = populationSize;
     offspringPopulationSize = populationSize ;
@@ -56,15 +61,6 @@ public class NSGAIIBuilder<S extends Solution<?>> implements AlgorithmBuilder<NS
     dominanceComparator = new DominanceComparator<>()  ;
 
     this.variant = NSGAIIVariant.NSGAII ;
-  }
-
-  public NSGAIIBuilder<S> setMaxEvaluations(int maxEvaluations) {
-    if (maxEvaluations < 0) {
-      throw new JMetalException("maxEvaluations is negative: " + maxEvaluations);
-    }
-    this.maxEvaluations = maxEvaluations;
-
-    return this;
   }
 
   public NSGAIIBuilder<S> setMatingPoolSize(int matingPoolSize) {
@@ -123,14 +119,13 @@ public class NSGAIIBuilder<S extends Solution<?>> implements AlgorithmBuilder<NS
   public NSGAII<S> build() {
     NSGAII<S> algorithm = null ;
     if (variant.equals(NSGAIIVariant.NSGAII)) {
-      algorithm = new NSGAII<S>(problem, maxEvaluations, populationSize, matingPoolSize, offspringPopulationSize,
-              crossoverOperator,
-          mutationOperator, selectionOperator, dominanceComparator, evaluator);
+      algorithm = new NSGAII<S>(problem, populationSize, matingPoolSize, offspringPopulationSize,
+              terminationCondition, crossoverOperator, mutationOperator, selectionOperator, dominanceComparator, evaluator);
     } else if (variant.equals(NSGAIIVariant.SteadyStateNSGAII)) {
-      algorithm = new SteadyStateNSGAII<S>(problem, maxEvaluations, populationSize, crossoverOperator,
+      algorithm = new SteadyStateNSGAII<S>(problem, populationSize, terminationCondition, crossoverOperator,
           mutationOperator, selectionOperator, dominanceComparator, evaluator);
     } else if (variant.equals(NSGAIIVariant.Measures)) {
-      algorithm = new NSGAIIMeasures<S>(problem, maxEvaluations, populationSize, matingPoolSize, offspringPopulationSize,
+      algorithm = new NSGAIIMeasures<S>(problem, populationSize, matingPoolSize, offspringPopulationSize, terminationCondition,
               crossoverOperator, mutationOperator, selectionOperator, dominanceComparator, evaluator);
     }
 
@@ -140,10 +135,6 @@ public class NSGAIIBuilder<S extends Solution<?>> implements AlgorithmBuilder<NS
   /* Getters */
   public Problem<S> getProblem() {
     return problem;
-  }
-
-  public int getMaxIterations() {
-    return maxEvaluations;
   }
 
   public int getPopulationSize() {

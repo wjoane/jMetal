@@ -21,6 +21,7 @@ import org.uma.jmetal.util.chartcontainer.ChartContainer;
 import org.uma.jmetal.util.comparator.GDominanceComparator;
 import org.uma.jmetal.util.comparator.RankingAndCrowdingDistanceComparator;
 import org.uma.jmetal.util.front.imp.ArrayFront;
+import org.uma.jmetal.util.terminationcondition.impl.TerminationByEvaluations;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -70,9 +71,9 @@ public class GNSGAIIMeasuresWithChartsRunner extends AbstractAlgorithmRunner {
 
     List<Double> referencePoint = Arrays.asList(0.5, 0.5) ;
 
-    algorithm = new NSGAIIBuilder<DoubleSolution>(problem, crossover, mutation, populationSize)
+    algorithm = new NSGAIIBuilder<DoubleSolution>(problem, populationSize,
+            new TerminationByEvaluations(maxEvaluations),crossover, mutation)
             .setSelectionOperator(selection)
-            .setMaxEvaluations(maxEvaluations)
             .setVariant(NSGAIIBuilder.NSGAIIVariant.Measures)
             .setDominanceComparator(new GDominanceComparator<>(referencePoint))
             .build();

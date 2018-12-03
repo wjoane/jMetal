@@ -6,6 +6,7 @@ import org.uma.jmetal.operator.SelectionOperator;
 import org.uma.jmetal.problem.Problem;
 import org.uma.jmetal.solution.Solution;
 import org.uma.jmetal.util.evaluator.SolutionListEvaluator;
+import org.uma.jmetal.util.terminationcondition.TerminationCondition;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -20,10 +21,10 @@ public class SteadyStateNSGAII<S extends Solution<?>> extends NSGAII<S> {
   /**
    * Constructor
    */
-  public SteadyStateNSGAII(Problem<S> problem, int maxEvaluations, int populationSize,
+  public SteadyStateNSGAII(Problem<S> problem, int populationSize, TerminationCondition terminationCondition,
                            CrossoverOperator<S> crossoverOperator, MutationOperator<S> mutationOperator,
                            SelectionOperator<List<S>, S> selectionOperator, Comparator<S> dominanceComparator, SolutionListEvaluator<S> evaluator) {
-    super(problem, maxEvaluations, populationSize,100, 100, crossoverOperator, mutationOperator,
+    super(problem, populationSize,100, 100, terminationCondition, crossoverOperator, mutationOperator,
         selectionOperator, dominanceComparator, evaluator);
   }
 

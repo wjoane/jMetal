@@ -6,6 +6,7 @@ import org.uma.jmetal.operator.SelectionOperator;
 import org.uma.jmetal.problem.Problem;
 import org.uma.jmetal.solution.Solution;
 import org.uma.jmetal.util.evaluator.SolutionListEvaluator;
+import org.uma.jmetal.util.terminationcondition.impl.TerminationByComputingTime;
 
 import java.util.Comparator;
 import java.util.List;
@@ -17,26 +18,17 @@ import java.util.List;
  */
 @SuppressWarnings("serial")
 public class NSGAIIStoppingByTime<S extends Solution<?>> extends NSGAII<S> {
-  private long initComputingTime ;
-  private long thresholdComputingTime ;
   /**
    * Constructor
    */
   public NSGAIIStoppingByTime(Problem<S> problem, int populationSize,
-                              long maxComputingTime, int matingPoolSize, int offspringPopulationSize,
+                              int maxComputingTime, int matingPoolSize, int offspringPopulationSize,
                               CrossoverOperator<S> crossoverOperator, MutationOperator<S> mutationOperator,
                               SelectionOperator<List<S>, S> selectionOperator, Comparator<S> dominanceComparator,
                               SolutionListEvaluator<S> evaluator) {
-    super(problem, 0, populationSize, matingPoolSize, offspringPopulationSize,
+    super(problem, populationSize, matingPoolSize, offspringPopulationSize,
+            new TerminationByComputingTime(maxComputingTime) ,
             crossoverOperator, mutationOperator,
         selectionOperator, dominanceComparator, evaluator);
-
-    initComputingTime = System.currentTimeMillis() ;
-    thresholdComputingTime = maxComputingTime ;
-  }
-
-  @Override protected boolean isStoppingConditionReached() {
-    long currentComputingTime = System.currentTimeMillis() - initComputingTime ;
-    return currentComputingTime > thresholdComputingTime ;
   }
 }

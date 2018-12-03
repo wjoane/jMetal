@@ -14,6 +14,7 @@ import org.uma.jmetal.util.AbstractAlgorithmRunner;
 import org.uma.jmetal.util.AlgorithmRunner;
 import org.uma.jmetal.util.JMetalLogger;
 import org.uma.jmetal.util.ProblemUtils;
+import org.uma.jmetal.util.terminationcondition.impl.TerminationByEvaluations;
 
 import java.util.List;
 
@@ -63,9 +64,10 @@ public class NSGAIIBinaryRunner extends AbstractAlgorithmRunner {
     selection = new BinaryTournamentSelection<BinarySolution>() ;
 
     int populationSize = 100;
-    algorithm = new NSGAIIBuilder<BinarySolution>(problem, crossover, mutation, populationSize)
+    int maxEvaluations = 25000 ;
+    algorithm = new NSGAIIBuilder<BinarySolution>(problem, populationSize,
+            new TerminationByEvaluations(maxEvaluations),crossover, mutation)
             .setSelectionOperator(selection)
-            .setMaxEvaluations(25000)
             .build() ;
 
     AlgorithmRunner algorithmRunner = new AlgorithmRunner.Executor(algorithm)

@@ -32,12 +32,6 @@ public class WASFGARunner extends AbstractAlgorithmRunner {
   java org.uma.jmetal.runner.multiobjective.WASFGABinaryRunner problemName [referenceFront]
    */
   public static void main(String[] args) throws JMetalException, IOException {
-    /*Problem<DoubleSolution> problem;
-    PermutationProblem<PermutationSolution<Integer>> problem;
-    Algorithm<List<DoubleSolution>> algorithm;
-    CrossoverOperator<DoubleSolution> crossover;
-    MutationOperator<DoubleSolution> mutation;
-    SelectionOperator<List<DoubleSolution>, DoubleSolution> selection;*/
     Algorithm<List<PermutationSolution<Integer>>> algorithm;
     PermutationProblem<PermutationSolution<Integer>> problem;
     CrossoverOperator<PermutationSolution<Integer>> crossover;

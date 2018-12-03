@@ -14,6 +14,7 @@ import org.uma.jmetal.util.AbstractAlgorithmRunner;
 import org.uma.jmetal.util.AlgorithmRunner;
 import org.uma.jmetal.util.JMetalLogger;
 import org.uma.jmetal.util.ProblemUtils;
+import org.uma.jmetal.util.terminationcondition.impl.TerminationByEvaluations;
 
 import java.io.FileNotFoundException;
 import java.util.List;
@@ -67,9 +68,10 @@ public class NSGAIIIntegerRunner extends AbstractAlgorithmRunner {
     selection = new BinaryTournamentSelection<IntegerSolution>() ;
 
     int populationSize = 100 ;
-    algorithm = new NSGAIIBuilder<IntegerSolution>(problem, crossover, mutation, populationSize)
+    int maxEvaluations = 25000 ;
+    algorithm = new NSGAIIBuilder<IntegerSolution>(problem, populationSize,
+            new TerminationByEvaluations(maxEvaluations),crossover, mutation)
             .setSelectionOperator(selection)
-            .setMaxEvaluations(25000)
             .build() ;
 
     AlgorithmRunner algorithmRunner = new AlgorithmRunner.Executor(algorithm)

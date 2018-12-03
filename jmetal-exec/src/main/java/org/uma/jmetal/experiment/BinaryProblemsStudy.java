@@ -34,6 +34,7 @@ import org.uma.jmetal.util.experiment.ExperimentBuilder;
 import org.uma.jmetal.util.experiment.component.*;
 import org.uma.jmetal.util.experiment.util.ExperimentAlgorithm;
 import org.uma.jmetal.util.experiment.util.ExperimentProblem;
+import org.uma.jmetal.util.terminationcondition.impl.TerminationByEvaluations;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -115,11 +116,11 @@ public class BinaryProblemsStudy {
       for (int i = 0; i < problemList.size(); i++) {
         Algorithm<List<BinarySolution>> algorithm = new NSGAIIBuilder<BinarySolution>(
             problemList.get(i).getProblem(),
+            100,
+            new TerminationByEvaluations(25000),
             new SinglePointCrossover(1.0),
             new BitFlipMutation(
-                1.0 / ((BinaryProblem) problemList.get(i).getProblem()).getNumberOfBits(0)),
-                100)
-            .setMaxEvaluations(25000)
+                1.0 / ((BinaryProblem) problemList.get(i).getProblem()).getNumberOfBits(0)))
             .build();
         algorithms.add(new ExperimentAlgorithm<>(algorithm, problemList.get(i), run));
       }

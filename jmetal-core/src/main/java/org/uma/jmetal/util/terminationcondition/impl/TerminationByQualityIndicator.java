@@ -27,7 +27,6 @@ public class TerminationByQualityIndicator<S extends Solution<?>> implements Ter
     referenceFrontHypervolume = ((PISAHypervolume<PointSolution>) hypervolume).evaluate(FrontUtils
         .convertFrontToSolutionList(referenceFront)) ;
     this.qualityDegree = qualityDegree ;
-
   }
 
   @Override

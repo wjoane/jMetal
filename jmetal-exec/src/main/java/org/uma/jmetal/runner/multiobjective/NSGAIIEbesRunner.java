@@ -16,6 +16,7 @@ import org.uma.jmetal.util.AlgorithmRunner;
 import org.uma.jmetal.util.JMetalException;
 import org.uma.jmetal.util.JMetalLogger;
 import org.uma.jmetal.util.comparator.RankingAndCrowdingDistanceComparator;
+import org.uma.jmetal.util.terminationcondition.impl.TerminationByEvaluations;
 
 import java.io.FileNotFoundException;
 import java.util.List;
@@ -54,9 +55,10 @@ public class NSGAIIEbesRunner extends AbstractAlgorithmRunner {
     selection = new BinaryTournamentSelection<DoubleSolution>(new RankingAndCrowdingDistanceComparator<DoubleSolution>());
 
     int populationSize = 100 ;
-    algorithm = new NSGAIIBuilder<DoubleSolution>(problem, crossover, mutation, populationSize)
+    int maxEvaluations = 25000 ;
+    algorithm = new NSGAIIBuilder<DoubleSolution>(problem, populationSize,
+            new TerminationByEvaluations(maxEvaluations),crossover, mutation)
         .setSelectionOperator(selection)
-        .setMaxEvaluations(25000)
         .build() ;
 
     AlgorithmRunner algorithmRunner = new AlgorithmRunner.Executor(algorithm)

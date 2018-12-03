@@ -11,6 +11,7 @@ import org.uma.jmetal.util.JMetalException;
 import org.uma.jmetal.util.comparator.RankingAndCrowdingDistanceComparator;
 import org.uma.jmetal.util.evaluator.SolutionListEvaluator;
 import org.uma.jmetal.util.evaluator.impl.SequentialSolutionListEvaluator;
+import org.uma.jmetal.util.terminationcondition.TerminationCondition;
 
 import java.util.List;
 
@@ -22,7 +23,6 @@ public class RNSGAIIBuilder<S extends Solution<?>> implements AlgorithmBuilder<R
    * NSGAIIBuilder class
    */
   private final Problem<S> problem;
-  private int maxEvaluations;
   private int populationSize;
   protected int matingPoolSize;
   protected int offspringPopulationSize ;
@@ -34,13 +34,14 @@ public class RNSGAIIBuilder<S extends Solution<?>> implements AlgorithmBuilder<R
   private List<Double> interestPoint;
   private double epsilon;
 
+  private TerminationCondition terminationCondition ;
   /**
    * NSGAIIBuilder constructor
    */
-  public RNSGAIIBuilder(Problem<S> problem, CrossoverOperator<S> crossoverOperator,
+  public RNSGAIIBuilder(Problem<S> problem, TerminationCondition terminationCondition, CrossoverOperator<S> crossoverOperator,
                         MutationOperator<S> mutationOperator, List<Double> interestPoint, double epsilon) {
     this.problem = problem;
-    maxEvaluations = 25000;
+    this.terminationCondition = terminationCondition ;
     populationSize = 100;
     this.matingPoolSize = 100 ;
     this.offspringPopulationSize = 100 ;
@@ -50,15 +51,6 @@ public class RNSGAIIBuilder<S extends Solution<?>> implements AlgorithmBuilder<R
     evaluator = new SequentialSolutionListEvaluator<S>();
     this.epsilon = epsilon;
     this.interestPoint = interestPoint;
-  }
-
-  public RNSGAIIBuilder<S> setMaxEvaluations(int maxEvaluations) {
-    if (maxEvaluations < 0) {
-      throw new JMetalException("maxEvaluations is negative: " + maxEvaluations);
-    }
-    this.maxEvaluations = maxEvaluations;
-
-    return this;
   }
 
   public RNSGAIIBuilder<S> setPopulationSize(int populationSize) {
@@ -111,7 +103,7 @@ public class RNSGAIIBuilder<S extends Solution<?>> implements AlgorithmBuilder<R
   public RNSGAII<S> build() {
     RNSGAII<S> algorithm;
 
-    algorithm = new RNSGAII<>(problem, maxEvaluations, populationSize, matingPoolSize, offspringPopulationSize,
+    algorithm = new RNSGAII<>(problem, populationSize, matingPoolSize, offspringPopulationSize, terminationCondition,
             crossoverOperator, mutationOperator, selectionOperator, evaluator, interestPoint, epsilon);
 
     return algorithm;
@@ -120,14 +112,6 @@ public class RNSGAIIBuilder<S extends Solution<?>> implements AlgorithmBuilder<R
   /* Getters */
   public Problem<S> getProblem() {
     return problem;
-  }
-
-  public int getMaxIterations() {
-    return maxEvaluations;
-  }
-
-  public int getPopulationSize() {
-    return populationSize;
   }
 
   public CrossoverOperator<S> getCrossoverOperator() {

@@ -13,6 +13,7 @@ import org.uma.jmetal.solution.DoubleSolution;
 import org.uma.jmetal.util.*;
 import org.uma.jmetal.util.evaluator.SolutionListEvaluator;
 import org.uma.jmetal.util.evaluator.impl.MultithreadedSolutionListEvaluator;
+import org.uma.jmetal.util.terminationcondition.impl.TerminationByEvaluations;
 
 import java.io.FileNotFoundException;
 import java.util.List;
@@ -65,9 +66,10 @@ public class ParallelNSGAIIRunner extends AbstractAlgorithmRunner {
     SolutionListEvaluator<DoubleSolution> evaluator = new MultithreadedSolutionListEvaluator<DoubleSolution>(8, problem) ;
 
     int populationSize = 100;
-    NSGAIIBuilder<DoubleSolution> builder = new NSGAIIBuilder<DoubleSolution>(problem, crossover, mutation, populationSize)
+    int maxEvaluations = 25000 ;
+    NSGAIIBuilder<DoubleSolution> builder = new NSGAIIBuilder<DoubleSolution>(problem, populationSize,
+            new TerminationByEvaluations(maxEvaluations),crossover, mutation)
         .setSelectionOperator(selection)
-        .setMaxEvaluations(25000)
         .setSolutionListEvaluator(evaluator) ;
 
     algorithm = builder.build() ;

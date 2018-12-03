@@ -26,6 +26,7 @@ import org.uma.jmetal.util.experiment.ExperimentBuilder;
 import org.uma.jmetal.util.experiment.component.*;
 import org.uma.jmetal.util.experiment.util.ExperimentAlgorithm;
 import org.uma.jmetal.util.experiment.util.ExperimentProblem;
+import org.uma.jmetal.util.terminationcondition.impl.TerminationByEvaluations;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -113,10 +114,11 @@ public class ConstraintProblemsStudy {
       for (int i = 0; i < problemList.size(); i++) {
         Algorithm<List<DoubleSolution>> algorithm = new NSGAIIBuilder<>(
                 problemList.get(i).getProblem(),
-                new SBXCrossover(1.0, 20),
-                new PolynomialMutation(1.0 / problemList.get(i).getProblem().getNumberOfVariables(), 20.0),
-                100)
-                .setMaxEvaluations(25000)
+                100,
+                new TerminationByEvaluations(25000),
+                new SBXCrossover(1.0, 20.0),
+                new PolynomialMutation(1.0 / problemList.get(i).getProblem().getNumberOfVariables(),
+                        20.0))
                 .build();
         algorithms.add(new ExperimentAlgorithm<>(algorithm, problemList.get(i), run));
       }

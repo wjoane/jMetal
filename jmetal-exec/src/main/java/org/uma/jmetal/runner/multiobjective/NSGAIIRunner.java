@@ -17,6 +17,8 @@ import org.uma.jmetal.util.algorithmobserver.EvaluationObserver;
 import org.uma.jmetal.util.algorithmobserver.QualityIndicatorChartObserver;
 import org.uma.jmetal.util.algorithmobserver.RealTimeChartObserver;
 import org.uma.jmetal.util.comparator.RankingAndCrowdingDistanceComparator;
+import org.uma.jmetal.util.terminationcondition.TerminationCondition;
+import org.uma.jmetal.util.terminationcondition.impl.TerminationByEvaluations;
 
 import java.io.FileNotFoundException;
 import java.util.List;
@@ -65,10 +67,15 @@ public class NSGAIIRunner extends AbstractAlgorithmRunner {
     selection = new BinaryTournamentSelection<DoubleSolution>(
             new RankingAndCrowdingDistanceComparator<DoubleSolution>());
 
+    //TerminationCondition terminationCondition = new TerminationByComputingTime(1000);
+    TerminationCondition terminationCondition = new TerminationByEvaluations(175000) ;
+    //TerminationCondition terminationCondition = new TerminationByKeyboard();
+    //TerminationCondition terminationCondition = new TerminationByQualityIndicator<DoubleSolution>
+    //  (referenceParetoFront, 0.99) ;
+
     int populationSize = 100 ;
-    algorithm = new NSGAIIBuilder<DoubleSolution>(problem, crossover, mutation, populationSize)
+    algorithm = new NSGAIIBuilder<DoubleSolution>(problem, populationSize, terminationCondition, crossover, mutation)
             .setSelectionOperator(selection)
-            .setMaxEvaluations(25000)
             .build();
 
     new RealTimeChartObserver(algorithm, "NSGA-II", 80, referenceParetoFront) ;
