@@ -14,6 +14,7 @@ import java.util.Map;
 
 public class EvaluationObserver implements MeasureListener<Map<String, Object>> {
   private Integer maxEvaluations ;
+  private int evaluations ;
 
   public EvaluationObserver(Measurable measurable) {
     this(measurable, null);
@@ -32,11 +33,15 @@ public class EvaluationObserver implements MeasureListener<Map<String, Object>> 
 
   @Override
   public void measureGenerated(Map<String, Object> data) {
-    int evaluations = (int)data.get("EVALUATIONS") ;
+    this.evaluations = (int)data.get("EVALUATIONS") ;
     if (maxEvaluations == null) {
       System.out.println("Evaluations: " + evaluations) ;
     } else {
       System.out.println("Evaluations: " + evaluations + " from " + maxEvaluations);
     }
+  }
+
+  public int getEvaluations() {
+    return evaluations ;
   }
 }

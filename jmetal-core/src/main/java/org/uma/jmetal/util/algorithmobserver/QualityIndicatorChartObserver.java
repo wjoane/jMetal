@@ -21,6 +21,7 @@ import java.util.Map;
 public class QualityIndicatorChartObserver implements MeasureListener<Map<String, Object>> {
   private ChartContainer chart;
   private Hypervolume<PointSolution> hypervolume;
+  private int evaluations ;
 
   public QualityIndicatorChartObserver(Measurable measurable, String legend, int delay) {
     this(measurable, legend, delay, "") ;
@@ -49,7 +50,7 @@ public class QualityIndicatorChartObserver implements MeasureListener<Map<String
 
   @Override
   public void measureGenerated(Map<String, Object> data) {
-    int evaluations = (int)data.get("EVALUATIONS") ;
+    this.evaluations = (int)data.get("EVALUATIONS") ;
     List<? extends Solution<?>> population = (List<? extends Solution<?>>) data.get("POPULATION");
 
     ArrayFront arrayFront = new ArrayFront(SolutionListUtils.getNondominatedSolutions(population)) ;
@@ -61,5 +62,9 @@ public class QualityIndicatorChartObserver implements MeasureListener<Map<String
       this.chart.updateIndicatorChart("Hypervolume", hypervolumeValue);
       this.chart.refreshCharts();
     }
+  }
+
+  public int getEvaluations() {
+    return evaluations ;
   }
 }

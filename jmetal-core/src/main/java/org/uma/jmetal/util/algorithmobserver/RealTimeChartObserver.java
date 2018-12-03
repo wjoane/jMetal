@@ -13,7 +13,7 @@ import java.util.Map;
 
 public class RealTimeChartObserver<S extends Solution<?>> implements MeasureListener<Map<String, Object>> {
   private ChartContainer<S> chart;
-
+  private int evaluations ;
 
   public RealTimeChartObserver(Measurable measurable, String legend, int delay) {
     this(measurable, legend, delay, "") ;
@@ -41,7 +41,7 @@ public class RealTimeChartObserver<S extends Solution<?>> implements MeasureList
 
   @Override
   public void measureGenerated(Map<String, Object> data) {
-    int evaluations = (int)data.get("EVALUATIONS") ;
+    this.evaluations = (int)data.get("EVALUATIONS") ;
     List<S> population = (List<S>) data.get("POPULATION");
     if (this.chart != null) {
       this.chart.getFrontChart().setTitle("Evaluation: " + evaluations);
@@ -52,5 +52,9 @@ public class RealTimeChartObserver<S extends Solution<?>> implements MeasureList
 
   public ChartContainer getChart() {
     return chart ;
+  }
+
+  public int getEvaluations() {
+    return evaluations ;
   }
 }

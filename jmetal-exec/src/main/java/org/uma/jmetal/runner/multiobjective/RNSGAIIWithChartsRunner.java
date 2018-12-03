@@ -121,7 +121,8 @@ public class RNSGAIIWithChartsRunner extends AbstractAlgorithmRunner {
     AlgorithmRunner algorithmRunner = new AlgorithmRunner.Executor(algorithm)
             .execute() ;
 
-    //chart.saveChart("RNSGAII", BitmapEncoder.BitmapFormat.PNG);
+    observer.getChart().saveChart("RNSGAII", BitmapEncoder.BitmapFormat.PNG);
+
     List<DoubleSolution> population = algorithm.getResult() ;
     long computingTime = algorithmRunner.getComputingTime() ;
 
