@@ -82,9 +82,12 @@ public class WASFGAMeasuresRunner extends AbstractAlgorithmRunner {
             .<List<DoubleSolution>>getPushMeasure("currentPopulation");
     CountingMeasure iterationMeasure = (CountingMeasure) measureManager.<Long>getPushMeasure("currentEvaluation");
 
+    List<List<Double>> referencePointList = new ArrayList<>() ;
+    referencePointList.add(referencePoint) ;
+
     ChartContainer chart = new ChartContainer(algorithm.getName(), 200);
     chart.setFrontChart(0, 1, referenceParetoFront);
-    chart.setReferencePoint(referencePoint);
+    chart.setReferencePoint(referencePointList);
     chart.setVarChart(0, 1);
     chart.initChart();
 

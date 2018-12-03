@@ -31,6 +31,7 @@ import org.uma.jmetal.problem.DoubleProblem;
 import org.uma.jmetal.problem.Problem;
 import org.uma.jmetal.solution.DoubleSolution;
 import org.uma.jmetal.util.*;
+import org.uma.jmetal.util.algorithmobserver.RealTimeChartObserver;
 import org.uma.jmetal.util.chartcontainer.ChartContainerWithReferencePoints;
 import org.uma.jmetal.util.comparator.RankingAndCrowdingDistanceComparator;
 import org.uma.jmetal.util.fileoutput.SolutionListOutput;
@@ -58,7 +59,7 @@ public class RNSGAIIWithChartsRunner extends AbstractAlgorithmRunner {
    */
   public static void main(String[] args) throws JMetalException, IOException {
     Problem<DoubleSolution> problem;
-    Algorithm<List<DoubleSolution>> algorithm;
+    RNSGAII<DoubleSolution> algorithm;
     CrossoverOperator<DoubleSolution> crossover;
     MutationOperator<DoubleSolution> mutation;
     SelectionOperator<List<DoubleSolution>, DoubleSolution> selection;
@@ -114,26 +115,13 @@ public class RNSGAIIWithChartsRunner extends AbstractAlgorithmRunner {
         .setPopulationSize(100)
         .build() ;
 
-    /* Measure management */
-    MeasureManager measureManager = ((RNSGAII) algorithm).getMeasureManager();
-
-    BasicMeasure<List<DoubleSolution>> solutionListMeasure = (BasicMeasure<List<DoubleSolution>>) measureManager
-            .<List<DoubleSolution>>getPushMeasure("currentPopulation");
-    CountingMeasure iterationMeasure = (CountingMeasure) measureManager.<Long>getPushMeasure("currentEvaluation");
-
-    ChartContainerWithReferencePoints chart = new ChartContainerWithReferencePoints(algorithm.getName(), 80);
-    chart.setFrontChart(0, 1, referenceParetoFront);
-    chart.setReferencePoint(convertReferencePointListToListOfLists(referencePoint, problem.getNumberOfObjectives()));
-    chart.initChart();
-
-    solutionListMeasure.register(new ChartListener(chart));
-    iterationMeasure.register(new IterationListener(chart));
-    /* End of measure management */
+    RealTimeChartObserver observer = new RealTimeChartObserver(algorithm, "RNSGA-II", 80, referenceParetoFront) ;
+    observer.setReferencePointList(convertReferencePointListToListOfLists(referencePoint, problem.getNumberOfObjectives()));
 
     AlgorithmRunner algorithmRunner = new AlgorithmRunner.Executor(algorithm)
             .execute() ;
 
-    chart.saveChart("RNSGAII", BitmapEncoder.BitmapFormat.PNG);
+    //chart.saveChart("RNSGAII", BitmapEncoder.BitmapFormat.PNG);
     List<DoubleSolution> population = algorithm.getResult() ;
     long computingTime = algorithmRunner.getComputingTime() ;
 
@@ -162,51 +150,5 @@ public class RNSGAIIWithChartsRunner extends AbstractAlgorithmRunner {
     }
 
     return referencePointList ;
-  }
-
-  private static class ChartListener implements MeasureListener<List<DoubleSolution>> {
-    private ChartContainerWithReferencePoints chart;
-    private int iteration = 0;
-
-    public ChartListener(ChartContainerWithReferencePoints chart) {
-      this.chart = chart;
-      this.chart.getFrontChart().setTitle("Evaluation: " + this.iteration);
-    }
-
-    private void refreshChart(List<DoubleSolution> solutionList) {
-      if (this.chart != null) {
-        iteration++;
-        this.chart.getFrontChart().setTitle("Iteration: " + this.iteration);
-        this.chart.updateFrontCharts(solutionList);
-        this.chart.refreshCharts();
-
-        new SolutionListOutput(solutionList)
-                .setSeparator("\t")
-                .setVarFileOutputContext(new DefaultFileOutputContext("VAR." + iteration + ".tsv"))
-                .setFunFileOutputContext(new DefaultFileOutputContext("FUN." + iteration + ".tsv"))
-                .print();
-      }
-    }
-
-    @Override
-    synchronized public void measureGenerated(List<DoubleSolution> solutions) {
-      refreshChart(solutions);
-    }
-  }
-
-  private static class IterationListener implements MeasureListener<Long> {
-    ChartContainerWithReferencePoints chart;
-
-    public IterationListener(ChartContainerWithReferencePoints chart) {
-      this.chart = chart;
-      this.chart.getFrontChart().setTitle("Iteration: " + 0);
-    }
-
-    @Override
-    synchronized public void measureGenerated(Long iteration) {
-      if (this.chart != null) {
-        this.chart.getFrontChart().setTitle("Iteration: " + iteration);
-      }
-    }
   }
 }

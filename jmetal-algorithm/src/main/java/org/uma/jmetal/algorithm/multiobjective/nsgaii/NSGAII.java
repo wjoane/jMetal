@@ -84,7 +84,7 @@ public class NSGAII<S extends Solution<?>> extends AbstractGeneticAlgorithm<S, L
     super.run();
   }
 
-  private void updateStatusData() {
+  protected void updateStatusData() {
     algorithmStatusData.put("EVALUATIONS", evaluations) ;
     algorithmStatusData.put("POPULATION", population) ;
     algorithmStatusData.put("COMPUTING_TIME", System.currentTimeMillis() - initComputingTime) ;

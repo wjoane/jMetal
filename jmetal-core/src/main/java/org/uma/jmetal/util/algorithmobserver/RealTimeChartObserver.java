@@ -14,6 +14,7 @@ import java.util.Map;
 public class RealTimeChartObserver implements MeasureListener<Map<String, Object>> {
   private ChartContainer chart;
 
+
   public RealTimeChartObserver(Measurable measurable, String legend, int delay) {
     this(measurable, legend, delay, "") ;
   }
@@ -32,6 +33,10 @@ public class RealTimeChartObserver implements MeasureListener<Map<String, Object
       e.printStackTrace();
     }
     chart.initChart();
+  }
+
+  public void setReferencePointList(List<List<Double>> referencePointList) {
+    chart.setReferencePoint(referencePointList);
   }
 
   @Override

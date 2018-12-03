@@ -30,12 +30,7 @@ public class RNSGAII<S extends Solution<?>> extends NSGAII<S> implements
 
   private List<Double> interestPoint;
   private double epsilon;
-
-  protected SimpleMeasureManager measureManager ;
-  protected BasicMeasure<List<S>> solutionListMeasure ;
-  protected CountingMeasure evaluations ;
-  protected DurationMeasure durationMeasure ;
-
+  
   /**
    * Constructor
    */
@@ -50,17 +45,10 @@ public class RNSGAII<S extends Solution<?>> extends NSGAII<S> implements
     this.interestPoint = interestPoint;
     this.epsilon = epsilon;
   }
+
   @Override
   public void updatePointOfInterest(List<Double> newReferencePoints){
     this.interestPoint = newReferencePoints;
-  }
-  @Override protected void initProgress() {
-    evaluations.reset(getMaxPopulationSize()) ;
-  }
-
-  @Override
-  public MeasureManager getMeasureManager() {
-    return measureManager ;
   }
 
   @Override protected List<S> replacement(List<S> population, List<S> offspringPopulation) {

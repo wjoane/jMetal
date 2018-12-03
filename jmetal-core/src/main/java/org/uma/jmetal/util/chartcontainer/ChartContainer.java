@@ -34,6 +34,7 @@ public class ChartContainer<S extends Solution<?>> {
     private int variable2;
     private Map<String, List<Integer>> iterations;
     private Map<String, List<Double>> indicatorValues;
+    private List<String> referencePointName ;
 
     public ChartContainer(String name) {
         this(name, 0);
@@ -45,6 +46,7 @@ public class ChartContainer<S extends Solution<?>> {
         this.charts = new LinkedHashMap<String, XYChart>();
         this.iterations = new HashMap<String, List<Integer>>();
         this.indicatorValues = new HashMap<String, List<Double>>();
+        referencePointName = new ArrayList<>() ;
     }
 
     public void setFrontChart(int objective1, int objective2) throws FileNotFoundException {
@@ -69,14 +71,35 @@ public class ChartContainer<S extends Solution<?>> {
 
         this.charts.put("Front", this.frontChart);
     }
-    
-    public void setReferencePoint(List<Double> referencePoint){
-        double rp1 = referencePoint.get(this.objective1);
-        double rp2 = referencePoint.get(this.objective2);
-        XYSeries referencePointSeries = this.frontChart.addSeries("Reference Point ["+ rp1 + ", " + rp2 + "]",
-                                                                  new double[] { rp1 },
-                                                                  new double[] { rp2 });
-        referencePointSeries.setMarkerColor(Color.green);
+
+    public synchronized void setReferencePoint(List<List<Double>> referencePoint){
+        for (int i = 0; i < referencePoint.size(); i++) {
+            double rp1 = referencePoint.get(i).get(this.objective1);
+            double rp2 = referencePoint.get(i).get(this.objective2);
+
+            referencePointName.add("Reference Point [" + rp1 + ", " + rp2 + "]") ;
+
+            XYSeries referencePointSeries = this.frontChart.addSeries(referencePointName.get(i),
+                    new double[] { rp1 },
+                    new double[] { rp2 });
+            referencePointSeries.setMarkerColor(Color.green);
+        }
+    }
+
+    public synchronized void updateReferencePoint(List<List<Double>> referencePoint){
+        for (int i = 0; i < referencePoint.size(); i++) {
+            double rp1 = referencePoint.get(i).get(this.objective1);
+            double rp2 = referencePoint.get(i).get(this.objective2);
+
+            this.frontChart.removeSeries(referencePointName.get(i)) ;
+
+            referencePointName.set(i, "Reference Point [" + rp1 + ", " + rp2 + "]") ;
+
+            XYSeries referencePointSeries = this.frontChart.addSeries(referencePointName.get(i),
+                    new double[] { rp1 },
+                    new double[] { rp2 });
+            referencePointSeries.setMarkerColor(Color.green);
+        }
     }
 
     public void setVarChart(int variable1, int variable2) {
