@@ -187,8 +187,7 @@ public class MOEADAlt
     aggregativeFunction.update(newSolution.getObjectives());
 
     List<DoubleSolution> newPopulation;
-    newPopulation = updateNeighborhood(
-        newSolution, population, weightVectorNeighborhood.getNeighborhood()[currentSubproblem]);
+    newPopulation = updateCurrentSubProblemNeighborhood(newSolution, population);
 
     return newPopulation;
   }
@@ -220,31 +219,44 @@ public class MOEADAlt
     return neighborType;
   }
 
-  protected List<DoubleSolution> updateNeighborhood(
-      DoubleSolution newSolution,
-      List<DoubleSolution> population,
-      int[] neighborhood) {
-    int size;
+  private int sourceOfNeighborsSize(int subProblem) {
     if (neighborType == NeighborType.NEIGHBOR) {
-      size = neighborhood.length;
+      return weightVectorNeighborhood.getNeighborhood()[subProblem].length;
     } else {
-      size = populationSize;
+      return populationSize;
     }
+  }
 
-    int[] permutation = new int[size];
-    MOEADUtils.randomPermutation(permutation, size);
-    int count = 0;
+  private int [] generatePermutationOfhNeighbors(int subProblem) {
 
-    for (int i = 0; i < size; i++) {
-      int k;
-      if (neighborType == NeighborType.NEIGHBOR) {
-        k = neighborhood[permutation[i]];
-      } else {
-        k = permutation[i];
-      }
+    int size = sourceOfNeighborsSize(subProblem);
+    int[] permutedArray = new int[size];
+    if (neighborType == NeighborType.NEIGHBOR) {
+      System.arraycopy(weightVectorNeighborhood.getNeighborhood()[subProblem],0, permutedArray,0,size);
+      MOEADUtils.shuffle(permutedArray);
+    } else {
+      MOEADUtils.randomPermutation(permutedArray, size);
+    }
+    return permutedArray;
+  }
 
-      double f1 = aggregativeFunction.compute(
-          population.get(k).getObjectives(),
+
+  private boolean maxReplacementLimitAchieved(int replaced) {
+    return replaced >= maximumNumberOfReplacedSolutions;
+  }
+
+  protected List<DoubleSolution> updateCurrentSubProblemNeighborhood(
+      DoubleSolution newSolution,
+      List<DoubleSolution> population) {
+
+
+    int[] permutedNeighborsIndexes = generatePermutationOfhNeighbors(currentSubproblem);
+    int replacements = 0;
+
+    for (int i = 0; i < permutedNeighborsIndexes.length && !maxReplacementLimitAchieved(replacements); i++) {
+      int k = permutedNeighborsIndexes[i];
+
+      double f1 = aggregativeFunction.compute(population.get(k).getObjectives(),
           weightVectorNeighborhood.getWeightVector()[k]);
       double f2 = aggregativeFunction.compute(
           newSolution.getObjectives(),
@@ -252,14 +264,9 @@ public class MOEADAlt
 
       if (f2 < f1) {
         population.set(k, (DoubleSolution) newSolution.copy());
-        count++;
-      }
-
-      if (count >= maximumNumberOfReplacedSolutions) {
-        break;
+        replacements++;
       }
     }
-
     return population;
   }
 
