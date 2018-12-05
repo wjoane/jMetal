@@ -1,4 +1,4 @@
-package org.uma.jmetal.util.algorithmobserver;
+package org.uma.jmetal.util.algorithmobserver.impl;
 
 import org.uma.jmetal.measure.Measurable;
 import org.uma.jmetal.measure.MeasureListener;
@@ -8,6 +8,7 @@ import org.uma.jmetal.qualityindicator.impl.Hypervolume;
 import org.uma.jmetal.qualityindicator.impl.hypervolume.PISAHypervolume;
 import org.uma.jmetal.solution.Solution;
 import org.uma.jmetal.util.SolutionListUtils;
+import org.uma.jmetal.util.algorithmobserver.AlgorithmObserver;
 import org.uma.jmetal.util.chartcontainer.ChartContainer;
 import org.uma.jmetal.util.front.Front;
 import org.uma.jmetal.util.front.imp.ArrayFront;
@@ -26,7 +27,7 @@ import java.util.Map;
  *
  * @author Antonio J. Nebro <antonio@lcc.uma.es>
  */
-public class HypervolumeIndicatorChartObserver implements MeasureListener<Map<String, Object>> {
+public class HypervolumeIndicatorChartObserver extends AlgorithmObserver {
   private ChartContainer chart;
   private Hypervolume<PointSolution> hypervolume;
   private int evaluations ;
@@ -49,11 +50,7 @@ public class HypervolumeIndicatorChartObserver implements MeasureListener<Map<St
    * @param referenceFrontName File name containing a reference front, needed to compute the hypervolume
    */
   public HypervolumeIndicatorChartObserver(Measurable measurable, String legend, int delay, String referenceFrontName) {
-    MeasureManager measureManager = measurable.getMeasureManager() ;
-    BasicMeasure<Map<String, Object>> observedData =  (BasicMeasure<Map<String, Object>>)measureManager
-            .<Map<String, Object>>getPushMeasure("ALGORITHM_DATA");
-
-    observedData.register(this);
+    super(measurable) ;
 
     Front referenceFront = null;
     try {

@@ -1,23 +1,17 @@
 package org.uma.jmetal.runner.multiobjective;
 
-import org.knowm.xchart.BitmapEncoder;
 import org.uma.jmetal.algorithm.Algorithm;
 import org.uma.jmetal.algorithm.multiobjective.smpso.SMPSORP;
-import org.uma.jmetal.measure.MeasureListener;
-import org.uma.jmetal.measure.MeasureManager;
-import org.uma.jmetal.measure.impl.BasicMeasure;
-import org.uma.jmetal.measure.impl.CountingMeasure;
 import org.uma.jmetal.operator.MutationOperator;
 import org.uma.jmetal.operator.impl.mutation.PolynomialMutation;
 import org.uma.jmetal.problem.DoubleProblem;
 import org.uma.jmetal.problem.multiobjective.ebes.Ebes;
 import org.uma.jmetal.solution.DoubleSolution;
 import org.uma.jmetal.util.JMetalException;
-import org.uma.jmetal.util.algorithmobserver.RealTimeChartObserver;
+import org.uma.jmetal.util.algorithmobserver.impl.RealTimeChartObserver;
 import org.uma.jmetal.util.archivewithreferencepoint.ArchiveWithReferencePoint;
 import org.uma.jmetal.util.archivewithreferencepoint.impl.CrowdingDistanceArchiveWithReferencePoint;
 import org.uma.jmetal.util.chartcontainer.ChartContainer;
-import org.uma.jmetal.util.chartcontainer.ChartContainerWithReferencePoints;
 import org.uma.jmetal.util.evaluator.impl.SequentialSolutionListEvaluator;
 import org.uma.jmetal.util.fileoutput.SolutionListOutput;
 import org.uma.jmetal.util.fileoutput.impl.DefaultFileOutputContext;

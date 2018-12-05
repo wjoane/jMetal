@@ -14,13 +14,8 @@
 package org.uma.jmetal.runner.multiobjective;
 
 import org.knowm.xchart.BitmapEncoder;
-import org.uma.jmetal.algorithm.Algorithm;
 import org.uma.jmetal.algorithm.multiobjective.rnsgaii.RNSGAII;
 import org.uma.jmetal.algorithm.multiobjective.rnsgaii.RNSGAIIBuilder;
-import org.uma.jmetal.measure.MeasureListener;
-import org.uma.jmetal.measure.MeasureManager;
-import org.uma.jmetal.measure.impl.BasicMeasure;
-import org.uma.jmetal.measure.impl.CountingMeasure;
 import org.uma.jmetal.operator.CrossoverOperator;
 import org.uma.jmetal.operator.MutationOperator;
 import org.uma.jmetal.operator.SelectionOperator;
@@ -31,8 +26,7 @@ import org.uma.jmetal.problem.DoubleProblem;
 import org.uma.jmetal.problem.Problem;
 import org.uma.jmetal.solution.DoubleSolution;
 import org.uma.jmetal.util.*;
-import org.uma.jmetal.util.algorithmobserver.RealTimeChartObserver;
-import org.uma.jmetal.util.chartcontainer.ChartContainerWithReferencePoints;
+import org.uma.jmetal.util.algorithmobserver.impl.RealTimeChartObserver;
 import org.uma.jmetal.util.comparator.RankingAndCrowdingDistanceComparator;
 import org.uma.jmetal.util.fileoutput.SolutionListOutput;
 import org.uma.jmetal.util.fileoutput.impl.DefaultFileOutputContext;

@@ -1,10 +1,11 @@
-package org.uma.jmetal.util.algorithmobserver;
+package org.uma.jmetal.util.algorithmobserver.impl;
 
 import org.uma.jmetal.measure.Measurable;
 import org.uma.jmetal.measure.MeasureListener;
 import org.uma.jmetal.measure.MeasureManager;
 import org.uma.jmetal.measure.impl.BasicMeasure;
 import org.uma.jmetal.solution.Solution;
+import org.uma.jmetal.util.algorithmobserver.AlgorithmObserver;
 import org.uma.jmetal.util.chartcontainer.ChartContainer;
 
 import java.io.FileNotFoundException;
@@ -19,7 +20,7 @@ import java.util.Map;
  *
  * @author Antonio J. Nebro <antonio@lcc.uma.es>
  */
-public class RealTimeChartObserver<S extends Solution<?>> implements MeasureListener<Map<String, Object>> {
+public class RealTimeChartObserver<S extends Solution<?>> extends AlgorithmObserver {
   private ChartContainer<S> chart;
   private int evaluations ;
 
@@ -41,11 +42,7 @@ public class RealTimeChartObserver<S extends Solution<?>> implements MeasureList
    * @param referenceFrontName File name containing a reference front
    */
   public RealTimeChartObserver(Measurable measurable, String legend, int delay, String referenceFrontName) {
-    MeasureManager measureManager = measurable.getMeasureManager() ;
-    BasicMeasure<Map<String, Object>> observedData =  (BasicMeasure<Map<String, Object>>)measureManager
-            .<Map<String, Object>>getPushMeasure("ALGORITHM_DATA");
-
-    observedData.register(this);
+    super(measurable) ;
 
     chart = new ChartContainer<S>(legend, delay) ;
     try {

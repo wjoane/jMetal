@@ -11,9 +11,9 @@ import org.uma.jmetal.util.JMetalLogger;
 import org.uma.jmetal.util.ProblemUtils;
 import org.uma.jmetal.util.aggregativefunction.AggregativeFunction;
 import org.uma.jmetal.util.aggregativefunction.impl.Tschebyscheff;
-import org.uma.jmetal.util.algorithmobserver.EvaluationObserver;
-import org.uma.jmetal.util.algorithmobserver.HypervolumeIndicatorChartObserver;
-import org.uma.jmetal.util.algorithmobserver.RealTimeChartObserver;
+import org.uma.jmetal.util.algorithmobserver.impl.EvaluationObserver;
+import org.uma.jmetal.util.algorithmobserver.impl.HypervolumeIndicatorChartObserver;
+import org.uma.jmetal.util.algorithmobserver.impl.RealTimeChartObserver;
 import org.uma.jmetal.util.terminationcondition.TerminationCondition;
 import org.uma.jmetal.util.terminationcondition.impl.TerminationByEvaluations;
 

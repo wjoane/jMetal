@@ -1,4 +1,4 @@
-package org.uma.jmetal.util.algorithmobserver;
+package org.uma.jmetal.util.algorithmobserver.impl;
 
 import org.uma.jmetal.measure.Measurable;
 import org.uma.jmetal.measure.Measure;
@@ -6,6 +6,7 @@ import org.uma.jmetal.measure.MeasureListener;
 import org.uma.jmetal.measure.MeasureManager;
 import org.uma.jmetal.measure.impl.BasicMeasure;
 import org.uma.jmetal.solution.Solution;
+import org.uma.jmetal.util.algorithmobserver.AlgorithmObserver;
 import org.uma.jmetal.util.chartcontainer.ChartContainer;
 
 import java.io.FileNotFoundException;
@@ -18,7 +19,7 @@ import java.util.Map;
  *
  * @author Antonio J. Nebro <antonio@lcc.uma.es>
  */
-public class EvaluationObserver implements MeasureListener<Map<String, Object>> {
+public class EvaluationObserver extends AlgorithmObserver {
   private Integer maxEvaluations ;
   private int evaluations ;
 
@@ -33,13 +34,8 @@ public class EvaluationObserver implements MeasureListener<Map<String, Object>> 
    * value.
    */
   public EvaluationObserver(Measurable measurable, Integer maxEvaluations) {
+    super(measurable) ;
     this.maxEvaluations = maxEvaluations ;
-    MeasureManager measureManager = measurable.getMeasureManager() ;
-
-    BasicMeasure<Map<String, Object>> observedData =  (BasicMeasure<Map<String, Object>>)measureManager
-            .<Map<String, Object>>getPushMeasure("ALGORITHM_DATA");
-
-    observedData.register(this);
   }
 
   /**
