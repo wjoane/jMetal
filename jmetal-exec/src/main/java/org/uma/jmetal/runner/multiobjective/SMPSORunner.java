@@ -90,7 +90,7 @@ public class SMPSORunner extends AbstractAlgorithmRunner {
 
     JMetalLogger.logger.info("Total execution time: " + computingTime + "ms");
 
-    realTimeChartObserver.getChart().saveChart("NSGAII." + problemName, BitmapEncoder.BitmapFormat.PNG);
+    realTimeChartObserver.getChart().saveChart("SMPSO." + problemName, BitmapEncoder.BitmapFormat.PNG);
 
     printFinalSolutionSet(population);
     if (!referenceParetoFront.equals("")) {

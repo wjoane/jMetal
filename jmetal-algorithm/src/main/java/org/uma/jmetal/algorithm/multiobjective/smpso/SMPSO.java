@@ -123,7 +123,6 @@ public class SMPSO extends AbstractParticleSwarmOptimization<DoubleSolution, Lis
     updateLeadersDensityEstimator();
 
     updateStatusData();
-    algorithmDataMeasure.push(algorithmStatusData);
   }
 
   @Override
@@ -132,7 +131,6 @@ public class SMPSO extends AbstractParticleSwarmOptimization<DoubleSolution, Lis
     updateLeadersDensityEstimator();
 
     updateStatusData();
-    algorithmDataMeasure.push(algorithmStatusData);
   }
 
   @Override
@@ -145,6 +143,8 @@ public class SMPSO extends AbstractParticleSwarmOptimization<DoubleSolution, Lis
     algorithmStatusData.put("EVALUATIONS", evaluations) ;
     algorithmStatusData.put("POPULATION", leaders.getSolutionList()) ;
     algorithmStatusData.put("COMPUTING_TIME", System.currentTimeMillis() - initComputingTime) ;
+
+    algorithmDataMeasure.push(algorithmStatusData);
   }
 
   @Override

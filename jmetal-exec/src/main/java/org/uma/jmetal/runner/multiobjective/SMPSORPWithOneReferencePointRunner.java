@@ -66,7 +66,7 @@ public class SMPSORPWithOneReferencePointRunner {
     }
 
     //TerminationCondition terminationCondition = new TerminationByComputingTime(1000);
-    TerminationCondition terminationCondition = new TerminationByEvaluations(175000) ;
+    TerminationCondition terminationCondition = new TerminationByEvaluations(25000) ;
     //TerminationCondition terminationCondition = new TerminationByKeyboard();
 
     algorithm = new SMPSORP(problem,

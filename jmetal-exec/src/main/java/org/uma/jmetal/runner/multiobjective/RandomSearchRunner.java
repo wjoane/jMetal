@@ -1,10 +1,14 @@
 package org.uma.jmetal.runner.multiobjective;
 
-import org.uma.jmetal.algorithm.Algorithm;
-import org.uma.jmetal.algorithm.multiobjective.randomsearch.RandomSearchBuilder;
+import org.uma.jmetal.algorithm.multiobjective.randomsearch.RandomSearch;
 import org.uma.jmetal.problem.Problem;
 import org.uma.jmetal.solution.DoubleSolution;
 import org.uma.jmetal.util.*;
+import org.uma.jmetal.util.algorithmobserver.impl.EvaluationObserver;
+import org.uma.jmetal.util.algorithmobserver.impl.RealTimeChartObserver;
+import org.uma.jmetal.util.terminationcondition.TerminationCondition;
+import org.uma.jmetal.util.terminationcondition.impl.TerminationByComputingTime;
+import org.uma.jmetal.util.terminationcondition.impl.TerminationByEvaluations;
 
 import java.io.FileNotFoundException;
 import java.util.List;
@@ -24,7 +28,7 @@ public class RandomSearchRunner extends AbstractAlgorithmRunner {
    */
   public static void main(String[] args) throws JMetalException, FileNotFoundException {
     Problem<DoubleSolution> problem;
-    Algorithm<List<DoubleSolution>> algorithm;
+    RandomSearch<DoubleSolution> algorithm;
 
     String referenceParetoFront = "" ;
 
@@ -41,9 +45,14 @@ public class RandomSearchRunner extends AbstractAlgorithmRunner {
 
     problem = ProblemUtils.loadProblem(problemName);
 
-    algorithm = new RandomSearchBuilder<DoubleSolution>(problem)
-            .setMaxEvaluations(2500000)
-            .build() ;
+    TerminationCondition terminationCondition =
+            //new TerminationByEvaluations(100000) ;
+            new TerminationByComputingTime(10000) ;
+
+    algorithm = new RandomSearch<>(problem, terminationCondition) ;
+
+    new RealTimeChartObserver<DoubleSolution>(algorithm, "Random Search", 80, referenceParetoFront) ;
+    new EvaluationObserver(algorithm) ;
 
     AlgorithmRunner algorithmRunner = new AlgorithmRunner.Executor(algorithm)
             .execute() ;
@@ -52,6 +61,7 @@ public class RandomSearchRunner extends AbstractAlgorithmRunner {
     long computingTime = algorithmRunner.getComputingTime() ;
 
     JMetalLogger.logger.info("Total execution time: " + computingTime + "ms");
+    JMetalLogger.logger.info("Evaluations: " + (int)algorithm.getEvaluations());
 
     printFinalSolutionSet(population);
     if (!referenceParetoFront.equals("")) {

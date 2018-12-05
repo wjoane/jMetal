@@ -114,7 +114,6 @@ public class MOEADAlt
     }
 
     updateStatusData();
-    algorithmDataMeasure.push(algorithmStatusData);
   }
 
   @Override
@@ -122,13 +121,14 @@ public class MOEADAlt
     evaluations++;
 
     updateStatusData();
-    algorithmDataMeasure.push(algorithmStatusData);
   }
 
   private void updateStatusData() {
     algorithmStatusData.put("EVALUATIONS", evaluations) ;
     algorithmStatusData.put("POPULATION", population) ;
     algorithmStatusData.put("COMPUTING_TIME", System.currentTimeMillis() - initComputingTime) ;
+
+    algorithmDataMeasure.push(algorithmStatusData);
   }
 
   @Override

@@ -88,20 +88,20 @@ public class NSGAII<S extends Solution<?>> extends AbstractGeneticAlgorithm<S, L
     algorithmStatusData.put("EVALUATIONS", evaluations) ;
     algorithmStatusData.put("POPULATION", population) ;
     algorithmStatusData.put("COMPUTING_TIME", System.currentTimeMillis() - initComputingTime) ;
+
+    algorithmDataMeasure.push(algorithmStatusData);
   }
 
   @Override protected void initProgress() {
     evaluations = getMaxPopulationSize();
 
     updateStatusData();
-    algorithmDataMeasure.push(algorithmStatusData);
   }
 
   @Override protected void updateProgress() {
     evaluations += offspringPopulationSize ;
 
     updateStatusData();
-    algorithmDataMeasure.push(algorithmStatusData);
   }
 
   @Override protected boolean isStoppingConditionReached() {
