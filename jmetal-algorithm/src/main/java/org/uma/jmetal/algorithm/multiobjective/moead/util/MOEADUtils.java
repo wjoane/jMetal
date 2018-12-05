@@ -72,33 +72,41 @@ public class MOEADUtils {
     }
   }
 
-  public static void randomPermutation(int[] perm, int size) {
+  public static void shuffle(int sequence []) {
     JMetalRandom randomGenerator = JMetalRandom.getInstance() ;
-    int[] index = new int[size];
-    boolean[] flag = new boolean[size];
+    int[] index = new int[sequence.length];
+    boolean[] flag = new boolean[sequence.length];
+    System.arraycopy(sequence,0,index,0,sequence.length);
 
-    for (int n = 0; n < size; n++) {
-      index[n] = n;
+    for (int n = 0; n < sequence.length; n++) {
       flag[n] = true;
     }
 
     int num = 0;
-    while (num < size) {
-      int start = randomGenerator.nextInt(0, size - 1);
+    while (num < sequence.length) {
+      int start = randomGenerator.nextInt(0, sequence.length - 1);
       while (true) {
         if (flag[start]) {
-          perm[num] = index[start];
+          sequence[num] = index[start];
           flag[start] = false;
           num++;
           break;
         }
-        if (start == (size - 1)) {
+        if (start == (sequence.length - 1)) {
           start = 0;
         } else {
           start++;
         }
       }
     }
+
+  }
+
+  public static void randomPermutation(int[] perm, int size) {
+      for (int n = 0; n < size; n++) {
+          perm[n] = n;
+      }
+      shuffle(perm);
   }
 
   /**
