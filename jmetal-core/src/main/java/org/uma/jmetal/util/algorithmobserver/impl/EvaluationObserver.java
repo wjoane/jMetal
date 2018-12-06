@@ -54,7 +54,7 @@ public class EvaluationObserver extends AlgorithmObserver {
         System.out.println("Evaluations: " + evaluations + " from " + maxEvaluations);
       }
     } else {
-      JMetalLogger.logger.info(getClass().getName()+
+      JMetalLogger.logger.warning(getClass().getName()+
                                   ": The algorithm has not registered yet any info related to the EVALUATIONS key");
     }
   }
