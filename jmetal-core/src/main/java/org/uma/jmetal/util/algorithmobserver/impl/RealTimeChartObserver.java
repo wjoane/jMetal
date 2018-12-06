@@ -88,8 +88,5 @@ public class RealTimeChartObserver<S extends Solution<?>> extends AlgorithmObser
   public ChartContainer getChart() {
     return chart ;
   }
-
-  public int getEvaluations() {
-    return evaluations ;
-  }
+  
 }

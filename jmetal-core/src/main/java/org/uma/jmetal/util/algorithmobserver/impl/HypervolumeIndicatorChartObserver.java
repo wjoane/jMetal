@@ -93,7 +93,5 @@ public class HypervolumeIndicatorChartObserver extends AlgorithmObserver {
     }
   }
 
-  public int getEvaluations() {
-    return evaluations ;
-  }
+
 }

@@ -59,7 +59,5 @@ public class EvaluationObserver extends AlgorithmObserver {
     }
   }
 
-  public int getEvaluations() {
-    return evaluations;
-  }
+
 }
