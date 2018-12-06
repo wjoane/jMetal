@@ -7,6 +7,7 @@ import org.uma.jmetal.measure.impl.BasicMeasure;
 import org.uma.jmetal.qualityindicator.impl.Hypervolume;
 import org.uma.jmetal.qualityindicator.impl.hypervolume.PISAHypervolume;
 import org.uma.jmetal.solution.Solution;
+import org.uma.jmetal.util.JMetalLogger;
 import org.uma.jmetal.util.SolutionListUtils;
 import org.uma.jmetal.util.algorithmobserver.AlgorithmObserver;
 import org.uma.jmetal.util.chartcontainer.ChartContainer;
@@ -30,7 +31,7 @@ import java.util.Map;
 public class HypervolumeIndicatorChartObserver extends AlgorithmObserver {
   private ChartContainer chart;
   private Hypervolume<PointSolution> hypervolume;
-  private int evaluations ;
+  private Integer evaluations ;
 
   /**
    * Constructor
@@ -72,17 +73,23 @@ public class HypervolumeIndicatorChartObserver extends AlgorithmObserver {
    */
   @Override
   public void measureGenerated(Map<String, Object> data) {
-    this.evaluations = (int)data.get("EVALUATIONS") ;
+    evaluations = (Integer) data.get("EVALUATIONS") ;
     List<? extends Solution<?>> population = (List<? extends Solution<?>>) data.get("POPULATION");
 
-    ArrayFront arrayFront = new ArrayFront(SolutionListUtils.getNondominatedSolutions(population)) ;
+    if (evaluations!=null && population!=null) {
 
-    double hypervolumeValue = hypervolume.evaluate(FrontUtils.convertFrontToSolutionList(arrayFront)) ;
+      ArrayFront arrayFront = new ArrayFront(SolutionListUtils.getNondominatedSolutions(population));
+      double hypervolumeValue = hypervolume.evaluate(FrontUtils.convertFrontToSolutionList(arrayFront));
 
-    if (this.chart != null) {
-      this.chart.getChart("Hypervolume").setTitle("Evaluations: " + evaluations);
-      this.chart.updateIndicatorChart("Hypervolume", hypervolumeValue);
-      this.chart.refreshCharts();
+      if (this.chart != null) {
+        this.chart.getChart("Hypervolume").setTitle("Evaluations: " + evaluations);
+        this.chart.updateIndicatorChart("Hypervolume", hypervolumeValue);
+        this.chart.refreshCharts();
+      }
+    } else {
+      JMetalLogger.logger.warning(getClass().getName()+
+                                  " : insufficient information for generating the requested graph." +
+                                  " Either EVALUATIONS or POPOULATION keys have not been registered yet by the algorithm");
     }
   }
 

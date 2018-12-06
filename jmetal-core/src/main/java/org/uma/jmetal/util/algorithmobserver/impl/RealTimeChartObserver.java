@@ -5,6 +5,7 @@ import org.uma.jmetal.measure.MeasureListener;
 import org.uma.jmetal.measure.MeasureManager;
 import org.uma.jmetal.measure.impl.BasicMeasure;
 import org.uma.jmetal.solution.Solution;
+import org.uma.jmetal.util.JMetalLogger;
 import org.uma.jmetal.util.algorithmobserver.AlgorithmObserver;
 import org.uma.jmetal.util.chartcontainer.ChartContainer;
 
@@ -22,7 +23,7 @@ import java.util.Map;
  */
 public class RealTimeChartObserver<S extends Solution<?>> extends AlgorithmObserver {
   private ChartContainer<S> chart;
-  private int evaluations ;
+  private Integer evaluations ;
 
   /**
    * Constructor
@@ -68,12 +69,19 @@ public class RealTimeChartObserver<S extends Solution<?>> extends AlgorithmObser
    */
   @Override
   public void measureGenerated(Map<String, Object> data) {
-    this.evaluations = (int)data.get("EVALUATIONS") ;
+    evaluations = (Integer)data.get("EVALUATIONS") ;
     List<S> population = (List<S>) data.get("POPULATION");
-    if (this.chart != null) {
-      this.chart.getFrontChart().setTitle("Evaluation: " + evaluations);
-      this.chart.updateFrontCharts(population);
-      this.chart.refreshCharts();
+
+    if (evaluations!=null && population!=null) {
+      if (this.chart != null) {
+        this.chart.getFrontChart().setTitle("Evaluation: " + evaluations);
+        this.chart.updateFrontCharts(population);
+        this.chart.refreshCharts();
+      }
+    } else {
+      JMetalLogger.logger.warning(getClass().getName()+
+        " : insufficient for generating real time information." +
+        " Either EVALUATIONS or POPOULATION keys have not been registered yet by the algorithm");
     }
   }
 
