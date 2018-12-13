@@ -73,7 +73,7 @@ public class ComputeQualityIndicators<S extends Solution<?>, Result> implements 
         FrontNormalizer frontNormalizer = new FrontNormalizer(referenceFront) ;
         Front normalizedReferenceFront = frontNormalizer.normalize(referenceFront) ;
 
-        String qualityIndicatorFile = problemDirectory + "/" + indicator.getName();
+        String qualityIndicatorFile = problemDirectory + "/QI." + indicator.getName();
 
 
         indicator.setReferenceParetoFront(normalizedReferenceFront);
@@ -139,7 +139,7 @@ public class ComputeQualityIndicators<S extends Solution<?>, Result> implements 
 
         for (ExperimentProblem<?> problem :experiment.getProblemList()) {
           String indicatorFileName =
-              algorithmDirectory + "/" + problem.getTag() + "/" + indicator.getName();
+              algorithmDirectory + "/" + problem.getTag() + "/QI." + indicator.getName();
           Path indicatorFile = Paths.get(indicatorFileName) ;
           if (indicatorFile == null) {
             throw new JMetalException("Indicator file " + indicator.getName() + " doesn't exist") ;
