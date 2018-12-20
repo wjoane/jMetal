@@ -92,12 +92,12 @@ public class Ebes extends AbstractDoubleProblem {
   protected double [][] nodeCheck_ ;
   public double nodeCheck(int i, int j) {
     return nodeCheck_[i][j];
-  } // get node check
+  } // get node isMet
 
   protected int [][] geometryCheck_ ;
   public int geometryCheck(int i, int j) {
     return geometryCheck_[i][j];
-  } // get node check
+  } // get node isMet
 
   /**
    * Stores the number of Bar Groups
@@ -797,7 +797,7 @@ public class Ebes extends AbstractDoubleProblem {
     System.out.println("  Number of constraints for Stress: " + (numberOfGroupElements_ * 3));
     System.out.println("  Number of constraints for Deflection: " + numberOfConstraintsNodes_);
     System.out.println("  Number of Constraints: " + numberOfConstraints_);
-    System.out.println("  Number of groups to check geometry: " + numberOfGroupsToCheckGeometry_);
+    System.out.println("  Number of groups to isMet geometry: " + numberOfGroupsToCheckGeometry_);
 
     // objectives
     // Weight, Deflections, stress squared absolute error;
@@ -5154,7 +5154,7 @@ public void EbesMutation(int groupId, int hi, Variable[] x) {
         // read lines
         for (i=0;i<4;i++){txt=input.nextLine();}
 
-        // check node constraint
+        // isMet node constraint
         for(i=txt.length()-1;i>=0;i--){
           ch=txt.charAt(i);
           if(ch == ' '){
@@ -5317,7 +5317,7 @@ public void EbesMutation(int groupId, int hi, Variable[] x) {
           nodeCheck_[i][1]=Double.valueOf(input.next());
         }
 
-        //number of groups to check geometry
+        //number of groups to isMet geometry
         txt=input.nextLine();
         txt=input.nextLine();
         if(numberOfGroupsToCheckGeometry_!=0) {

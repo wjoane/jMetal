@@ -21,7 +21,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;
 
 /**
- * Note: this class does check that the BLX-aplha crossover operator does not return invalid
+ * Note: this class does isMet that the BLX-aplha crossover operator does not return invalid
  * values, but not that it works properly (@see BLXAlphaCrossoverWorkingTest)
  *
  * @author Antonio J. Nebro

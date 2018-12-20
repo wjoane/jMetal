@@ -6,7 +6,7 @@ import org.uma.jmetal.util.terminationcondition.TerminationCondition;
 import java.util.Map;
 
 /**
- * Class that allows to check the termination condition when the computing time of an algorithm
+ * Class that allows to isMet the termination condition when the computing time of an algorithm
  * gets higher than a given threshold.
  *
  *  @author Antonio J. Nebro <antonio@lcc.uma.es>
@@ -21,7 +21,7 @@ public class TerminationByComputingTime implements TerminationCondition {
   }
 
   @Override
-  public boolean check(Map<String, Object> algorithmStatusData) {
+  public boolean isMet(Map<String, Object> algorithmStatusData) {
     long currentComputingTime = (long) algorithmStatusData.get("COMPUTING_TIME") ;
 
     boolean result = currentComputingTime >= maxComputingTime ;

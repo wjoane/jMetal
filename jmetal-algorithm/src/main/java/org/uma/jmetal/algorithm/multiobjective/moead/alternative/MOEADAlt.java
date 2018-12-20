@@ -133,7 +133,7 @@ public class MOEADAlt
 
   @Override
   protected boolean isStoppingConditionReached() {
-    return terminationCondition.check(algorithmStatusData);
+    return terminationCondition.isMet(algorithmStatusData);
   }
 
   @Override
@@ -219,7 +219,7 @@ public class MOEADAlt
     return neighborType;
   }
 
-  private int sourceOfNeighborsSize(int subProblem) {
+  protected int sourceOfNeighborsSize(int subProblem) {
     if (neighborType == NeighborType.NEIGHBOR) {
       return weightVectorNeighborhood.getNeighborhood()[subProblem].length;
     } else {
@@ -227,7 +227,7 @@ public class MOEADAlt
     }
   }
 
-  private int [] generatePermutationOfhNeighbors(int subProblem) {
+  protected int [] generatePermutationOfhNeighbors(int subProblem) {
 
     int size = sourceOfNeighborsSize(subProblem);
     int[] permutedArray = new int[size];
@@ -241,7 +241,7 @@ public class MOEADAlt
   }
 
 
-  private boolean maxReplacementLimitAchieved(int replaced) {
+  protected boolean maxReplacementLimitAchieved(int replaced) {
     return replaced >= maximumNumberOfReplacedSolutions;
   }
 
@@ -270,7 +270,7 @@ public class MOEADAlt
     return population;
   }
 
-  private static class Permutation {
+  protected static class Permutation {
     private int[] permutation;
     private int counter;
 

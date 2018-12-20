@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.Scanner;
 
 /**
- * Class that allows to check the termination condition based on introducing a character by keyboard.
+ * Class that allows to isMet the termination condition based on introducing a character by keyboard.
  *
  *  @author Antonio J. Nebro <antonio@lcc.uma.es>
  */
@@ -24,7 +24,7 @@ public class TerminationByKeyboard implements TerminationCondition {
   }
 
   @Override
-  public boolean check(Map<String, Object> algorithmStatusData) {
+  public boolean isMet(Map<String, Object> algorithmStatusData) {
     if (keyHit) {
       this.evaluations = (int)algorithmStatusData.get("EVALUATIONS") ;
       JMetalLogger.logger.info("Evaluations: " + evaluations);

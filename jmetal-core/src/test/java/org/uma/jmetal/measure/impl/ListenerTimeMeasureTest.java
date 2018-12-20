@@ -45,7 +45,7 @@ public class ListenerTimeMeasureTest {
 			}
 			average /= rounds;
 
-			// check we are within a range of 10% around the expected time
+			// isMet we are within a range of 10% around the expected time
 			assertTrue("Time spent: " + average + " instead of " + expected,
 					average > expected * 0.9 && average < expected * 1.1);
 		}
@@ -70,7 +70,7 @@ public class ListenerTimeMeasureTest {
 		wrapper10ms.measureGenerated(null);
 		long expected = 60;
 
-		// check we are within a range of 10% around the expected time
+		// isMet we are within a range of 10% around the expected time
 		assertTrue("Time spent: " + measure.get() + " instead of " + expected,
 				measure.get() > expected * 0.9
 						&& measure.get() < expected * 1.1);
@@ -118,7 +118,7 @@ public class ListenerTimeMeasureTest {
 			}
 		}
 
-		// check the instance always changes with an error of 10%
+		// isMet the instance always changes with an error of 10%
 		assertTrue("Differences: " + differences + "/" + rounds,
 				differences > rounds * 0.9 && differences <= rounds);
 	}
@@ -145,7 +145,7 @@ public class ListenerTimeMeasureTest {
 		original10ms.push(null);
 		long expected = 60;
 
-		// check we are within a range of 10% around the expected time
+		// isMet we are within a range of 10% around the expected time
 		assertTrue("Time spent: " + measure.get() + " instead of " + expected,
 				measure.get() > expected * 0.9
 						&& measure.get() < expected * 1.1);
@@ -192,7 +192,7 @@ public class ListenerTimeMeasureTest {
 			}
 		}
 
-		// check the instance always changes with an error of 10%
+		// isMet the instance always changes with an error of 10%
 		assertTrue("Differences: " + differences + "/" + rounds,
 				differences > rounds * 0.9 && differences <= rounds);
 	}
@@ -259,7 +259,7 @@ public class ListenerTimeMeasureTest {
 		measure1.push(null);
 		long expected = 60;
 
-		// check we are within a range of 10% around the expected time
+		// isMet we are within a range of 10% around the expected time
 		assertTrue("Time spent: " + measure.get() + " instead of " + expected,
 				measure.get() > expected * 0.9
 						&& measure.get() < expected * 1.1);
@@ -378,7 +378,7 @@ public class ListenerTimeMeasureTest {
 		wrapper50ms.measureGenerated(null);
 		long expected = 75;
 
-		// check we are within a range of 10% around the expected time
+		// isMet we are within a range of 10% around the expected time
 		assertTrue("Time spent: " + measure.get() + " instead of " + expected,
 				measure.get() > expected * 0.9
 						&& measure.get() < expected * 1.1);

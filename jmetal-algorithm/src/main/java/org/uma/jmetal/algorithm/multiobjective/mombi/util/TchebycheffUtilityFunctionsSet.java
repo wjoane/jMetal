@@ -11,8 +11,8 @@ import java.util.List;
  * @author Juan J. Durillo
  * 
  * ToDo List: 
- * + check the size of nadir and reference points are the correct ones
- * + check that the function that needs to be evaluated is the correct one
+ * + isMet the size of nadir and reference points are the correct ones
+ * + isMet that the function that needs to be evaluated is the correct one
  *
  * @param <S>
  */

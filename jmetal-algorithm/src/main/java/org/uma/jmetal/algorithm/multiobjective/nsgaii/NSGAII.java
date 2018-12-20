@@ -105,7 +105,7 @@ public class NSGAII<S extends Solution<?>> extends AbstractGeneticAlgorithm<S, L
   }
 
   @Override protected boolean isStoppingConditionReached() {
-    return terminationCondition.check(algorithmStatusData);
+    return terminationCondition.isMet(algorithmStatusData);
   }
 
   @Override protected List<S> evaluatePopulation(List<S> population) {

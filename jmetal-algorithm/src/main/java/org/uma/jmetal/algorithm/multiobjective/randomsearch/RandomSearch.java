@@ -59,7 +59,7 @@ public class RandomSearch<S extends Solution<?>> implements Algorithm<List<S>>, 
     updateStatusData();
 
     S newSolution;
-    while (!terminationCondition.check(algorithmStatusData)) {
+    while (!terminationCondition.isMet(algorithmStatusData)) {
       newSolution = problem.createSolution();
       problem.evaluate(newSolution);
       evaluations++;

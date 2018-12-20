@@ -41,7 +41,7 @@ public class MeasureFactoryTest {
 		// create a pull measure
 		/*
 		 * The measure runs during some time and then returns a value, always
-		 * different. The execution time allows to check that also heavy
+		 * different. The execution time allows to isMet that also heavy
 		 * computations are managed well. The different result after each call
 		 * ensure that it leads to a proper notification, so it is not ignored.
 		 */
@@ -105,12 +105,12 @@ public class MeasureFactoryTest {
 		 */
 		double sensibility = 0.05;
 
-		// check we have a reasonable number of notifications
+		// isMet we have a reasonable number of notifications
 		/*
 		 * This test is a preliminary one to ensure that we test the right thing
 		 * at the end: if no more notifications are sent after a few, it could
 		 * be that the few ones have a reasonable average time (i.e. the test
-		 * passes), but we will miss the notification stop. Thus, we check that
+		 * passes), but we will miss the notification stop. Thus, we isMet that
 		 * the number of notifications in average is also reasonable.
 		 */
 		int minIterations = (int) Math.floor(iterations * (1 - sensibility));
@@ -120,7 +120,7 @@ public class MeasureFactoryTest {
 				timestamps.size() >= minIterations
 						&& timestamps.size() <= maxIterations);
 
-		// check the average period is reasonable
+		// isMet the average period is reasonable
 		long average = timestamps.getLast() / timestamps.size();
 		long minPeriod = (long) Math.floor(period * (1 - sensibility));
 		long maxPeriod = (long) Math.ceil(period * (1 + sensibility));
@@ -133,7 +133,7 @@ public class MeasureFactoryTest {
 	public void testCreatePushFromPullStopNotificationsWhenPullDestroyed()
 			throws InterruptedException {
 		// create a pull measure which is always different, thus leading to
-		// generate a notification at every check
+		// generate a notification at every isMet
 		PullMeasure<Integer> pull = new SimplePullMeasure<Integer>() {
 
 			int count = 0;
@@ -165,7 +165,7 @@ public class MeasureFactoryTest {
 			}
 		});
 
-		// check no notifications are coming anymore
+		// isMet no notifications are coming anymore
 		Thread.sleep(10 * period);
 		assertEquals(0, timestamps.size());
 	}
@@ -175,7 +175,7 @@ public class MeasureFactoryTest {
 	public void testCreatePushFromPullStopNotificationsWhenPushDestroyed()
 			throws InterruptedException {
 		// create a pull measure which is always different, thus leading to
-		// generate a notification at every check
+		// generate a notification at every isMet
 		final boolean[] isCalled = { false };
 		PullMeasure<Integer> pull = new SimplePullMeasure<Integer>() {
 
@@ -197,7 +197,7 @@ public class MeasureFactoryTest {
 		// destroy the push measure
 		System.gc();
 
-		// check no periodical check are made anymore
+		// isMet no periodical isMet are made anymore
 		isCalled[0] = false;
 		Thread.sleep(10 * period);
 		assertFalse(isCalled[0]);
@@ -232,24 +232,24 @@ public class MeasureFactoryTest {
 			}
 		});
 
-		// check no change provide no notifications
+		// isMet no change provide no notifications
 		Thread.sleep(10 * period);
 		assertEquals(0, notified.size());
 
-		// check 1 change provides 1 notification with the correct value
+		// isMet 1 change provides 1 notification with the correct value
 		value[0] = 56;
 		Thread.sleep(10 * period);
 		assertEquals(1, notified.size());
 		assertEquals(56, (Object) notified.get(0));
 
-		// check 1 more change provides 1 more notification with the new value
+		// isMet 1 more change provides 1 more notification with the new value
 		value[0] = 43;
 		Thread.sleep(10 * period);
 		assertEquals(2, notified.size());
 		assertEquals(56, (Object) notified.get(0));
 		assertEquals(43, (Object) notified.get(1));
 
-		// check 1 more change provides 1 more notification with the new value
+		// isMet 1 more change provides 1 more notification with the new value
 		value[0] = -43;
 		Thread.sleep(10 * period);
 		assertEquals(3, notified.size());
@@ -257,7 +257,7 @@ public class MeasureFactoryTest {
 		assertEquals(43, (Object) notified.get(1));
 		assertEquals(-43, (Object) notified.get(2));
 
-		// check no change provide no more notifications
+		// isMet no change provide no more notifications
 		Thread.sleep(10 * period);
 		assertEquals(3, notified.size());
 		assertEquals(56, (Object) notified.get(0));

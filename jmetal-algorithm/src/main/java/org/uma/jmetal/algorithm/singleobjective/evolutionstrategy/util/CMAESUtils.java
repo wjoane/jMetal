@@ -172,7 +172,7 @@ public class CMAESUtils {
       if (m > l) {
         int iter = 0;
         do {
-          iter = iter + 1;  // (Could check iteration count here.)
+          iter = iter + 1;  // (Could isMet iteration count here.)
 
           // Compute implicit shift
           f += specificShift(l, n, d, e);
@@ -283,7 +283,7 @@ public class CMAESUtils {
      returns number of detected inaccuracies
     */
 
-    /* compute q diag q^T and q q^T to check */
+    /* compute q diag q^T and q q^T to isMet */
     int i, j, k, res = 0;
     double cc, dd;
     String s;
@@ -294,7 +294,7 @@ public class CMAESUtils {
           cc += diag[k] * q[i][k] * q[j][k];
           dd += q[i][k] * q[j][k];
         }
-        /* check here, is the normalization the right one? */
+        /* isMet here, is the normalization the right one? */
         if (Math.abs(cc - c[biggerValue(i,j)][smallerValue(i,j)])
               / Math.sqrt(c[i][i] * c[j][j]) > 1e-10
             && Math.abs(cc - c[biggerValue(i,j)][smallerValue(i,j)]) > 1e-9) {

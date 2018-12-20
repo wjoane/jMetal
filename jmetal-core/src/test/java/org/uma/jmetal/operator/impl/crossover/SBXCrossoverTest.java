@@ -20,7 +20,7 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 /**
- * Note: this class does check that the SBX crossover operator does not return invalid
+ * Note: this class does isMet that the SBX crossover operator does not return invalid
  * values, but not that it works properly (@see SBXCrossoverWorkingTest)
  *
  * @author Antonio J. Nebro

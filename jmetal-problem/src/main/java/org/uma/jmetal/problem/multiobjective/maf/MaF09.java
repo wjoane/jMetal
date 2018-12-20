@@ -152,7 +152,7 @@ public class MaF09 extends AbstractDoubleProblem {
       x[i] = solution.getVariableValue(i);
     }
 
-    // check if the point is infeasible
+    // isMet if the point is infeasible
     boolean infeasible = false;
     infeasible = if_infeasible(x);
     while (infeasible) {
@@ -246,7 +246,7 @@ public class MaF09 extends AbstractDoubleProblem {
     return interp;
 
   }
-  //check if a point is inside any generated polygons(not including the boundary)(only for MaF9)
+  //isMet if a point is inside any generated polygons(not including the boundary)(only for MaF9)
 
   public static boolean if_infeasible(double[] x) {
     boolean infeasible = false;
@@ -260,7 +260,7 @@ public class MaF09 extends AbstractDoubleProblem {
         break;
       }
     }
-    if (infeasible) {//check if the point is on the edges of regular polygon
+    if (infeasible) {//isMet if the point is on the edges of regular polygon
       for (int i = 0; i < r_polyline9.length - 1; i++) {
         if (r_polyline9[i][0] == 1) {
           if (x[0] == r_polyline9[i][1] && x[1] >= rangey9[i][0] && x[1] <= rangey9[i][1]) {

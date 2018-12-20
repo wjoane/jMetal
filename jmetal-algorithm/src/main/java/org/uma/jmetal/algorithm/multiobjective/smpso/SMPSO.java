@@ -149,7 +149,7 @@ public class SMPSO extends AbstractParticleSwarmOptimization<DoubleSolution, Lis
 
   @Override
   protected boolean isStoppingConditionReached() {
-    return terminationCondition.check(algorithmStatusData);
+    return terminationCondition.isMet(algorithmStatusData);
   }
 
   @Override

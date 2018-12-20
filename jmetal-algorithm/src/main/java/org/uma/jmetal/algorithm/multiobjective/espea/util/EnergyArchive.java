@@ -302,7 +302,7 @@ public class EnergyArchive<S extends Solution<?>> extends AbstractBoundedArchive
   }
 
   /**
-   * A check for testing whether the archive is full.
+   * A isMet for testing whether the archive is full.
    *
    * @return true if the archive possesses the maximum number of elements.
    * False otherwise.

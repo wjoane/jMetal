@@ -552,7 +552,7 @@ public class MOEADD<S extends DoubleSolution> extends AbstractMOEAD<S> {
           dominateList.remove(0);
         }
 
-        // if there are still some other solutions moved to the next level, check their domination situation in their new level
+        // if there are still some other solutions moved to the next level, isMet their domination situation in their new level
         prevRank = newRank;
         newRank = newRank + 1;
         curListSize = dominateList.size();
@@ -1266,7 +1266,7 @@ public class MOEADD<S extends DoubleSolution> extends AbstractMOEAD<S> {
   }
 
   /**
-   * check the dominance relationship between a and b: 1 -> a dominates b, -1 -> b dominates a 0 ->
+   * isMet the dominance relationship between a and b: 1 -> a dominates b, -1 -> b dominates a 0 ->
    * non-dominated with each other
    */
   public int checkDominance(S a, S b) {

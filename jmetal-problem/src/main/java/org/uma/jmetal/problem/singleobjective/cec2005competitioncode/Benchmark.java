@@ -622,7 +622,7 @@ public class Benchmark {
     } else if ((func_num < 0) || (func_num > NUM_TEST_FUNC)) {
       throw new JMetalException("The specified func_num is out of range.");
     } else {
-      // Run the org.uma.test function against the check points
+      // Run the org.uma.test function against the isMet points
       int num_test_points = 10;
       int test_dimension = 50;
 
@@ -638,7 +638,7 @@ public class Benchmark {
         " (" + aFunc.name() + "):");
       JMetalLogger.logger.info("  " +
         num_test_points + " " +
-        aFunc.dimension() + "-dimension check points");
+        aFunc.dimension() + "-dimension isMet points");
 
       loadTestDataFromFile(file_test, num_test_points, test_dimension, test_x, test_f);
 

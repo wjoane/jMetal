@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Class that allows to check the termination condition based on the value of the Hypervolume
+ * Class that allows to isMet the termination condition based on the value of the Hypervolume
  * quality indicator. Concretely, given the Hypervolume value of a reference front (HVrf),
  * the stopping condition is true when the hypervolume of the received front (HV) is higher than a
  * quality degree value (D) according to the expression "D*HV > HVrf".
@@ -40,7 +40,7 @@ public class TerminationByQualityIndicator<S extends Solution<?>> implements Ter
   }
 
   @Override
-  public boolean check(Map<String, Object> algorithmStatusData) {
+  public boolean isMet(Map<String, Object> algorithmStatusData) {
     List<S> solutionList = (List<S>)algorithmStatusData.get("POPULATION") ;
     ArrayFront arrayFront = new ArrayFront(SolutionListUtils.getNondominatedSolutions(solutionList)) ;
 
