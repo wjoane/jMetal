@@ -1,5 +1,6 @@
 package org.uma.jmetal.runner.multiobjective;
 
+import org.uma.jmetal.util.pseudorandom.JMetalRandom;
 import org.uma.jmetal.algorithm.Algorithm;
 import org.uma.jmetal.algorithm.multiobjective.nsgaii.NSGAIIBuilder;
 import org.uma.jmetal.operator.CrossoverOperator;
