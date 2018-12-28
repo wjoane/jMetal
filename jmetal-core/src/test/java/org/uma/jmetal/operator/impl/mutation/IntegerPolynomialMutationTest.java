@@ -187,8 +187,8 @@ public class IntegerPolynomialMutationTest {
     IntegerPolynomialMutation mutation = new IntegerPolynomialMutation(mutationProbability, distributionIndex) ;
 
     MockIntegerProblem problem = new MockIntegerProblem(1) ;
-    ReflectionTestUtils.setField(problem, "lowerLimit", Arrays.asList(new Integer[]{1}));
-    ReflectionTestUtils.setField(problem, "upperLimit", Arrays.asList(new Integer[]{1}));
+    ReflectionTestUtils.setField(problem, "lowerBounds", Arrays.asList(new Integer[]{1}));
+    ReflectionTestUtils.setField(problem, "upperBounds", Arrays.asList(new Integer[]{1}));
 
     IntegerSolution solution = problem.createSolution() ;
 
@@ -213,21 +213,21 @@ public class IntegerPolynomialMutationTest {
       setNumberOfVariables(numberOfVariables);
       setNumberOfObjectives(2);
 
-      List<Integer> lowerLimit = new ArrayList<>(getNumberOfVariables()) ;
-      List<Integer> upperLimit = new ArrayList<>(getNumberOfVariables()) ;
+      lowerBounds = new ArrayList<>(getNumberOfVariables()) ;
+      upperBounds = new ArrayList<>(getNumberOfVariables()) ;
 
       for (int i = 0; i < getNumberOfVariables(); i++) {
-        lowerLimit.add(-4);
-        upperLimit.add(4);
+        lowerBounds.add(-4);
+        upperBounds.add(4);
       }
 
-      setLowerLimit(lowerLimit);
-      setUpperLimit(upperLimit);
+      setLowerBounds(lowerBounds);
+      setUpperBounds(upperBounds);
     }
 
     @Override
     public IntegerSolution createSolution() {
-      return new DefaultIntegerSolution(this) ;
+      return new DefaultIntegerSolution(getNumberOfVariables(), getNumberOfObjectives(), lowerBounds, upperBounds) ;
     }
 
     /** Evaluate() method */
@@ -256,19 +256,9 @@ public class IntegerPolynomialMutationTest {
 			public int getNumberOfVariables() {
 				return 10;
 			}
-			
-			@Override
-			public Integer getLowerBound(int index) {
-				return 0;
-			}
-			
-			@Override
-			public Integer getUpperBound(int index) {
-				return 10;
-			}
 
 		};
-		IntegerSolution solution = problem.createSolution();
+		IntegerSolution solution = new DefaultIntegerSolution(2, 2, Arrays.asList(2, 2), Arrays.asList(3, 3)) ;
 
 		// Check configuration leads to use default generator by default
 		final int[] defaultUses = { 0 };

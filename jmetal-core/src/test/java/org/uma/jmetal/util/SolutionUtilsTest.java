@@ -162,13 +162,16 @@ public class SolutionUtilsTest {
   }
 */
   private class MockedDoubleProblem extends AbstractDoubleProblem {
+    List<Double> lowerLimit  ;
+    List<Double> upperLimit  ;
+
     public MockedDoubleProblem(int numberOfVariables) {
       setNumberOfVariables(numberOfVariables);
       setNumberOfObjectives(2);
       setNumberOfConstraints(0);
 
-      List<Double> lowerLimit = new ArrayList<>(getNumberOfVariables());
-      List<Double> upperLimit = new ArrayList<>(getNumberOfVariables());
+      lowerLimit = new ArrayList<>(getNumberOfVariables());
+      upperLimit = new ArrayList<>(getNumberOfVariables());
 
       for (int i = 0; i < getNumberOfVariables(); i++) {
         lowerLimit.add(0.0);
@@ -186,7 +189,7 @@ public class SolutionUtilsTest {
 
     @Override
     public DoubleSolution createSolution() {
-      return new DefaultDoubleSolution(this)  ;
+      return new DefaultDoubleSolution(getNumberOfVariables(), getNumberOfObjectives(), lowerLimit, upperLimit)  ;
     }
   }
 }

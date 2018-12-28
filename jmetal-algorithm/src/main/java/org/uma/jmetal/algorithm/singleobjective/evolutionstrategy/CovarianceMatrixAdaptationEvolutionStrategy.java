@@ -509,10 +509,10 @@ public class CovarianceMatrixAdaptationEvolutionStrategy
       }
 
       double value = distributionMean[i] + sigma * sum;
-      if (value > ((DoubleProblem)getProblem()).getUpperBound(i)) {
-        value = ((DoubleProblem)getProblem()).getUpperBound(i);
-      } else if (value < ((DoubleProblem)getProblem()).getLowerBound(i)) {
-        value = ((DoubleProblem)getProblem()).getLowerBound(i);
+      if (value > ((DoubleProblem)getProblem()).getUpperBounds().get(i)) {
+        value = ((DoubleProblem)getProblem()).getUpperBounds().get(i);
+      } else if (value < ((DoubleProblem)getProblem()).getLowerBounds().get(i)) {
+        value = ((DoubleProblem)getProblem()).getLowerBounds().get(i);
       }
 
       solution.setVariableValue(i, value);

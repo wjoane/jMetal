@@ -260,14 +260,7 @@ public class BLXAlphaCrossoverTest {
 		int alpha = 20;
 		RepairDoubleSolutionAtBounds solutionRepair = new RepairDoubleSolutionAtBounds();
 		@SuppressWarnings("serial")
-		DoubleProblem problem = new AbstractDoubleProblem() {
-
-			@Override
-			public void evaluate(DoubleSolution solution) {
-				// Do nothing
-			}
-
-		};
+		DoubleProblem problem = new MockDoubleProblem(2) ;
 		List<DoubleSolution> solutions = new LinkedList<>();
 		solutions.add(problem.createSolution());
 		solutions.add(problem.createSolution());

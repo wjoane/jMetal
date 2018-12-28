@@ -49,21 +49,21 @@ public abstract class WFG extends AbstractDoubleProblem {
     setNumberOfObjectives(this.m);
     setNumberOfConstraints(0);
 
-    List<Double> lowerLimit = new ArrayList<>(getNumberOfVariables()) ;
-    List<Double> upperLimit = new ArrayList<>(getNumberOfVariables()) ;
+    lowerBounds = new ArrayList<>(getNumberOfVariables()) ;
+    upperBounds = new ArrayList<>(getNumberOfVariables()) ;
 
     for (int i = 0; i < getNumberOfVariables(); i++) {
-      lowerLimit.add(0.0);
-      upperLimit.add(2.0*(i+1));
+      lowerBounds.add(0.0);
+      upperBounds.add(2.0*(i+1));
     }
 
-    setLowerLimit(lowerLimit);
-    setUpperLimit(upperLimit);
+    setLowerLimit(lowerBounds);
+    setUpperLimit(upperBounds);
   }
 
   @Override
   public DoubleSolution createSolution() {
-    return new DefaultDoubleSolution(this)  ;
+    return new DefaultDoubleSolution(getNumberOfVariables(), getNumberOfObjectives(), lowerBounds, upperBounds)  ;
   }
 
   /**

@@ -274,15 +274,8 @@ public class ABYSSTest {
     }
 
     @Override public DoubleSolution createSolution() {
-      return new DefaultDoubleSolution(this);
+      return new DefaultDoubleSolution(getNumberOfVariables(), getNumberOfObjectives(), lowerBounds, upperBounds);
     }
 
-    @Override public Double getLowerBound(int index) {
-      return super.getUpperBound(index);
-    }
-
-    @Override public Double getUpperBound(int index) {
-      return super.getUpperBound(index);
-    }
   }
 }

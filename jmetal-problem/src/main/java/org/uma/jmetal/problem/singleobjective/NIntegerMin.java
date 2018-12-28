@@ -34,8 +34,8 @@ public class NIntegerMin extends AbstractIntegerProblem {
       upperLimit.add(upperBound);
     }
 
-    setLowerLimit(lowerLimit);
-    setUpperLimit(upperLimit);
+    setLowerBounds(lowerLimit);
+    setUpperBounds(upperLimit);
   }
 
   /** Evaluate() method */

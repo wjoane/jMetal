@@ -175,21 +175,21 @@ public class WFGHypervolumeTest {
       setNumberOfVariables(10);
       setNumberOfObjectives(numberOfObjectives);
 
-      List<Double> lowerLimit = new ArrayList<>(getNumberOfVariables()) ;
-      List<Double> upperLimit = new ArrayList<>(getNumberOfVariables()) ;
+      lowerBounds = new ArrayList<>(getNumberOfVariables()) ;
+      upperBounds = new ArrayList<>(getNumberOfVariables()) ;
 
       for (int i = 0; i < getNumberOfVariables(); i++) {
-        lowerLimit.add(-4.0);
-        upperLimit.add(4.0);
+        lowerBounds.add(-4.0);
+        upperBounds.add(4.0);
       }
 
-      setLowerLimit(lowerLimit);
-      setUpperLimit(upperLimit);
+      setLowerLimit(lowerBounds);
+      setUpperLimit(upperBounds);
     }
 
     @Override
     public DoubleSolution createSolution() {
-      return new DefaultDoubleSolution(this) ;
+      return new DefaultDoubleSolution(getNumberOfVariables(), getNumberOfObjectives(), lowerBounds, upperBounds) ;
     }
 
     /** Evaluate() method */

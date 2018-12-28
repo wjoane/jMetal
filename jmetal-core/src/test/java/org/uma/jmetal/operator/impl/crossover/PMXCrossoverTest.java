@@ -4,6 +4,7 @@ import org.junit.Test;
 import org.uma.jmetal.problem.PermutationProblem;
 import org.uma.jmetal.problem.impl.AbstractIntegerPermutationProblem;
 import org.uma.jmetal.solution.PermutationSolution;
+import org.uma.jmetal.solution.impl.DefaultIntegerPermutationSolution;
 import org.uma.jmetal.util.pseudorandom.JMetalRandom;
 import org.uma.jmetal.util.pseudorandom.impl.AuditableRandomGenerator;
 
@@ -26,10 +27,10 @@ public class PMXCrossoverTest {
 			public void evaluate(PermutationSolution<Integer> solution) {
 				// Do nothing
 			}
-			
+
 			@Override
 			public int getNumberOfVariables() {
-				return 10;
+				return 1;
 			}
 
 			@Override
@@ -39,8 +40,8 @@ public class PMXCrossoverTest {
 
 		};
 		List<PermutationSolution<Integer>> parentSolutions = new LinkedList<>();
-		parentSolutions.add(problem.createSolution());
-		parentSolutions.add(problem.createSolution());
+		parentSolutions.add(new DefaultIntegerPermutationSolution(3, 2));
+		parentSolutions.add(new DefaultIntegerPermutationSolution(3, 2));
 
 		// Check configuration leads to use default generator by default
 		final int[] defaultUses = { 0 };

@@ -4,6 +4,7 @@ import org.junit.Test;
 import org.uma.jmetal.problem.BinaryProblem;
 import org.uma.jmetal.problem.impl.AbstractBinaryProblem;
 import org.uma.jmetal.solution.BinarySolution;
+import org.uma.jmetal.solution.impl.DefaultBinarySolution;
 import org.uma.jmetal.util.pseudorandom.JMetalRandom;
 import org.uma.jmetal.util.pseudorandom.impl.AuditableRandomGenerator;
 
@@ -19,21 +20,9 @@ public class HUXCrossoverTest {
 	public void testJMetalRandomGeneratorNotUsedWhenCustomRandomGeneratorProvided() {
 		// Configuration
 		@SuppressWarnings("serial")
-		BinaryProblem problem = new AbstractBinaryProblem() {
-
-			@Override
-			public void evaluate(BinarySolution solution) {
-				// Do nothing
-			}
-
-			@Override
-			protected int getBitsPerVariable(int index) {
-				return 5;
-			}
-		};
 		List<BinarySolution> parents = new LinkedList<>();
-		parents.add(problem.createSolution());
-		parents.add(problem.createSolution());
+		parents.add(new DefaultBinarySolution(2, 2, new int[2]));
+		parents.add(new DefaultBinarySolution(2, 2, new int[2]));
 
 		// Check configuration leads to use default generator by default
 		final int[] defaultUses = { 0 };
@@ -55,5 +44,4 @@ public class HUXCrossoverTest {
 		assertTrue("Default random generator used", defaultUses[0] == 0);
 		assertTrue("No use of the custom generator", customUses[0] > 0);
 	}
-
 }

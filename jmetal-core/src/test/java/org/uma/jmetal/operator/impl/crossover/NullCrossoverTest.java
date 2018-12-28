@@ -41,14 +41,17 @@ public class NullCrossoverTest {
   private class MockProblem extends AbstractDoubleProblem {
     private JMetalRandom randomGenerator = JMetalRandom.getInstance() ;
 
+    private List<Double> lowerLimit ;
+    private List<Double> upperLimit ;
+
     public MockProblem() {
       setNumberOfVariables(3);
       setNumberOfObjectives(2);
       setNumberOfConstraints(0);
       setName("Fonseca");
 
-      List<Double> lowerLimit = new ArrayList<>(getNumberOfVariables()) ;
-      List<Double> upperLimit = new ArrayList<>(getNumberOfVariables()) ;
+      lowerLimit = new ArrayList<>(getNumberOfVariables()) ;
+      upperLimit = new ArrayList<>(getNumberOfVariables()) ;
 
       for (int i = 0; i < getNumberOfVariables(); i++) {
         lowerLimit.add(-4.0);
@@ -81,15 +84,7 @@ public class NullCrossoverTest {
     }
 
     @Override public DoubleSolution createSolution() {
-      return new DefaultDoubleSolution(this);
-    }
-
-    @Override public Double getLowerBound(int index) {
-      return super.getUpperBound(index);
-    }
-
-    @Override public Double getUpperBound(int index) {
-      return super.getUpperBound(index);
+      return new DefaultDoubleSolution(getNumberOfVariables(), getNumberOfObjectives(), lowerLimit, upperLimit);
     }
   }
 }

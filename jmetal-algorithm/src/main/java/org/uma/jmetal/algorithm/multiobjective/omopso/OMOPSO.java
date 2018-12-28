@@ -178,12 +178,12 @@ public class OMOPSO extends AbstractParticleSwarmOptimization<DoubleSolution, Li
       DoubleSolution particle = swarm.get(i);
       for (int var = 0; var < particle.getNumberOfVariables(); var++) {
         particle.setVariableValue(var, particle.getVariableValue(var) + speed[i][var]);
-        if (particle.getVariableValue(var) < problem.getLowerBound(var)) {
-          particle.setVariableValue(var, problem.getLowerBound(var));
+        if (particle.getVariableValue(var) < problem.getLowerBounds().get(var)) {
+          particle.setVariableValue(var, problem.getLowerBounds().get(var));
           speed[i][var] = speed[i][var] * -1.0;
         }
-        if (particle.getVariableValue(var) > problem.getUpperBound(var)) {
-          particle.setVariableValue(var, problem.getUpperBound(var));
+        if (particle.getVariableValue(var) > problem.getUpperBounds().get(var)) {
+          particle.setVariableValue(var, problem.getUpperBounds().get(var));
           speed[i][var] = speed[i][var] * -1.0;
         }
       }

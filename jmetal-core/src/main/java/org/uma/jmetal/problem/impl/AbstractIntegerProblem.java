@@ -10,32 +10,32 @@ import java.util.List;
 public abstract class AbstractIntegerProblem extends AbstractGenericProblem<IntegerSolution>
   implements IntegerProblem {
 
-  private List<Integer> lowerLimit ;
-  private List<Integer> upperLimit ;
+  protected List<Integer> lowerBounds;
+  protected List<Integer> upperBounds;
 
   /* Getters */
 	@Override
-	public Integer getUpperBound(int index) {
-		return upperLimit.get(index);
+	public List<Integer> getUpperBounds() {
+		return upperBounds ;
 	}
 
 	@Override
-	public Integer getLowerBound(int index) {
-		return lowerLimit.get(index);
+	public List<Integer> getLowerBounds() {
+		return lowerBounds ;
 	}
 
   /* Setters */
-  protected void setLowerLimit(List<Integer> lowerLimit) {
-    this.lowerLimit = lowerLimit;
+  protected void setLowerBounds(List<Integer> lowerBounds) {
+    this.lowerBounds = lowerBounds;
   }
 
-  protected void setUpperLimit(List<Integer> upperLimit) {
-    this.upperLimit = upperLimit;
+  protected void setUpperBounds(List<Integer> upperBounds) {
+    this.upperBounds = upperBounds;
   }
 
   @Override
   public IntegerSolution createSolution() {
-    return new DefaultIntegerSolution(this) ;
+    return new DefaultIntegerSolution(getNumberOfVariables(), getNumberOfObjectives(), lowerBounds, upperBounds) ;
   }
 
 }

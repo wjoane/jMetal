@@ -42,29 +42,32 @@ public class ArrayDoubleSolutionTest {
   public void shouldGetLowerBoundReturnTheRightValue() {
     DoubleSolution solution = problem.createSolution() ;
 
-    assertEquals(problem.getLowerBound(0), solution.getLowerBound(0));
-    assertEquals(problem.getLowerBound(1), solution.getLowerBound(1));
-    assertEquals(problem.getLowerBound(2), solution.getLowerBound(2));
+    assertEquals(problem.getLowerBounds().get(0), solution.getLowerBound(0));
+    assertEquals(problem.getLowerBounds().get(1), solution.getLowerBound(1));
+    assertEquals(problem.getLowerBounds().get(2), solution.getLowerBound(2));
   }
 
   @Test
   public void shouldGetUpperBoundReturnTheRightValue() {
     DoubleSolution solution = problem.createSolution() ;
 
-    assertEquals(problem.getUpperBound(0), solution.getUpperBound(0));
-    assertEquals(problem.getUpperBound(1), solution.getUpperBound(1));
-    assertEquals(problem.getUpperBound(2), solution.getUpperBound(2));
+    assertEquals(problem.getUpperBounds().get(0), solution.getUpperBound(0));
+    assertEquals(problem.getUpperBounds().get(1), solution.getUpperBound(1));
+    assertEquals(problem.getUpperBounds().get(2), solution.getUpperBound(2));
   }
 
   @SuppressWarnings("serial")
   private class MockedDoubleProblem extends AbstractDoubleProblem {
+    List<Double> lowerLimit ;
+    List<Double> upperLimit ;
+
     public MockedDoubleProblem() {
       setNumberOfVariables(3);
       setNumberOfObjectives(2);
       setNumberOfConstraints(0);
 
-      List<Double> lowerLimit = new ArrayList<>(getNumberOfVariables()) ;
-      List<Double> upperLimit = new ArrayList<>(getNumberOfVariables()) ;
+      lowerLimit = new ArrayList<>(getNumberOfVariables()) ;
+      upperLimit = new ArrayList<>(getNumberOfVariables()) ;
 
       lowerLimit.add(-4.0);
       lowerLimit.add(-3.0);
@@ -83,7 +86,7 @@ public class ArrayDoubleSolutionTest {
 
     @Override
     public DoubleSolution createSolution() {
-      return new ArrayDoubleSolution(this)  ;
+      return new ArrayDoubleSolution(getNumberOfVariables(), getNumberOfObjectives(), lowerLimit, upperLimit)  ;
     }
   }
 }

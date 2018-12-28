@@ -158,7 +158,7 @@ public class MaF09 extends AbstractDoubleProblem {
     while (infeasible) {
       //re-generate a random variable
       for (int i = 0; i < numberOfVariables_; i++) {
-        x[i] = generV(getLowerBound(i), getUpperBound(i));
+        x[i] = generV(getLowerBounds().get(i), getUpperBounds().get(i));
         solution.setVariableValue(i, x[i]);
       }
       infeasible = if_infeasible(x);

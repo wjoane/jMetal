@@ -50,7 +50,7 @@ public class ZDT4 extends ZDT1 {
 
     lowerLimit.add(0.0);
     upperLimit.add(1.0);
-    for (int i = 0; i < getNumberOfVariables(); i++) {
+    for (int i = 1; i < getNumberOfVariables(); i++) {
       lowerLimit.add(-5.0);
       upperLimit.add(5.0);
     }

@@ -235,12 +235,12 @@ public class StandardPSO2011 extends AbstractParticleSwarmOptimization<DoubleSol
       for (int var = 0; var < particle.getNumberOfVariables(); var++) {
         particle.setVariableValue(var, particle.getVariableValue(var) + speed[i][var]);
 
-        if (particle.getVariableValue(var) < problem.getLowerBound(var)) {
-          particle.setVariableValue(var, problem.getLowerBound(var));
+        if (particle.getVariableValue(var) < problem.getLowerBounds().get(var)) {
+          particle.setVariableValue(var, problem.getLowerBounds().get(var));
           speed[i][var] = changeVelocity * speed[i][var];
         }
-        if (particle.getVariableValue(var) > problem.getUpperBound(var)) {
-          particle.setVariableValue(var, problem.getUpperBound(var));
+        if (particle.getVariableValue(var) > problem.getUpperBounds().get(var)) {
+          particle.setVariableValue(var, problem.getUpperBounds().get(var));
           speed[i][var] = changeVelocity * speed[i][var];
         }
       }

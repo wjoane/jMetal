@@ -194,8 +194,8 @@ public class PolynomialMutationTest {
     PolynomialMutation mutation = new PolynomialMutation(mutationProbability, distributionIndex) ;
 
     MockDoubleProblem problem = new MockDoubleProblem(1) ;
-    ReflectionTestUtils.setField(problem, "lowerLimit", Arrays.asList(new Double[]{1.0}));
-    ReflectionTestUtils.setField(problem, "upperLimit", Arrays.asList(new Double[]{1.0}));
+    ReflectionTestUtils.setField(problem, "lowerBounds", Arrays.asList(new Double[]{1.0}));
+    ReflectionTestUtils.setField(problem, "upperBounds", Arrays.asList(new Double[]{1.0}));
 
     DoubleSolution solution = problem.createSolution() ;
 
@@ -217,21 +217,21 @@ public class PolynomialMutationTest {
       setNumberOfVariables(numberOfVariables);
       setNumberOfObjectives(2);
 
-      List<Double> lowerLimit = new ArrayList<>(getNumberOfVariables()) ;
-      List<Double> upperLimit = new ArrayList<>(getNumberOfVariables()) ;
+      lowerBounds = new ArrayList<>(getNumberOfVariables()) ;
+      upperBounds = new ArrayList<>(getNumberOfVariables()) ;
 
       for (int i = 0; i < getNumberOfVariables(); i++) {
-        lowerLimit.add(-4.0);
-        upperLimit.add(4.0);
+        lowerBounds.add(-4.0);
+        upperBounds.add(4.0);
       }
 
-      setLowerLimit(lowerLimit);
-      setUpperLimit(upperLimit);
+      setLowerLimit(lowerBounds);
+      setUpperLimit(upperBounds);
     }
 
     @Override
     public DoubleSolution createSolution() {
-      return new DefaultDoubleSolution(this) ;
+      return new DefaultDoubleSolution(getNumberOfVariables(), getNumberOfObjectives(), lowerBounds, upperBounds) ;
     }
 
     /** Evaluate() method */
@@ -248,31 +248,9 @@ public class PolynomialMutationTest {
 		double crossoverProbability = 0.1;
 		int alpha = 20;
 		RepairDoubleSolutionAtBounds solutionRepair = new RepairDoubleSolutionAtBounds();
-		@SuppressWarnings("serial")
-		DoubleProblem problem = new AbstractDoubleProblem() {
 
-			@Override
-			public void evaluate(DoubleSolution solution) {
-				// Do nothing
-			}
-			
-			@Override
-			public int getNumberOfVariables() {
-				return 5;
-			}
-			
-			@Override
-			public Double getLowerBound(int index) {
-				return 0.0;
-			}
-			
-			@Override
-			public Double getUpperBound(int index) {
-				return 10.0;
-			}
-
-		};
-		DoubleSolution solution = problem.createSolution();
+		DoubleSolution solution = new DefaultDoubleSolution(2, 2,
+        Arrays.asList(0.0, 0.0), Arrays.asList(1.0, 1.0) );
 
 		// Check configuration leads to use default generator by default
 		final int[] defaultUses = { 0 };

@@ -7,6 +7,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import org.uma.jmetal.problem.DoubleProblem;
 import org.uma.jmetal.problem.impl.AbstractDoubleProblem;
 import org.uma.jmetal.solution.DoubleSolution;
+import org.uma.jmetal.solution.impl.DefaultDoubleSolution;
 import org.uma.jmetal.solution.util.RepairDoubleSolutionAtBounds;
 import org.uma.jmetal.util.JMetalException;
 import org.uma.jmetal.util.pseudorandom.JMetalRandom;
@@ -283,18 +284,10 @@ public class SBXCrossoverTest {
 		double crossoverProbability = 0.1;
 		int alpha = 20;
 		RepairDoubleSolutionAtBounds solutionRepair = new RepairDoubleSolutionAtBounds();
-		@SuppressWarnings("serial")
-		DoubleProblem problem = new AbstractDoubleProblem() {
 
-			@Override
-			public void evaluate(DoubleSolution solution) {
-				// Do nothing
-			}
-
-		};
 		List<DoubleSolution> solutions = new LinkedList<>();
-		solutions.add(problem.createSolution());
-		solutions.add(problem.createSolution());
+		solutions.add(new DefaultDoubleSolution(2, 2, Arrays.asList(1.0, 1.0), Arrays.asList(2.0, 2.0)));
+    solutions.add(new DefaultDoubleSolution(2, 2, Arrays.asList(1.0, 1.0), Arrays.asList(2.0, 2.0)));
 
 		// Check configuration leads to use default generator by default
 		final int[] defaultUses = { 0 };

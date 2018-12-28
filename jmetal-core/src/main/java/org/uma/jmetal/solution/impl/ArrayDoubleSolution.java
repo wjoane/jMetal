@@ -16,22 +16,25 @@ import java.util.*;
 public class ArrayDoubleSolution implements DoubleSolution {
   private double[] objectives;
   private double[] variables;
-  protected DoubleProblem problem ;
-  protected Map<Object, Object> attributes ;
-  protected final JMetalRandom randomGenerator ;
+  private Map<Object, Object> attributes ;
+
+  private List<Double> lowerBounds ;
+  private List<Double> upperBounds ;
 
   /**
    * Constructor
    */
-  public ArrayDoubleSolution(DoubleProblem problem) {
-    this.problem = problem ;
+  public ArrayDoubleSolution(int numberOfVariables, int numberOfObjectives, List<Double> lowerBounds, List<Double> upperBounds) {
     attributes = new HashMap<>() ;
-    randomGenerator = JMetalRandom.getInstance() ;
 
-    objectives = new double[problem.getNumberOfObjectives()] ;
-    variables = new double[problem.getNumberOfVariables()] ;
-    for (int i = 0; i < problem.getNumberOfVariables(); i++) {
-      variables[i] = randomGenerator.nextDouble(getLowerBound(i), getUpperBound(i)) ;
+    objectives = new double[numberOfObjectives] ;
+    variables = new double[numberOfVariables] ;
+
+    this.lowerBounds = lowerBounds ;
+    this.upperBounds = upperBounds ;
+
+    for (int i = 0; i < numberOfVariables; i++) {
+      variables[i] = JMetalRandom.getInstance().nextDouble(lowerBounds.get(i), upperBounds.get(i)) ;
     }
   }
 
@@ -40,13 +43,13 @@ public class ArrayDoubleSolution implements DoubleSolution {
    * @param solution to copy
    */
   public ArrayDoubleSolution(ArrayDoubleSolution solution) {
-    this(solution.problem) ;
+    this(solution.getNumberOfVariables(), solution.getNumberOfObjectives(), solution.lowerBounds, solution.upperBounds) ;
 
-    for (int i = 0; i < problem.getNumberOfVariables(); i++) {
+    for (int i = 0; i < solution.getNumberOfVariables(); i++) {
       variables[i] = solution.getVariableValue(i) ;
     }
 
-    for (int i = 0; i < problem.getNumberOfObjectives(); i++) {
+    for (int i = 0; i < solution.getNumberOfObjectives(); i++) {
       objectives[i] = solution.getObjective(i) ;
     }
 
@@ -94,22 +97,12 @@ public class ArrayDoubleSolution implements DoubleSolution {
 
   @Override
   public int getNumberOfVariables() {
-    return problem.getNumberOfVariables();
+    return variables.length;
   }
 
   @Override
   public int getNumberOfObjectives() {
-    return problem.getNumberOfObjectives();
-  }
-
-  @Override
-  public Double getUpperBound(int index) {
-    return problem.getUpperBound(index);
-  }
-
-  @Override
-  public Double getLowerBound(int index) {
-    return problem.getLowerBound(index) ;
+    return objectives.length;
   }
 
   @Override
@@ -128,23 +121,25 @@ public class ArrayDoubleSolution implements DoubleSolution {
   }
 
   @Override
+  public Double getLowerBound(int index) {
+    return this.lowerBounds.get(index) ;
+  }
+
+  @Override
+  public Double getUpperBound(int index) {
+    return this.upperBounds.get(index) ;
+  }
+
+  @Override
   public boolean equals(Object o) {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
-
     ArrayDoubleSolution that = (ArrayDoubleSolution) o;
-
-    if (!Arrays.equals(objectives, that.objectives)) return false;
-    if (!Arrays.equals(variables, that.variables)) return false;
-    return problem != null ? problem.equals(that.problem) : that.problem == null;
-
+    return Arrays.equals(variables, that.variables);
   }
 
   @Override
   public int hashCode() {
-    int result = Arrays.hashCode(objectives);
-    result = 31 * result + Arrays.hashCode(variables);
-    result = 31 * result + (problem != null ? problem.hashCode() : 0);
-    return result;
+    return Arrays.hashCode(variables);
   }
 }

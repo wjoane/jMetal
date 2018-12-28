@@ -7,6 +7,7 @@ import org.uma.jmetal.solution.DoubleSolution;
 import org.uma.jmetal.util.pseudorandom.JMetalRandom;
 import org.uma.jmetal.util.pseudorandom.impl.AuditableRandomGenerator;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
@@ -22,29 +23,7 @@ public class DifferentialEvolutionCrossoverTest {
 		double f = 0.5;
 		String variant = "rand/1/bin";
 		@SuppressWarnings("serial")
-		DoubleProblem problem = new AbstractDoubleProblem() {
-
-			@Override
-			public void evaluate(DoubleSolution solution) {
-				// Do nothing
-			}
-			
-			@Override
-			public int getNumberOfVariables() {
-				return 5;
-			}
-			
-			@Override
-			public Double getLowerBound(int index) {
-				return 0.0;
-			}
-			
-			@Override
-			public Double getUpperBound(int index) {
-				return 10.0;
-			}
-
-		};
+		DoubleProblem problem = new MockDoubleProblem(2) ;
 		DoubleSolution currentSolution = problem.createSolution();
 		List<DoubleSolution> parentSolutions = new LinkedList<>();
 		parentSolutions.add(problem.createSolution());
@@ -82,4 +61,34 @@ public class DifferentialEvolutionCrossoverTest {
 		assertTrue("No use of the custom generator 2", custom2Uses[0] > 0);
 	}
 
+	/**
+	 * Mock class representing a double problem
+	 */
+	@SuppressWarnings("serial")
+	private class MockDoubleProblem extends AbstractDoubleProblem {
+
+		/** Constructor */
+		public MockDoubleProblem(Integer numberOfVariables) {
+			setNumberOfVariables(numberOfVariables);
+			setNumberOfObjectives(2);
+
+			List<Double> lowerLimit = new ArrayList<>(getNumberOfVariables()) ;
+			List<Double> upperLimit = new ArrayList<>(getNumberOfVariables()) ;
+
+			for (int i = 0; i < getNumberOfVariables(); i++) {
+				lowerLimit.add(-4.0);
+				upperLimit.add(4.0);
+			}
+
+			setLowerLimit(lowerLimit);
+			setUpperLimit(upperLimit);
+		}
+
+		/** Evaluate() method */
+		@Override
+		public void evaluate(DoubleSolution solution) {
+			solution.setObjective(0, 0.0);
+			solution.setObjective(1, 1.0);
+		}
+	}
 }

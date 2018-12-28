@@ -136,7 +136,7 @@ public class SMPSORP
     deltaMax = new double[problem.getNumberOfVariables()];
     deltaMin = new double[problem.getNumberOfVariables()];
     for (int i = 0; i < problem.getNumberOfVariables(); i++) {
-      deltaMax[i] = (problem.getUpperBound(i) - problem.getLowerBound(i)) / 2.0;
+      deltaMax[i] = (problem.getUpperBounds().get(i) - problem.getLowerBounds().get(i)) / 2.0;
       deltaMin[i] = -deltaMax[i];
     }
 
@@ -272,12 +272,12 @@ public class SMPSORP
       for (int j = 0; j < particle.getNumberOfVariables(); j++) {
         particle.setVariableValue(j, particle.getVariableValue(j) + speed[i][j]);
 
-        if (particle.getVariableValue(j) < problem.getLowerBound(j)) {
-          particle.setVariableValue(j, problem.getLowerBound(j));
+        if (particle.getVariableValue(j) < problem.getLowerBounds().get(j)) {
+          particle.setVariableValue(j, problem.getLowerBounds().get(j));
           speed[i][j] = speed[i][j] * changeVelocity1;
         }
-        if (particle.getVariableValue(j) > problem.getUpperBound(j)) {
-          particle.setVariableValue(j, problem.getUpperBound(j));
+        if (particle.getVariableValue(j) > problem.getUpperBounds().get(j)) {
+          particle.setVariableValue(j, problem.getUpperBounds().get(j));
           speed[i][j] = speed[i][j] * changeVelocity2;
         }
       }

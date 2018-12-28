@@ -84,11 +84,11 @@ public class IntegerSBXCrossoverWorkingTest {
   }
 
   private static double[][] classify(List<IntegerSolution> solutions, IntegerProblem problem, int granularity) {
-    double grain = (problem.getUpperBound(0) - problem.getLowerBound(0)) / granularity ;
+    double grain = (problem.getUpperBounds().get(0) - problem.getLowerBounds().get(0)) / granularity ;
     double[][] classifier = new double[granularity][] ;
     for (int i = 0 ; i < granularity; i++) {
       classifier[i] = new double[2] ;
-      classifier[i][0] = problem.getLowerBound(0) + i * grain ;
+      classifier[i][0] = problem.getLowerBounds().get(0) + i * grain ;
       classifier[i][1] = 0 ;
     }
 

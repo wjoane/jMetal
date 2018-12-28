@@ -2,8 +2,11 @@ package org.uma.jmetal.solution.impl;
 
 import org.uma.jmetal.problem.IntegerProblem;
 import org.uma.jmetal.solution.IntegerSolution;
+import org.uma.jmetal.util.JMetalException;
+import org.uma.jmetal.util.pseudorandom.JMetalRandom;
 
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * Defines an implementation of an integer solution
@@ -12,26 +15,42 @@ import java.util.HashMap;
  */
 @SuppressWarnings("serial")
 public class DefaultIntegerSolution
-    extends AbstractGenericSolution<Integer, IntegerProblem>
+    extends AbstractGenericSolution<Integer>
     implements IntegerSolution {
 
-  /** Constructor */
-  public DefaultIntegerSolution(IntegerProblem problem) {
-    super(problem) ;
+  List<Integer> lowerBounds ;
+  List<Integer> upperBounds ;
 
-    initializeIntegerVariables();
-    initializeObjectiveValues();
+  /** Constructor */
+  public DefaultIntegerSolution(int numberOfVariables, int numberOfObjectives, List<Integer> lowerBounds, List<Integer>upperBounds) {
+    super(numberOfVariables, numberOfObjectives) ;
+
+    if (numberOfVariables != lowerBounds.size()) {
+      throw new JMetalException("The number of lower bounds is not equal to the number of objectives: " +
+          lowerBounds.size() + " -> " +  numberOfObjectives) ;
+    } else if (numberOfVariables != upperBounds.size()) {
+      throw new JMetalException("The number of upper bounds is not equal to the number of objectives: " +
+          upperBounds.size() + " -> " +  numberOfObjectives) ;
+    }
+
+    this.lowerBounds = lowerBounds ;
+    this.upperBounds = upperBounds ;
+
+    for (int i = 0 ; i < numberOfVariables; i++) {
+      int value = JMetalRandom.getInstance().nextInt(lowerBounds.get(i), upperBounds.get(i)) ;
+      setVariableValue(i, value) ;
+    }
   }
 
   /** Copy constructor */
   public DefaultIntegerSolution(DefaultIntegerSolution solution) {
-    super(solution.problem) ;
+    super(solution.getNumberOfVariables(), solution.getNumberOfObjectives()) ;
 
-    for (int i = 0; i < problem.getNumberOfVariables(); i++) {
+    for (int i = 0; i < solution.getNumberOfVariables(); i++) {
       setVariableValue(i, solution.getVariableValue(i));
     }
 
-    for (int i = 0; i < problem.getNumberOfObjectives(); i++) {
+    for (int i = 0; i < solution.getNumberOfObjectives(); i++) {
       setObjective(i, solution.getObjective(i)) ;
     }
 
@@ -39,14 +58,15 @@ public class DefaultIntegerSolution
   }
 
   @Override
-  public Integer getUpperBound(int index) {
-    return problem.getUpperBound(index);
+  public Integer getLowerBound(int index) {
+    return this.lowerBounds.get(index) ;
   }
 
   @Override
-  public Integer getLowerBound(int index) {
-    return problem.getLowerBound(index) ;
+  public Integer getUpperBound(int index) {
+    return this.upperBounds.get(index) ;
   }
+
 
   @Override
   public DefaultIntegerSolution copy() {
@@ -56,12 +76,5 @@ public class DefaultIntegerSolution
   @Override
   public String getVariableValueString(int index) {
     return getVariableValue(index).toString() ;
-  }
-  
-  private void initializeIntegerVariables() {
-    for (int i = 0 ; i < problem.getNumberOfVariables(); i++) {
-      Integer value = randomGenerator.nextInt(getLowerBound(i), getUpperBound(i));
-      setVariableValue(i, value) ;
-    }
   }
 }

@@ -311,13 +311,13 @@ public class SinglePointCrossoverTest {
     }
 
     @Override
-    protected int getBitsPerVariable(int index) {
+    public int getNumberOfBits(int index) {
       return bitsPerVariable[index] ;
     }
 
     @Override
     public BinarySolution createSolution() {
-      return new DefaultBinarySolution(this) ;
+      return new DefaultBinarySolution(getNumberOfVariables(), getNumberOfObjectives(), bitsPerVariable) ;
     }
 
     /** Evaluate() method */
@@ -332,28 +332,10 @@ public class SinglePointCrossoverTest {
 	public void shouldJMetalRandomGeneratorNotBeUsedWhenCustomRandomGeneratorProvided() {
 		// Configuration
 		double crossoverProbability = 1.0;
-		@SuppressWarnings("serial")
-		BinaryProblem problem = new AbstractBinaryProblem() {
 
-			@Override
-			public void evaluate(BinarySolution solution) {
-				// Do nothing
-			}
-
-			@Override
-			protected int getBitsPerVariable(int index) {
-				return 5;
-			}
-
-			@Override
-			public int getNumberOfVariables() {
-				return 5;
-			}
-
-		};
 		List<BinarySolution> parentSolutions = new LinkedList<>();
-		parentSolutions.add(problem.createSolution());
-		parentSolutions.add(problem.createSolution());
+		parentSolutions.add(new DefaultBinarySolution(2, 2, new int[]{2, 2}));
+    parentSolutions.add(new DefaultBinarySolution(2, 2, new int[]{2, 2}));
 
 		// Check configuration leads to use default generator by default
 		final int[] defaultUses = { 0 };

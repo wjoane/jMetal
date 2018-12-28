@@ -10,31 +10,32 @@ import java.util.List;
 public abstract class AbstractDoubleProblem extends AbstractGenericProblem<DoubleSolution>
   implements DoubleProblem {
 
-  private List<Double> lowerLimit ;
-  private List<Double> upperLimit ;
+  protected List<Double> lowerBounds ;
+  protected List<Double> upperBounds ;
 
   /* Getters */
 	@Override
-	public Double getUpperBound(int index) {
-		return upperLimit.get(index);
+	public List<Double> getUpperBounds() {
+		return upperBounds ;
 	}
 
 	@Override
-	public Double getLowerBound(int index) {
-		return lowerLimit.get(index);
+	public List<Double> getLowerBounds() {
+		return lowerBounds ;
 	}
 
   /* Setters */
   protected void setLowerLimit(List<Double> lowerLimit) {
-    this.lowerLimit = lowerLimit;
+    this.lowerBounds = lowerLimit;
   }
 
   protected void setUpperLimit(List<Double> upperLimit) {
-    this.upperLimit = upperLimit;
+    this.upperBounds = upperLimit;
   }
 
   @Override
   public DoubleSolution createSolution() {
-    return new DefaultDoubleSolution(this)  ;
+    return new DefaultDoubleSolution(this.getNumberOfVariables(), this.getNumberOfObjectives(),
+        this.getLowerBounds(), this.getUpperBounds())  ;
   }
 }

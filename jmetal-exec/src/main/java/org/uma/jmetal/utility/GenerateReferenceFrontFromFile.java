@@ -21,7 +21,7 @@ import static java.util.stream.Collectors.toList;
 /**
  * This utility reads a file or the files in a directory and creates a reference front.
  * The file(s) must contain only objective values.
- *
+ * <p>
  * The program receives two parameters:
  * 1. the name of the file or directory containing the data
  * 2. the output file name which will contain the generated front
@@ -34,86 +34,73 @@ public class GenerateReferenceFrontFromFile {
       throw new JMetalException("Wrong number of arguments: two file names are required.");
     }
 
-    String inputFileName = args[0] ;
-    String outputFileName = args[1] ;
+    String inputFileName = args[0];
+    String outputFileName = args[1];
 
     NonDominatedSolutionListArchive<DoubleSolution> archive = null;
 
     if (Files.isRegularFile(Paths.get(inputFileName))) {
-      archive = readDataFromFile(inputFileName) ;
+      archive = readDataFromFile(inputFileName);
 
     } else if (Files.isDirectory(Paths.get(inputFileName))) {
 
       List<String> fileNameList = Files
-              .list(Paths.get(inputFileName))
-              .map(s -> s.toString())
-              .collect(toList());
+          .list(Paths.get(inputFileName))
+          .map(s -> s.toString())
+          .collect(toList());
 
-      archive = new NonDominatedSolutionListArchive<>() ;
-      for (String fileName: fileNameList) {
-        System.out.println(fileName) ;
-        archive.join(readDataFromFile(fileName)) ;
+      archive = new NonDominatedSolutionListArchive<>();
+      for (String fileName : fileNameList) {
+        System.out.println(fileName);
+        archive.join(readDataFromFile(fileName));
       }
     } else {
-      throw new JMetalException("Error opening file/directory") ;
+      throw new JMetalException("Error opening file/directory");
     }
 
     new SolutionListOutput(archive.getSolutionList())
-            .setSeparator("\t")
-            .setFunFileOutputContext(new DefaultFileOutputContext(outputFileName))
-            .print();
+        .setSeparator("\t")
+        .setFunFileOutputContext(new DefaultFileOutputContext(outputFileName))
+        .print();
   }
 
-  private static NonDominatedSolutionListArchive<DoubleSolution> readDataFromFile(String inputFileName)  {
-    Stream<String> lines ;
+  private static NonDominatedSolutionListArchive<DoubleSolution> readDataFromFile(String inputFileName) {
+    Stream<String> lines;
 
     try {
       lines = Files.lines(Paths.get(inputFileName), Charset.defaultCharset());
     } catch (IOException e) {
-      throw new JMetalException(e) ;
+      throw new JMetalException(e);
     }
 
     List<List<Double>> numbers = lines
-            .map(line -> {
-              String[] textNumbers = line.split(" ") ;
-              List<Double> listOfNumbers = new ArrayList<>() ;
-              for (String number : textNumbers) {
-                listOfNumbers.add(Double.parseDouble(number)) ;
-              }
+        .map(line -> {
+          String[] textNumbers = line.split(" ");
+          List<Double> listOfNumbers = new ArrayList<>();
+          for (String number : textNumbers) {
+            listOfNumbers.add(Double.parseDouble(number));
+          }
 
-              return listOfNumbers ;
-            })
-            .collect(toList()) ;
+          return listOfNumbers;
+        })
+        .collect(toList());
 
-    int numberOfObjectives = numbers.get(0).size() ;
-    DummyProblem dummyProblem = new DummyProblem(numberOfObjectives);
+    int numberOfObjectives = numbers.get(0).size();
 
-    NonDominatedSolutionListArchive<DoubleSolution> archive ;
-    archive = new NonDominatedSolutionListArchive<>() ;
+    NonDominatedSolutionListArchive<DoubleSolution> archive;
+    archive = new NonDominatedSolutionListArchive<>();
 
     numbers
-            .stream()
-            .forEach(list -> {
-              DoubleSolution solution = new DefaultDoubleSolution(dummyProblem);
-              for (int i = 0; i < numberOfObjectives; i++) {
-                solution.setObjective(i, list.get(i));
-              }
-              archive.add(solution) ;
-            });
+        .stream()
+        .forEach(list -> {
+          DoubleSolution solution = new DefaultDoubleSolution(0, numberOfObjectives, null, null);
+          for (int i = 0; i < numberOfObjectives; i++) {
+            solution.setObjective(i, list.get(i));
+          }
+          archive.add(solution);
+        });
 
 
-    return archive ;
-  }
-
-  private static class DummyProblem extends AbstractDoubleProblem {
-
-    public DummyProblem(int numberOfObjectives) {
-      this.setNumberOfObjectives(numberOfObjectives);
-    }
-
-    @Override
-    public void evaluate(DoubleSolution solution) {
-
-    }
+    return archive;
   }
 }

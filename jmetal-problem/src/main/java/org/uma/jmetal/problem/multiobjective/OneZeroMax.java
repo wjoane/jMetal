@@ -29,7 +29,7 @@ public class OneZeroMax extends AbstractBinaryProblem {
   }
 
   @Override
-  protected int getBitsPerVariable(int index) {
+  public int getNumberOfBits(int index) {
   	if (index != 0) {
   		throw new JMetalException("Problem OneZeroMax has only a variable. Index = " + index) ;
   	}
@@ -38,7 +38,7 @@ public class OneZeroMax extends AbstractBinaryProblem {
 
   @Override
   public BinarySolution createSolution() {
-    return new DefaultBinarySolution(this) ;
+    return new DefaultBinarySolution(getNumberOfVariables(), getNumberOfObjectives(), new int[]{bits}) ;
   }
 
   /** Evaluate() method */

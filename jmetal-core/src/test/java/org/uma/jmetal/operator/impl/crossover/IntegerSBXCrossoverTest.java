@@ -4,12 +4,11 @@ import org.junit.Test;
 import org.uma.jmetal.problem.IntegerProblem;
 import org.uma.jmetal.problem.impl.AbstractIntegerProblem;
 import org.uma.jmetal.solution.IntegerSolution;
+import org.uma.jmetal.solution.impl.DefaultIntegerSolution;
 import org.uma.jmetal.util.pseudorandom.JMetalRandom;
 import org.uma.jmetal.util.pseudorandom.impl.AuditableRandomGenerator;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 import static org.junit.Assert.assertTrue;
 
@@ -18,18 +17,9 @@ public class IntegerSBXCrossoverTest {
 	@Test
 	public void testJMetalRandomGeneratorNotUsedWhenCustomRandomGeneratorProvided() {
 		// Configuration
-		@SuppressWarnings("serial")
-		IntegerProblem problem = new AbstractIntegerProblem() {
-
-			@Override
-			public void evaluate(IntegerSolution solution) {
-				// Do nothing
-			}
-
-		};
 		List<IntegerSolution> parents = new LinkedList<>();
-		parents.add(problem.createSolution());
-		parents.add(problem.createSolution());
+		parents.add(new DefaultIntegerSolution(2, 2, Arrays.asList(1, 1), Arrays.asList(2, 2)));
+		parents.add(new DefaultIntegerSolution(2, 2, Arrays.asList(1, 1), Arrays.asList(2, 2)));
 
 		// Check configuration leads to use default generator by default
 		final int[] defaultUses = { 0 };

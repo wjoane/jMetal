@@ -16,25 +16,25 @@ import java.util.Map;
  * @author Antonio J. Nebro <antonio@lcc.uma.es>
  */
 @SuppressWarnings("serial")
-public abstract class AbstractGenericSolution<T, P extends Problem<?>> implements Solution<T> {
+public abstract class AbstractGenericSolution<T> implements Solution<T> {
   private double[] objectives;
   private List<T> variables;
-  protected P problem ;
   protected Map<Object, Object> attributes ;
-  protected final JMetalRandom randomGenerator ;
 
   /**
    * Constructor
    */
-  protected AbstractGenericSolution(P problem) {
-    this.problem = problem ;
+  protected AbstractGenericSolution(int numberOfVariables, int numberOfObjectives) {
     attributes = new HashMap<>() ;
-    randomGenerator = JMetalRandom.getInstance() ;
 
-    objectives = new double[problem.getNumberOfObjectives()] ;
-    variables = new ArrayList<>(problem.getNumberOfVariables()) ;
-    for (int i = 0; i < problem.getNumberOfVariables(); i++) {
+    objectives = new double[numberOfObjectives] ;
+    variables = new ArrayList<>(numberOfVariables) ;
+    for (int i = 0; i < numberOfVariables; i++) {
       variables.add(i, null) ;
+    }
+
+    for (int i = 0 ; i < numberOfObjectives; i++) {
+      objectives[i] = 0.0 ;
     }
   }
 
@@ -86,12 +86,6 @@ public abstract class AbstractGenericSolution<T, P extends Problem<?>> implement
   @Override
   public int getNumberOfObjectives() {
     return objectives.length;
-  }
-
-  protected void initializeObjectiveValues() {
-    for (int i = 0; i < problem.getNumberOfObjectives(); i++) {
-      objectives[i] = 0.0 ;
-    }
   }
 
   @Override

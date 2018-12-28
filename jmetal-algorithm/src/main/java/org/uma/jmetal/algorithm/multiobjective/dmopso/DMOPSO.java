@@ -120,8 +120,8 @@ public class DMOPSO implements Algorithm<List<DoubleSolution>> {
     deltaMax = new double[problem.getNumberOfVariables()];
     deltaMin = new double[problem.getNumberOfVariables()];
     for (int i = 0; i < problem.getNumberOfVariables(); i++) {
-      deltaMax[i] = (problem.getUpperBound(i) -
-              problem.getLowerBound(i)) / 2.0;
+      deltaMax[i] = (problem.getUpperBounds().get(i) -
+              problem.getLowerBounds().get(i)) / 2.0;
       deltaMin[i] = -deltaMax[i];
     }
   }
@@ -396,12 +396,12 @@ public class DMOPSO implements Algorithm<List<DoubleSolution>> {
     DoubleSolution particle = getSwarm().get(part) ;
 
     for(int var = 0; var < particle.getNumberOfVariables(); var++){
-      if (particle.getVariableValue(var) < problem.getLowerBound(var)) {
-        particle.setVariableValue(var, problem.getLowerBound(var));
+      if (particle.getVariableValue(var) < problem.getLowerBounds().get(var)) {
+        particle.setVariableValue(var, problem.getLowerBounds().get(var));
         speed[part][var] = speed[part][var] * changeVelocity1;
       }
-      if (particle.getVariableValue(var) > problem.getUpperBound(var)) {
-        particle.setVariableValue(var, problem.getUpperBound(var));
+      if (particle.getVariableValue(var) > problem.getUpperBounds().get(var)) {
+        particle.setVariableValue(var, problem.getUpperBounds().get(var));
         speed[part][var] = speed[part][var] * changeVelocity2;
       }
     }

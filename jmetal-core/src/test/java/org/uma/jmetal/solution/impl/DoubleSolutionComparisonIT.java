@@ -81,13 +81,16 @@ public class DoubleSolutionComparisonIT {
 
   @SuppressWarnings("serial")
   private class MockedDoubleProblem1 extends AbstractDoubleProblem {
+    List<Double> lowerLimit  ;
+    List<Double> upperLimit  ;
+
     public MockedDoubleProblem1(int numberOfVariables) {
       setNumberOfVariables(numberOfVariables);
       setNumberOfObjectives(2);
       setNumberOfConstraints(0);
 
-      List<Double> lowerLimit = new ArrayList<>(getNumberOfVariables()) ;
-      List<Double> upperLimit = new ArrayList<>(getNumberOfVariables()) ;
+      lowerLimit = new ArrayList<>(getNumberOfVariables()) ;
+      upperLimit = new ArrayList<>(getNumberOfVariables()) ;
 
       for (int i = 0 ; i < getNumberOfVariables(); i++) {
         lowerLimit.add(0.0);
@@ -140,7 +143,7 @@ public class DoubleSolutionComparisonIT {
 
     @Override
     public DoubleSolution createSolution() {
-      return new ArrayDoubleSolution(this)  ;
+      return new ArrayDoubleSolution(getNumberOfVariables(), getNumberOfObjectives(), lowerLimit, upperLimit)  ;
     }
   }
 
@@ -152,7 +155,7 @@ public class DoubleSolutionComparisonIT {
 
     @Override
     public DoubleSolution createSolution() {
-      return new DefaultDoubleSolution(this)  ;
+      return new DefaultDoubleSolution(getNumberOfVariables(), getNumberOfObjectives(), lowerLimit, upperLimit)  ;
     }
   }
 }

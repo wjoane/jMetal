@@ -20,7 +20,6 @@ import static org.junit.Assert.assertEquals;
  * @author Antonio J. Nebro <antonio@lcc.uma.es>
  */
 public class DominanceRankingTest {
-  private DoubleProblem problem ;
 
   @Test
   public void shouldTheRankingOfAnEmptyPopulationReturnZeroSubfronts() {
@@ -33,11 +32,13 @@ public class DominanceRankingTest {
 
   @Test
   public void shouldTheRankingOfAnEmptyPopulationReturnOneSubfronts(){
-    problem = new DummyProblem(2) ;
     List<DoubleSolution> population = Arrays.<DoubleSolution>asList(
-            new DefaultDoubleSolution(problem),
-            new DefaultDoubleSolution(problem),
-            new DefaultDoubleSolution(problem));
+            new DefaultDoubleSolution(2, 2,
+            Arrays.asList(0.0, 0.0), Arrays.asList(1.0, 1.0)) ,
+            new DefaultDoubleSolution(2, 2,
+                Arrays.asList(0.0, 0.0), Arrays.asList(1.0, 1.0)) ,
+            new DefaultDoubleSolution(2, 2,
+                Arrays.asList(0.0, 0.0), Arrays.asList(1.0, 1.0)));
 
     Ranking<DoubleSolution> ranking = new DominanceRanking<DoubleSolution>() ;
     ranking.computeRanking(population) ;
@@ -48,14 +49,15 @@ public class DominanceRankingTest {
   @Test
   public void shouldRankingOfAPopulationWithTwoNonDominatedSolutionsReturnOneSubfront() {
     int numberOfObjectives = 2 ;
-    problem = new DummyProblem(numberOfObjectives) ;
 
     List<DoubleSolution>population = new ArrayList<>() ;
 
-    DoubleSolution solution = problem.createSolution() ;
+    DoubleSolution solution = new DefaultDoubleSolution(2, 2,
+        Arrays.asList(0.0, 0.0), Arrays.asList(1.0, 1.0)) ;
     solution.setObjective(0, 2.0);
     solution.setObjective(1, 3.0);
-    DoubleSolution solution2 = problem.createSolution() ;
+    DoubleSolution solution2 = new DefaultDoubleSolution(2, 2,
+        Arrays.asList(0.0, 0.0), Arrays.asList(1.0, 1.0)) ;
     solution2.setObjective(0, 1.0);
     solution2.setObjective(1, 6.0);
 
@@ -79,14 +81,15 @@ public class DominanceRankingTest {
   @Test
   public void shouldRankingOfAPopulationWithTwoDominatedSolutionsReturnTwoSubfronts() {
     int numberOfObjectives = 2 ;
-    problem = new DummyProblem(numberOfObjectives) ;
 
     List<DoubleSolution>population = new ArrayList<>() ;
 
-    DoubleSolution solution = (DoubleSolution)problem.createSolution() ;
+    DoubleSolution solution = new DefaultDoubleSolution(2, 2,
+        Arrays.asList(0.0, 0.0), Arrays.asList(1.0, 1.0)) ;
     solution.setObjective(0, 2.0);
     solution.setObjective(1, 3.0);
-    DoubleSolution solution2 = (DoubleSolution)problem.createSolution() ;
+    DoubleSolution solution2 = new DefaultDoubleSolution(2, 2,
+        Arrays.asList(0.0, 0.0), Arrays.asList(1.0, 1.0)) ;
     solution2.setObjective(0, 3.0);
     solution2.setObjective(1, 6.0);
 
@@ -115,17 +118,19 @@ public class DominanceRankingTest {
   @Test
   public void shouldRankingOfAPopulationWithThreeDominatedSolutionsReturnThreeSubfronts() {
     int numberOfObjectives = 2 ;
-    problem = new DummyProblem(numberOfObjectives) ;
 
     List<DoubleSolution>population = new ArrayList<>() ;
 
-    DoubleSolution solution = (DoubleSolution)problem.createSolution() ;
+    DoubleSolution solution = new DefaultDoubleSolution(2, 2,
+        Arrays.asList(0.0, 0.0), Arrays.asList(1.0, 1.0))  ;
     solution.setObjective(0, 2.0);
     solution.setObjective(1, 3.0);
-    DoubleSolution solution2 = (DoubleSolution)problem.createSolution() ;
+    DoubleSolution solution2 = new DefaultDoubleSolution(2, 2,
+        Arrays.asList(0.0, 0.0), Arrays.asList(1.0, 1.0))  ;
     solution2.setObjective(0, 3.0);
     solution2.setObjective(1, 6.0);
-    DoubleSolution solution3 = (DoubleSolution)problem.createSolution() ;
+    DoubleSolution solution3 = new DefaultDoubleSolution(2, 2,
+        Arrays.asList(0.0, 0.0), Arrays.asList(1.0, 1.0))  ;
     solution3.setObjective(0, 4.0);
     solution3.setObjective(1, 8.0);
 
@@ -158,23 +163,27 @@ public class DominanceRankingTest {
   @Test
   public void shouldRankingOfAPopulationWithFiveSolutionsWorkProperly() {
     int numberOfObjectives = 2 ;
-    problem = new DummyProblem(numberOfObjectives) ;
 
     List<DoubleSolution>population = new ArrayList<>() ;
 
-    DoubleSolution solution = (DoubleSolution)problem.createSolution() ;
+    DoubleSolution solution = new DefaultDoubleSolution(2, 2,
+        Arrays.asList(0.0, 0.0), Arrays.asList(1.0, 1.0)) ;
     solution.setObjective(0, 1.0);
     solution.setObjective(1, 0.0);
-    DoubleSolution solution2 = (DoubleSolution)problem.createSolution() ;
+    DoubleSolution solution2 = new DefaultDoubleSolution(2, 2,
+        Arrays.asList(0.0, 0.0), Arrays.asList(1.0, 1.0)) ;
     solution2.setObjective(0, 0.6);
     solution2.setObjective(1, 0.6);
-    DoubleSolution solution3 = (DoubleSolution)problem.createSolution() ;
+    DoubleSolution solution3 = new DefaultDoubleSolution(2, 2,
+        Arrays.asList(0.0, 0.0), Arrays.asList(1.0, 1.0)) ;
     solution3.setObjective(0, 0.5);
     solution3.setObjective(1, 0.5);
-    DoubleSolution solution4 = (DoubleSolution)problem.createSolution() ;
+    DoubleSolution solution4 = new DefaultDoubleSolution(2, 2,
+        Arrays.asList(0.0, 0.0), Arrays.asList(1.0, 1.0)) ;
     solution4.setObjective(0, 1.1);
     solution4.setObjective(1, 0.0);
-    DoubleSolution solution5 = (DoubleSolution)problem.createSolution() ;
+    DoubleSolution solution5 = new DefaultDoubleSolution(2, 2,
+        Arrays.asList(0.0, 0.0), Arrays.asList(1.0, 1.0))  ;
     solution5.setObjective(0, 0.0);
     solution5.setObjective(1, 1.0);
 

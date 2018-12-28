@@ -14,16 +14,16 @@ import java.util.List;
  */
 @SuppressWarnings("serial")
 public class DefaultIntegerPermutationSolution
-    extends AbstractGenericSolution<Integer, PermutationProblem<?>>
+    extends AbstractGenericSolution<Integer>
     implements PermutationSolution<Integer> {
 
   /** Constructor */
-  public DefaultIntegerPermutationSolution(PermutationProblem<?> problem) {
-    super(problem) ;
+  public DefaultIntegerPermutationSolution(int numberOfVariables, int numberOfObjectives) {
+    super(numberOfVariables, numberOfObjectives) ;
 
-    List<Integer> randomSequence = new ArrayList<>(problem.getPermutationLength());
+    List<Integer> randomSequence = new ArrayList<>(numberOfVariables);
 
-    for (int j = 0; j < problem.getPermutationLength(); j++) {
+    for (int j = 0; j < numberOfVariables; j++) {
       randomSequence.add(j);
     }
 
@@ -36,12 +36,12 @@ public class DefaultIntegerPermutationSolution
 
   /** Copy Constructor */
   public DefaultIntegerPermutationSolution(DefaultIntegerPermutationSolution solution) {
-    super(solution.problem) ;
-    for (int i = 0; i < problem.getNumberOfObjectives(); i++) {
+    super(solution.getNumberOfVariables(), solution.getNumberOfObjectives()) ;
+    for (int i = 0; i < solution.getNumberOfObjectives(); i++) {
       setObjective(i, solution.getObjective(i)) ;
     }
 
-    for (int i = 0; i < problem.getNumberOfVariables(); i++) {
+    for (int i = 0; i < solution.getNumberOfVariables(); i++) {
       setVariableValue(i, solution.getVariableValue(i));
     }
     

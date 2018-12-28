@@ -189,7 +189,8 @@ public class GenerateReferenceParetoSetAndFrontFromDoubleSolutions implements Ex
 
     List<DoubleSolution> solutionList = new ArrayList<>() ;
     for (int i = 0 ; i < frontWithVariableValues.getNumberOfPoints(); i++) {
-      DoubleSolution solution = new DefaultDoubleSolution(problem);
+      DoubleSolution solution =
+          new DefaultDoubleSolution(problem.getNumberOfVariables(), problem.getNumberOfObjectives(), null, null);
       for (int vars = 0; vars < numberOfVariables; vars++) {
         solution.setVariableValue(vars, frontWithVariableValues.getPoint(i).getValues()[vars]);
       }

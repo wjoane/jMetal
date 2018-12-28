@@ -58,8 +58,8 @@ public class BitFlipMutationTest {
     Mockito.when(randomGenerator.getRandomValue()).thenReturn(0.02, 0.02, 0.02, 0.02) ;
 
     BitFlipMutation mutation = new BitFlipMutation(mutationProbability) ;
-    BinaryProblem problem = new MockBinaryProblem(1) ;
-    BinarySolution solution = problem.createSolution() ;
+    int[] bitsPerVariable = new int[]{NUMBER_OF_BITS_OF_MOCKED_BINARY_PROBLEM} ;
+    BinarySolution solution = new DefaultBinarySolution(bitsPerVariable.length, 2, bitsPerVariable) ;
     BinarySolution oldSolution = (BinarySolution)solution.copy() ;
 
     ReflectionTestUtils.setField(mutation, "randomGenerator", randomGenerator);
@@ -79,8 +79,8 @@ public class BitFlipMutationTest {
     Mockito.when(randomGenerator.getRandomValue()).thenReturn(0.02, 0.0, 0.02, 0.02) ;
 
     BitFlipMutation mutation = new BitFlipMutation(mutationProbability) ;
-    BinaryProblem problem = new MockBinaryProblem(1) ;
-    BinarySolution solution = problem.createSolution() ;
+    int[] bitsPerVariable = new int[]{NUMBER_OF_BITS_OF_MOCKED_BINARY_PROBLEM} ;
+    BinarySolution solution = new DefaultBinarySolution(bitsPerVariable.length, 2, bitsPerVariable) ;
     BinarySolution oldSolution = (BinarySolution)solution.copy() ;
 
     ReflectionTestUtils.setField(mutation, "randomGenerator", randomGenerator);
@@ -100,8 +100,8 @@ public class BitFlipMutationTest {
     Mockito.when(randomGenerator.getRandomValue()).thenReturn(0.02, 0.02, 0.02, 0.02, 0.2, 0.2, 0.2, 0.2) ;
 
     BitFlipMutation mutation = new BitFlipMutation(mutationProbability) ;
-    BinaryProblem problem = new MockBinaryProblem(2) ;
-    BinarySolution solution = problem.createSolution() ;
+    int[] bitsPerVariable = new int[]{NUMBER_OF_BITS_OF_MOCKED_BINARY_PROBLEM, NUMBER_OF_BITS_OF_MOCKED_BINARY_PROBLEM} ;
+    BinarySolution solution = new DefaultBinarySolution(bitsPerVariable.length, 2, bitsPerVariable) ;
     BinarySolution oldSolution = (BinarySolution)solution.copy() ;
 
     ReflectionTestUtils.setField(mutation, "randomGenerator", randomGenerator);
@@ -121,8 +121,8 @@ public class BitFlipMutationTest {
     Mockito.when(randomGenerator.getRandomValue()).thenReturn(0.01, 0.02, 0.02, 0.02, 0.02, 0.02, 0.01, 0.02) ;
 
     BitFlipMutation mutation = new BitFlipMutation(mutationProbability) ;
-    BinaryProblem problem = new MockBinaryProblem(2) ;
-    BinarySolution solution = problem.createSolution() ;
+    int[] bitsPerVariable = new int[]{NUMBER_OF_BITS_OF_MOCKED_BINARY_PROBLEM, NUMBER_OF_BITS_OF_MOCKED_BINARY_PROBLEM} ;
+    BinarySolution solution = new DefaultBinarySolution(bitsPerVariable.length, 2, bitsPerVariable) ;
     BinarySolution oldSolution = (BinarySolution)solution.copy() ;
 
     ReflectionTestUtils.setField(mutation, "randomGenerator", randomGenerator);
@@ -134,67 +134,13 @@ public class BitFlipMutationTest {
     verify(randomGenerator, times(8)).getRandomValue();
  }
 
-  /**
-   * Mock class representing a binary problem
-   */
-  @SuppressWarnings("serial")
-  private class MockBinaryProblem extends AbstractBinaryProblem {
-    private int[] bitsPerVariable ;
-
-    /** Constructor */
-    public MockBinaryProblem(Integer numberOfVariables) {
-      setNumberOfVariables(numberOfVariables);
-      setNumberOfObjectives(2);
-
-      bitsPerVariable = new int[numberOfVariables] ;
-
-      for (int var = 0; var < numberOfVariables; var++) {
-        bitsPerVariable[var] = NUMBER_OF_BITS_OF_MOCKED_BINARY_PROBLEM;
-      }
-    }
-
-    @Override
-    protected int getBitsPerVariable(int index) {
-      return bitsPerVariable[index] ;
-    }
-
-    @Override
-    public BinarySolution createSolution() {
-      return new DefaultBinarySolution(this) ;
-    }
-
-    /** Evaluate() method */
-    @Override
-    public void evaluate(BinarySolution solution) {
-      solution.setObjective(0, 0);
-      solution.setObjective(1, 1);
-    }
-  }
-  
   @Test
 	public void shouldJMetalRandomGeneratorNotBeUsedWhenCustomRandomGeneratorProvided() {
 		// Configuration
 		double mutationProbability = 0.1;
-		@SuppressWarnings("serial")
-		BinaryProblem problem = new AbstractBinaryProblem() {
 
-			@Override
-			public void evaluate(BinarySolution solution) {
-				// Do nothing
-			}
-
-			@Override
-			protected int getBitsPerVariable(int index) {
-				return 5;
-			}
-			
-			@Override
-			public int getNumberOfVariables() {
-				return 10;
-			}
-
-		};
-		BinarySolution solution = problem.createSolution();
+    int[] bitsPerVariable = new int[]{NUMBER_OF_BITS_OF_MOCKED_BINARY_PROBLEM} ;
+    BinarySolution solution = new DefaultBinarySolution(bitsPerVariable.length, 2, bitsPerVariable) ;
 
 		// Check configuration leads to use default generator by default
 		final int[] defaultUses = { 0 };

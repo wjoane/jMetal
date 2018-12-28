@@ -940,7 +940,7 @@ public class Ebes extends AbstractDoubleProblem {
 
   @Override
   public DoubleSolution createSolution() {
-    return new DefaultDoubleSolution(this) ;
+    return new DefaultDoubleSolution(getNumberOfVariables(), getNumberOfObjectives(), lowerBounds, upperBounds) ;
   }
 
   /**

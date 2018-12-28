@@ -4,9 +4,11 @@ import org.junit.Test;
 import org.uma.jmetal.problem.DoubleProblem;
 import org.uma.jmetal.problem.impl.AbstractDoubleProblem;
 import org.uma.jmetal.solution.DoubleSolution;
+import org.uma.jmetal.solution.impl.DefaultDoubleSolution;
 import org.uma.jmetal.util.pseudorandom.JMetalRandom;
 import org.uma.jmetal.util.pseudorandom.impl.AuditableRandomGenerator;
 
+import java.util.Arrays;
 import java.util.Random;
 
 import static org.junit.Assert.assertTrue;
@@ -16,31 +18,9 @@ public class NonUniformMutationTest {
 	@Test
 	public void testJMetalRandomGeneratorNotUsedWhenCustomRandomGeneratorProvided() {
 		// Configuration
-		@SuppressWarnings("serial")
-		DoubleProblem problem = new AbstractDoubleProblem() {
 
-			@Override
-			public void evaluate(DoubleSolution solution) {
-				// Do nothing
-			}
-			
-			@Override
-			public int getNumberOfVariables() {
-				return 100;
-			}
-			
-			@Override
-			public Double getLowerBound(int index) {
-				return 0.0;
-			}
-			
-			@Override
-			public Double getUpperBound(int index) {
-				return 1.0;
-			}
-
-		};
-		DoubleSolution solution = problem.createSolution();
+		DoubleSolution solution = new DefaultDoubleSolution(2, 2,
+				Arrays.asList(0.0, 0.0), Arrays.asList(1.0, 1.0)) ;
 
 		// Check configuration leads to use default generator by default
 		final int[] defaultUses = { 0 };

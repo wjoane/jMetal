@@ -520,8 +520,8 @@ public class ArrayFrontTest {
         upperLimit.add(4);
       }
 
-      setLowerLimit(lowerLimit);
-      setUpperLimit(upperLimit);
+      setLowerBounds(lowerLimit);
+      setUpperBounds(upperLimit);
     }
 
     /**

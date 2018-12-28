@@ -106,17 +106,19 @@ public class DynamicDoubleProblem implements DoubleProblem {
     return name;
   }
 
-  public Double getLowerBound(int index) {
-    return lowerBounds.get(index);
+  @Override
+  public List<Double> getLowerBounds() {
+    return lowerBounds ;
   }
 
-  public Double getUpperBound(int index) {
-    return upperBounds.get(index);
+  @Override
+  public List<Double> getUpperBounds() {
+    return upperBounds ;
   }
 
   @Override
   public DoubleSolution createSolution() {
-    return new DefaultDoubleSolution(this)  ;
+    return new DefaultDoubleSolution(getNumberOfVariables(), getNumberOfObjectives(), lowerBounds, upperBounds)  ;
   }
 
   @Override

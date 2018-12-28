@@ -4,22 +4,28 @@ import org.uma.jmetal.problem.BinaryProblem;
 import org.uma.jmetal.solution.BinarySolution;
 import org.uma.jmetal.solution.impl.DefaultBinarySolution;
 
+import java.util.List;
+
 @SuppressWarnings("serial")
 public abstract class AbstractBinaryProblem extends AbstractGenericProblem<BinarySolution>
   implements BinaryProblem {
 
-  protected abstract int getBitsPerVariable(int index) ;
+  private int[] bitsPerVariable ;
+
+  public void setBitsPerVariable(int[]bitsPerVariable) {
+    this.bitsPerVariable = bitsPerVariable ;
+  }
 
   @Override
   public int getNumberOfBits(int index) {
-    return getBitsPerVariable(index) ;
+    return bitsPerVariable[index] ;
   }
   
   @Override
   public int getTotalNumberOfBits() {
   	int count = 0 ;
   	for (int i = 0; i < this.getNumberOfVariables(); i++) {
-  		count += this.getBitsPerVariable(i) ;
+  		count += this.bitsPerVariable[i] ;
   	}
   	
   	return count ;
@@ -27,6 +33,6 @@ public abstract class AbstractBinaryProblem extends AbstractGenericProblem<Binar
 
   @Override
   public BinarySolution createSolution() {
-    return new DefaultBinarySolution(this)  ;
+    return new DefaultBinarySolution(getNumberOfVariables(), getNumberOfObjectives(), bitsPerVariable)  ;
   }
 }

@@ -88,14 +88,14 @@ public class ArtificialDecisionMakerDecisionTree<S extends Solution<?>> extends 
     if(problem instanceof AbstractDoubleProblem){
       AbstractDoubleProblem aux =(AbstractDoubleProblem)problem;
       for (int i = 0; i < numberOfObjectives ; i++) {
-        idealOjectiveVector.add(aux.getLowerBound(i));
-        nadirObjectiveVector.add(aux.getUpperBound(i));
+        idealOjectiveVector.add(aux.getLowerBounds().get(i));
+        nadirObjectiveVector.add(aux.getUpperBounds().get(i));
       }
     }else if(problem instanceof AbstractIntegerProblem){
       AbstractIntegerProblem aux =(AbstractIntegerProblem)problem;
       for (int i = 0; i < numberOfObjectives ; i++) {
-        idealOjectiveVector.add(new Double(aux.getLowerBound(i)));
-        nadirObjectiveVector.add(new Double(aux.getUpperBound(i)));
+        idealOjectiveVector.add(new Double(aux.getLowerBounds().get(i)));
+        nadirObjectiveVector.add(new Double(aux.getUpperBounds().get(i)));
       }
     }else if(problem instanceof AbstractIntegerDoubleProblem){
       AbstractIntegerDoubleProblem aux =(AbstractIntegerDoubleProblem)problem;
