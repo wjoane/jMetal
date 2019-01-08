@@ -6,6 +6,7 @@ import org.uma.jmetal.measure.MeasureListener;
 import org.uma.jmetal.measure.MeasureManager;
 import org.uma.jmetal.measure.impl.BasicMeasure;
 import org.uma.jmetal.solution.Solution;
+import org.uma.jmetal.util.JMetalLogger;
 import org.uma.jmetal.util.algorithmobserver.AlgorithmObserver;
 import org.uma.jmetal.util.chartcontainer.ChartContainer;
 
@@ -20,8 +21,7 @@ import java.util.Map;
  * @author Antonio J. Nebro <antonio@lcc.uma.es>
  */
 public class EvaluationObserver extends AlgorithmObserver {
-  private Integer maxEvaluations ;
-  private int evaluations ;
+  private Integer maxEvaluations, evaluations ;
 
   public EvaluationObserver(Measurable measurable) {
     this(measurable, null);
@@ -44,15 +44,20 @@ public class EvaluationObserver extends AlgorithmObserver {
    */
   @Override
   public void measureGenerated(Map<String, Object> data) {
-    this.evaluations = (int)data.get("EVALUATIONS") ;
-    if (maxEvaluations == null) {
-      System.out.println("Evaluations: " + evaluations) ;
+
+    evaluations = (Integer)data.get("EVALUATIONS") ;
+
+    if (evaluations!=null) {
+      if (maxEvaluations == null) {
+        System.out.println("Evaluations: " + evaluations);
+      } else {
+        System.out.println("Evaluations: " + evaluations + " from " + maxEvaluations);
+      }
     } else {
-      System.out.println("Evaluations: " + evaluations + " from " + maxEvaluations);
+      JMetalLogger.logger.warning(getClass().getName()+
+                                  ": The algorithm has not registered yet any info related to the EVALUATIONS key");
     }
   }
 
-  public int getEvaluations() {
-    return evaluations ;
-  }
+
 }
