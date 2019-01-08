@@ -29,7 +29,7 @@ public class CosineDistanceBetweenSolutionsInObjectiveSpace<S extends Solution<?
 
     return result ;
   }
-
+s
   private double sumOfDistancesToIdealPoint(S solution) {
     double sum = 0.0 ;
 
