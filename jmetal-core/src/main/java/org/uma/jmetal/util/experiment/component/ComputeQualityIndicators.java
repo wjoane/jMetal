@@ -51,10 +51,10 @@ public class ComputeQualityIndicators<S extends Solution<?>, Result> implements 
   @Override
   public void run() throws IOException {
 
+    resetIndicatorFiles() ;
 
     for (GenericIndicator<S> indicator : experiment.getIndicatorList()) {
       JMetalLogger.logger.info("Computing indicator: " + indicator.getName());
-      ;
 
       for (ExperimentAlgorithm<?, Result> algorithm : experiment.getAlgorithmList()) {
         String algorithmDirectory;
@@ -63,18 +63,16 @@ public class ComputeQualityIndicators<S extends Solution<?>, Result> implements 
 
         String referenceFrontDirectory = experiment.getReferenceFrontDirectory();
 
-
         String referenceFrontName = referenceFrontDirectory + "/" + algorithm.getReferenceParetoFront();
 
         JMetalLogger.logger.info("RF: " + referenceFrontName);
-        ;
+
         Front referenceFront = new ArrayFront(referenceFrontName);
 
         FrontNormalizer frontNormalizer = new FrontNormalizer(referenceFront);
         Front normalizedReferenceFront = frontNormalizer.normalize(referenceFront);
 
-        String qualityIndicatorFile = problemDirectory + "/QI." + indicator.getName();
-
+        String qualityIndicatorFile = problemDirectory + "/" + indicator.getName();
 
         indicator.setReferenceParetoFront(normalizedReferenceFront);
         String frontFileName = problemDirectory + "/" +
@@ -99,6 +97,22 @@ public class ComputeQualityIndicators<S extends Solution<?>, Result> implements 
       os.write("" + indicatorValue + "\n");
     } catch (IOException ex) {
       throw new JMetalException("Error writing indicator file" + ex);
+    }
+  }
+
+  /**
+   * Deletes the files containing the indicator values if the exist.
+   */
+  private void resetIndicatorFiles() {
+    for (GenericIndicator<S> indicator : experiment.getIndicatorList()) {
+      for (ExperimentAlgorithm<?, Result> algorithm : experiment.getAlgorithmList()) {
+        String algorithmDirectory;
+        algorithmDirectory = experiment.getExperimentBaseDirectory() + "/data/" + algorithm.getAlgorithmTag();
+        String problemDirectory = algorithmDirectory + "/" + algorithm.getProblemTag();
+        String qualityIndicatorFile = problemDirectory + "/" + indicator.getName();
+
+        resetFile(qualityIndicatorFile);
+      }
     }
   }
 
@@ -133,6 +147,7 @@ public class ComputeQualityIndicators<S extends Solution<?>, Result> implements 
   }
 
   public void findBestIndicatorFronts(Experiment<?, Result> experiment) throws IOException {
+    JMetalLogger.logger.info("Finding best indicator fronts");
     for (GenericIndicator<?> indicator : experiment.getIndicatorList()) {
       for (ExperimentAlgorithm<?, Result> algorithm : experiment.getAlgorithmList()) {
         String algorithmDirectory;
@@ -141,7 +156,7 @@ public class ComputeQualityIndicators<S extends Solution<?>, Result> implements 
 
         for (ExperimentProblem<?> problem : experiment.getProblemList()) {
           String indicatorFileName =
-                  algorithmDirectory + "/" + problem.getTag() + "/QI." + indicator.getName();
+                  algorithmDirectory + "/" + problem.getTag() + "/" + indicator.getName();
           Path indicatorFile = Paths.get(indicatorFileName);
           if (indicatorFile == null) {
             throw new JMetalException("Indicator file " + indicator.getName() + " doesn't exist");
@@ -211,8 +226,9 @@ public class ComputeQualityIndicators<S extends Solution<?>, Result> implements 
     }
   }
 
-  private void writeSummaryFile(Experiment<S, Result> experiment) throws IOException {
-    String headerOfCSVFile = "Algorithm, Problem, Indicator, ExecutionId, IndicatorValue";
+  private void writeSummaryFile(Experiment<S, Result> experiment) {
+    JMetalLogger.logger.info("Writing experiment summary file");
+    String headerOfCSVFile = "Algorithm,Problem,IndicatorName,ExecutionId,IndicatorValue";
     String csvFileName = this.experiment.getExperimentBaseDirectory() + "/QualityIndicatorSummary.csv";
     resetFile(csvFileName);
 
@@ -227,7 +243,7 @@ public class ComputeQualityIndicators<S extends Solution<?>, Result> implements 
 
           for (ExperimentProblem<?> problem : experiment.getProblemList()) {
             String indicatorFileName =
-                    algorithmDirectory + "/" + problem.getTag() + "/QI." + indicator.getName();
+                    algorithmDirectory + "/" + problem.getTag() + "/" + indicator.getName();
             Path indicatorFile = Paths.get(indicatorFileName);
             if (indicatorFile == null) {
               throw new JMetalException("Indicator file " + indicator.getName() + " doesn't exist");
@@ -236,11 +252,8 @@ public class ComputeQualityIndicators<S extends Solution<?>, Result> implements 
             List<String> fileArray;
             fileArray = Files.readAllLines(indicatorFile, StandardCharsets.UTF_8);
 
-            //System.out.println(algorithm.getAlgorithmTag() + "," + problem.getTag() + ", " + indicator.getName()) ;
-            //System.out.println(fileArray) ;
-
             for (int i = 0; i < fileArray.size(); i++) {
-              String row = algorithm.getAlgorithmTag() + ", " + problem.getTag() + ", " + indicator.getName() + ", " + i + ", " + fileArray.get(i);
+              String row = algorithm.getAlgorithmTag() + "," + problem.getTag() + "," + indicator.getName() + "," + i + "," + fileArray.get(i);
               os.write("" + row + "\n");
             }
           }
@@ -250,6 +263,5 @@ public class ComputeQualityIndicators<S extends Solution<?>, Result> implements 
       throw new JMetalException("Error writing indicator file" + ex);
     }
   }
-
 }
 

@@ -49,7 +49,7 @@ public class GenerateWilcoxonTestTablesWithR<Result> implements ExperimentCompon
     }
     for (GenericIndicator<? extends Solution<?>> indicator : experiment.getIndicatorList()) {
       String rFileName = rDirectoryName + "/" + indicator.getName() + ".Wilcoxon" + ".R";
-      String latexFileName = rDirectoryName + "/" + indicator.getName() + ".Wilcoxon" + ".tex";
+      String latexFileName = indicator.getName() + ".Wilcoxon" + ".tex";
 
       printHeaderLatexCommands(rFileName, latexFileName);
       printTableHeader(indicator, rFileName, latexFileName);
@@ -66,7 +66,7 @@ public class GenerateWilcoxonTestTablesWithR<Result> implements ExperimentCompon
     String output = "write(\"\", \"" + latexFileName + "\",append=FALSE)";
     os.write(output + "\n");
 
-    String dataDirectory = experiment.getExperimentBaseDirectory() + "/data";
+    String dataDirectory = "../data";
     os.write("resultDirectory<-\"" + dataDirectory + "\"" + "\n");
     output = "latexHeader <- function() {" + "\n" +
         "  write(\"\\\\documentclass{article}\", \"" + latexFileName + APPEND_STRING +
