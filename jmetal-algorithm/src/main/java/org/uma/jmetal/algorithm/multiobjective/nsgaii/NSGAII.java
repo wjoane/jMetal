@@ -11,6 +11,7 @@ import org.uma.jmetal.operator.SelectionOperator;
 import org.uma.jmetal.operator.impl.selection.RankingAndCrowdingSelection;
 import org.uma.jmetal.problem.Problem;
 import org.uma.jmetal.solution.Solution;
+import org.uma.jmetal.util.JMetalException;
 import org.uma.jmetal.util.SolutionListUtils;
 import org.uma.jmetal.util.comparator.DominanceComparator;
 import org.uma.jmetal.util.evaluator.SolutionListEvaluator;
@@ -41,19 +42,19 @@ public class NSGAII<S extends Solution<?>> extends AbstractGeneticAlgorithm<S, L
   /**
    * Constructor
    */
-  public NSGAII(Problem<S> problem, int populationSize,
-                int matingPoolSize, int offspringPopulationSize,
+  public NSGAII(Problem<S> problem, int populationSize, int offspringPopulationSize,
       TerminationCondition terminationCondition,
       CrossoverOperator<S> crossoverOperator, MutationOperator<S> mutationOperator,
       SelectionOperator<List<S>, S> selectionOperator, SolutionListEvaluator<S> evaluator) {
-    this(problem, populationSize, matingPoolSize, offspringPopulationSize, terminationCondition,
+    this(problem, populationSize, offspringPopulationSize, terminationCondition,
             crossoverOperator, mutationOperator, selectionOperator, new DominanceComparator<S>(), evaluator);
   }
   /**
    * Constructor
    */
-  public NSGAII(Problem<S> problem, int populationSize,
-                int matingPoolSize, int offspringPopulationSize,
+  public NSGAII(Problem<S> problem,
+                int populationSize,
+                int offspringPopulationSize,
                 TerminationCondition terminationCondition,
                 CrossoverOperator<S> crossoverOperator, MutationOperator<S> mutationOperator,
       SelectionOperator<List<S>, S> selectionOperator, Comparator<S> dominanceComparator,
@@ -69,8 +70,14 @@ public class NSGAII<S extends Solution<?>> extends AbstractGeneticAlgorithm<S, L
     this.evaluator = evaluator;
     this.dominanceComparator = dominanceComparator ;
 
-    this.matingPoolSize = matingPoolSize ;
     this.offspringPopulationSize = offspringPopulationSize ;
+    this.matingPoolSize = offspringPopulationSize *
+        crossoverOperator.getNumberOfRequiredParents() / crossoverOperator.getNumberOfGeneratedChildren() ;
+
+    int a = matingPoolSize % crossoverOperator.getNumberOfRequiredParents() ;
+    if (matingPoolSize % crossoverOperator.getNumberOfRequiredParents() != 0) {
+      matingPoolSize += a ;
+    }
 
     algorithmStatusData = new HashMap<String, Object>();
     algorithmDataMeasure = new BasicMeasure<>() ;
@@ -146,7 +153,9 @@ public class NSGAII<S extends Solution<?>> extends AbstractGeneticAlgorithm<S, L
   protected List<S> reproduction(List<S> matingPool) {
     int numberOfParents = crossoverOperator.getNumberOfRequiredParents() ;
 
-    checkNumberOfParents(matingPool, numberOfParents);
+    if (matingPool.size() % numberOfParents != 0) {
+      throw new JMetalException("Wrong number of parents") ;
+    }
 
     List<S> offspringPopulation = new ArrayList<>(offspringPopulationSize);
     for (int i = 0; i < matingPool.size(); i += numberOfParents) {

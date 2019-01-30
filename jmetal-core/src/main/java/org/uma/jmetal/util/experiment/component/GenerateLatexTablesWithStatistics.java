@@ -38,7 +38,7 @@ public class GenerateLatexTablesWithStatistics implements ExperimentComponent {
   public GenerateLatexTablesWithStatistics(Experiment<?, ?> configuration) {
     this.experiment = configuration ;
 
-    experiment.removeDuplicatedAlgorithms();
+    //experiment.removeDuplicatedAlgorithms();
   }
 
   @Override

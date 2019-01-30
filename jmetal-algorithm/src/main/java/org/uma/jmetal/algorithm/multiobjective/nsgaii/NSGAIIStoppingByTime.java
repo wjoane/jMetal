@@ -22,11 +22,11 @@ public class NSGAIIStoppingByTime<S extends Solution<?>> extends NSGAII<S> {
    * Constructor
    */
   public NSGAIIStoppingByTime(Problem<S> problem, int populationSize,
-                              int maxComputingTime, int matingPoolSize, int offspringPopulationSize,
+                              int maxComputingTime, int offspringPopulationSize,
                               CrossoverOperator<S> crossoverOperator, MutationOperator<S> mutationOperator,
                               SelectionOperator<List<S>, S> selectionOperator, Comparator<S> dominanceComparator,
                               SolutionListEvaluator<S> evaluator) {
-    super(problem, populationSize, matingPoolSize, offspringPopulationSize,
+    super(problem, populationSize, offspringPopulationSize,
             new TerminationByComputingTime(maxComputingTime) ,
             crossoverOperator, mutationOperator,
         selectionOperator, dominanceComparator, evaluator);

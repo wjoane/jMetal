@@ -50,7 +50,7 @@ public class MOEADAltRunner extends AbstractAlgorithmRunner {
 
     problem = (DoubleProblem) ProblemUtils.<DoubleSolution>loadProblem(problemName);
 
-    int populationSize = 300;
+    int populationSize = 100;
     int neighborSize = 20;
     double neighborhoodSelectionProbability = 0.9;
     int maximumNumberOfReplacedSolutions = 2;
@@ -74,7 +74,7 @@ public class MOEADAltRunner extends AbstractAlgorithmRunner {
 
     new RealTimeChartObserver(algorithm, "MOEA/D", 1,"jmetal-problem/src/test/resources/pareto_fronts/LZ09_F2.pf") ;
     new EvaluationObserver(algorithm) ;
-    new HypervolumeIndicatorChartObserver(algorithm, "Hypervolume", 80, referenceParetoFront) ;
+    //new HypervolumeIndicatorChartObserver(algorithm, "Hypervolume", 80, referenceParetoFront) ;
 
     AlgorithmRunner algorithmRunner = new AlgorithmRunner.Executor(algorithm)
         .execute();

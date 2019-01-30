@@ -39,6 +39,8 @@ public class ExecuteAlgorithms<S extends Solution<?>, Result> implements Experim
     experiment.getAlgorithmList()
             .parallelStream()
             .forEach(algorithm -> algorithm.runAlgorithm(experiment));
+
+    experiment.removeDuplicatedAlgorithms();
   }
 
 

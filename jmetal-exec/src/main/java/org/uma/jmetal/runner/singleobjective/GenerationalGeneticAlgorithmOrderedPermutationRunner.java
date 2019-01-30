@@ -5,14 +5,16 @@ import org.uma.jmetal.algorithm.singleobjective.geneticalgorithm.GeneticAlgorith
 import org.uma.jmetal.operator.CrossoverOperator;
 import org.uma.jmetal.operator.MutationOperator;
 import org.uma.jmetal.operator.SelectionOperator;
-import org.uma.jmetal.operator.impl.crossover.SinglePointCrossover;
-import org.uma.jmetal.operator.impl.mutation.BitFlipMutation;
+import org.uma.jmetal.operator.impl.crossover.PMXCrossover;
+import org.uma.jmetal.operator.impl.mutation.PermutationSwapMutation;
 import org.uma.jmetal.operator.impl.selection.BinaryTournamentSelection;
-import org.uma.jmetal.problem.BinaryProblem;
-import org.uma.jmetal.problem.singleobjective.OneMax;
-import org.uma.jmetal.solution.BinarySolution;
+import org.uma.jmetal.problem.PermutationProblem;
+import org.uma.jmetal.problem.singleobjective.OrderedPermutation;
+import org.uma.jmetal.problem.singleobjective.TSP;
+import org.uma.jmetal.solution.PermutationSolution;
 import org.uma.jmetal.util.AlgorithmRunner;
 import org.uma.jmetal.util.JMetalLogger;
+import org.uma.jmetal.util.comparator.RankingAndCrowdingDistanceComparator;
 import org.uma.jmetal.util.fileoutput.SolutionListOutput;
 import org.uma.jmetal.util.fileoutput.impl.DefaultFileOutputContext;
 
@@ -20,41 +22,41 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Class to configure and run a generational genetic algorithm. The target problem is OneMax.
+ * Class to configure and run a generational genetic algorithm. The target problem is TSP.
  *
  * @author Antonio J. Nebro <antonio@lcc.uma.es>
  */
-public class GenerationalGeneticAlgorithmBinaryEncodingRunner {
+public class GenerationalGeneticAlgorithmOrderedPermutationRunner {
   /**
-   * Usage: java org.uma.jmetal.runner.singleobjective.GenerationalGeneticAlgorithmBinaryEncodingRunner
+   * Usage: java org.uma.jmetal.runner.singleobjective.BinaryGenerationalGeneticAlgorithmRunner
    */
   public static void main(String[] args) throws Exception {
-    BinaryProblem problem;
-    Algorithm<BinarySolution> algorithm;
-    CrossoverOperator<BinarySolution> crossover;
-    MutationOperator<BinarySolution> mutation;
-    SelectionOperator<List<BinarySolution>, BinarySolution> selection;
+    PermutationProblem<PermutationSolution<Integer>> problem;
+    Algorithm<PermutationSolution<Integer>> algorithm;
+    CrossoverOperator<PermutationSolution<Integer>> crossover;
+    MutationOperator<PermutationSolution<Integer>> mutation;
+    SelectionOperator<List<PermutationSolution<Integer>>, PermutationSolution<Integer>> selection;
 
-    problem = new OneMax(512) ;
+    problem = new OrderedPermutation(250) ;
 
-    crossover = new SinglePointCrossover(1.0) ;
+    crossover = new PMXCrossover(0.) ;
 
-    double mutationProbability = 1.0 / problem.getNumberOfBits(0) ;
-    mutation = new BitFlipMutation(mutationProbability) ;
+    double mutationProbability = 1.0 / problem.getNumberOfVariables() ;
+    mutation = new PermutationSwapMutation<Integer>(mutationProbability) ;
 
-    selection = new BinaryTournamentSelection<BinarySolution>();
+    selection = new BinaryTournamentSelection<PermutationSolution<Integer>>(new RankingAndCrowdingDistanceComparator<PermutationSolution<Integer>>());
 
     algorithm = new GeneticAlgorithmBuilder<>(problem, crossover, mutation)
             .setPopulationSize(100)
-            .setMaxEvaluations(20000)
+            .setMaxEvaluations(25000)
             .setSelectionOperator(selection)
             .build() ;
 
     AlgorithmRunner algorithmRunner = new AlgorithmRunner.Executor(algorithm)
             .execute() ;
 
-    BinarySolution solution = algorithm.getResult() ;
-    List<BinarySolution> population = new ArrayList<>(1) ;
+    PermutationSolution<Integer> solution = algorithm.getResult() ;
+    List<PermutationSolution<Integer>> population = new ArrayList<>(1) ;
     population.add(solution) ;
 
     long computingTime = algorithmRunner.getComputingTime() ;
@@ -69,7 +71,5 @@ public class GenerationalGeneticAlgorithmBinaryEncodingRunner {
     JMetalLogger.logger.info("Objectives values have been written to file FUN.tsv");
     JMetalLogger.logger.info("Variables values have been written to file VAR.tsv");
 
-    JMetalLogger.logger.info("Fitness: " + solution.getObjective(0)) ;
-    JMetalLogger.logger.info("Solution: " + solution.getVariableValueString(0)) ;
   }
 }

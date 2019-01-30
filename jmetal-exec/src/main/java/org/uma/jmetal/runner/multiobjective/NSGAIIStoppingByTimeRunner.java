@@ -65,14 +65,12 @@ public class NSGAIIStoppingByTimeRunner extends AbstractAlgorithmRunner {
 
     int thresholdComputingTimeInMilliseconds = 4000 ;
     int populationSize = 100 ;
-    int matingPoolSize = 100 ;
     int offspringPopulationSize = 100 ;
 
     algorithm = new NSGAIIStoppingByTime<DoubleSolution>(
             problem,
             populationSize,
             thresholdComputingTimeInMilliseconds,
-            matingPoolSize,
             offspringPopulationSize,
             crossover,
             mutation,

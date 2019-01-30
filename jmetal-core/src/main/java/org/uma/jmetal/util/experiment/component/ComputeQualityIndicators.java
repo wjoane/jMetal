@@ -2,6 +2,7 @@ package org.uma.jmetal.util.experiment.component;
 
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
+import org.uma.jmetal.problem.Problem;
 import org.uma.jmetal.qualityindicator.QualityIndicator;
 import org.uma.jmetal.qualityindicator.impl.GenericIndicator;
 import org.uma.jmetal.solution.Solution;
@@ -59,32 +60,36 @@ public class ComputeQualityIndicators<S extends Solution<?>, Result> implements 
       for (ExperimentAlgorithm<?, Result> algorithm : experiment.getAlgorithmList()) {
         String algorithmDirectory;
         algorithmDirectory = experiment.getExperimentBaseDirectory() + "/data/" + algorithm.getAlgorithmTag();
-        String problemDirectory = algorithmDirectory + "/" + algorithm.getProblemTag();
+        for (ExperimentProblem<?> problem : experiment.getProblemList()) {
+          String problemDirectory = algorithmDirectory + "/" + problem.getTag();
 
-        String referenceFrontDirectory = experiment.getReferenceFrontDirectory();
+          String referenceFrontDirectory = experiment.getReferenceFrontDirectory();
 
-        String referenceFrontName = referenceFrontDirectory + "/" + algorithm.getReferenceParetoFront();
+          String referenceFrontName = referenceFrontDirectory + "/" + algorithm.getReferenceParetoFront();
 
-        JMetalLogger.logger.info("RF: " + referenceFrontName);
+          JMetalLogger.logger.info("RF: " + referenceFrontName);
 
-        Front referenceFront = new ArrayFront(referenceFrontName);
+          Front referenceFront = new ArrayFront(referenceFrontName);
 
-        FrontNormalizer frontNormalizer = new FrontNormalizer(referenceFront);
-        Front normalizedReferenceFront = frontNormalizer.normalize(referenceFront);
+          FrontNormalizer frontNormalizer = new FrontNormalizer(referenceFront);
+          Front normalizedReferenceFront = frontNormalizer.normalize(referenceFront);
 
-        String qualityIndicatorFile = problemDirectory + "/" + indicator.getName();
+          String qualityIndicatorFile = problemDirectory + "/" + indicator.getName();
 
-        indicator.setReferenceParetoFront(normalizedReferenceFront);
-        String frontFileName = problemDirectory + "/" +
-                experiment.getOutputParetoFrontFileName() + algorithm.getRunId() + ".tsv";
+          indicator.setReferenceParetoFront(normalizedReferenceFront);
+          for (int run = 0; run < experiment.getIndependentRuns(); run++) {
+            String frontFileName = problemDirectory + "/" +
+                experiment.getOutputParetoFrontFileName() + run + ".tsv";
 
-        Front front = new ArrayFront(frontFileName);
-        Front normalizedFront = frontNormalizer.normalize(front);
-        List<PointSolution> normalizedPopulation = FrontUtils.convertFrontToSolutionList(normalizedFront);
-        Double indicatorValue = (Double) indicator.evaluate((List<S>) normalizedPopulation);
-        JMetalLogger.logger.info(indicator.getName() + ": " + indicatorValue);
+            Front front = new ArrayFront(frontFileName);
+            Front normalizedFront = frontNormalizer.normalize(front);
+            List<PointSolution> normalizedPopulation = FrontUtils.convertFrontToSolutionList(normalizedFront);
+            Double indicatorValue = (Double) indicator.evaluate((List<S>) normalizedPopulation);
+            JMetalLogger.logger.info(indicator.getName() + ": " + indicatorValue);
 
-        writeQualityIndicatorValueToFile(indicatorValue, qualityIndicatorFile);
+            writeQualityIndicatorValueToFile(indicatorValue, qualityIndicatorFile);
+          }
+        }
       }
     }
     findBestIndicatorFronts(experiment) ;
@@ -248,9 +253,13 @@ public class ComputeQualityIndicators<S extends Solution<?>, Result> implements 
             if (indicatorFile == null) {
               throw new JMetalException("Indicator file " + indicator.getName() + " doesn't exist");
             }
+            System.out.println("-----");
+            System.out.println(indicatorFileName) ;
 
             List<String> fileArray;
             fileArray = Files.readAllLines(indicatorFile, StandardCharsets.UTF_8);
+            System.out.println(fileArray) ;
+            System.out.println("++++++");
 
             for (int i = 0; i < fileArray.size(); i++) {
               String row = algorithm.getAlgorithmTag() + "," + problem.getTag() + "," + indicator.getName() + "," + i + "," + fileArray.get(i);

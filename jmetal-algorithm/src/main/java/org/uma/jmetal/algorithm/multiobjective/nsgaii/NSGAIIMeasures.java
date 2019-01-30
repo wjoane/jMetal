@@ -41,11 +41,10 @@ public class NSGAIIMeasures<S extends Solution<?>> extends NSGAII<S> implements 
   /**
    * Constructor
    */
-  public NSGAIIMeasures(Problem<S> problem, int populationSize,
-                        int matingPoolSize, int offspringPopulationSize, TerminationCondition terminationCondition,
+  public NSGAIIMeasures(Problem<S> problem, int populationSize, int offspringPopulationSize, TerminationCondition terminationCondition,
                         CrossoverOperator<S> crossoverOperator, MutationOperator<S> mutationOperator,
                         SelectionOperator<List<S>, S> selectionOperator, Comparator<S> dominanceComparator, SolutionListEvaluator<S> evaluator) {
-    super(problem, populationSize, matingPoolSize, offspringPopulationSize, terminationCondition,
+    super(problem, populationSize, offspringPopulationSize, terminationCondition,
             crossoverOperator, mutationOperator, selectionOperator, dominanceComparator, evaluator) ;
 
     referenceFront = new ArrayFront() ;

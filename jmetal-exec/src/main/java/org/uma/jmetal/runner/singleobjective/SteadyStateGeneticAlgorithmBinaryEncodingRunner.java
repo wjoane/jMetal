@@ -35,7 +35,7 @@ public class SteadyStateGeneticAlgorithmBinaryEncodingRunner {
     MutationOperator<BinarySolution> mutation;
     SelectionOperator<List<BinarySolution>, BinarySolution> selection;
 
-    problem = new OneMax(1024) ;
+    problem = new OneMax(512) ;
 
     crossover = new SinglePointCrossover(0.9) ;
 
@@ -45,8 +45,8 @@ public class SteadyStateGeneticAlgorithmBinaryEncodingRunner {
     selection = new BinaryTournamentSelection<BinarySolution>();
 
     algorithm = new GeneticAlgorithmBuilder<>(problem, crossover, mutation)
-        .setPopulationSize(50)
-        .setMaxEvaluations(25000)
+        .setPopulationSize(100)
+        .setMaxEvaluations(20000)
         .setSelectionOperator(selection)
         .setVariant(GeneticAlgorithmBuilder.GeneticAlgorithmVariant.STEADY_STATE)
         .build() ;

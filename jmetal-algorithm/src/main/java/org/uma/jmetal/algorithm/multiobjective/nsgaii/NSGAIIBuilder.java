@@ -52,7 +52,6 @@ public class NSGAIIBuilder<S extends Solution<?>> implements AlgorithmBuilder<NS
     this.problem = problem;
     this.terminationCondition = terminationCondition ;
     this.populationSize = populationSize;
-    matingPoolSize = populationSize;
     offspringPopulationSize = populationSize ;
     this.crossoverOperator = crossoverOperator ;
     this.mutationOperator = mutationOperator ;
@@ -63,15 +62,7 @@ public class NSGAIIBuilder<S extends Solution<?>> implements AlgorithmBuilder<NS
     this.variant = NSGAIIVariant.NSGAII ;
   }
 
-  public NSGAIIBuilder<S> setMatingPoolSize(int matingPoolSize) {
-    if (matingPoolSize < 0) {
-      throw new JMetalException("The mating pool size is negative: " + populationSize);
-    }
 
-    this.matingPoolSize = matingPoolSize;
-
-    return this;
-  }
   public NSGAIIBuilder<S> setOffspringPopulationSize(int offspringPopulationSize) {
     if (offspringPopulationSize < 0) {
       throw new JMetalException("Offspring population size is negative: " + populationSize);
@@ -119,13 +110,10 @@ public class NSGAIIBuilder<S extends Solution<?>> implements AlgorithmBuilder<NS
   public NSGAII<S> build() {
     NSGAII<S> algorithm = null ;
     if (variant.equals(NSGAIIVariant.NSGAII)) {
-      algorithm = new NSGAII<S>(problem, populationSize, matingPoolSize, offspringPopulationSize,
+      algorithm = new NSGAII<S>(problem, populationSize, offspringPopulationSize,
               terminationCondition, crossoverOperator, mutationOperator, selectionOperator, dominanceComparator, evaluator);
-    } else if (variant.equals(NSGAIIVariant.SteadyStateNSGAII)) {
-      algorithm = new SteadyStateNSGAII<S>(problem, populationSize, terminationCondition, crossoverOperator,
-          mutationOperator, selectionOperator, dominanceComparator, evaluator);
     } else if (variant.equals(NSGAIIVariant.Measures)) {
-      algorithm = new NSGAIIMeasures<S>(problem, populationSize, matingPoolSize, offspringPopulationSize, terminationCondition,
+      algorithm = new NSGAIIMeasures<S>(problem, populationSize, offspringPopulationSize, terminationCondition,
               crossoverOperator, mutationOperator, selectionOperator, dominanceComparator, evaluator);
     }
 

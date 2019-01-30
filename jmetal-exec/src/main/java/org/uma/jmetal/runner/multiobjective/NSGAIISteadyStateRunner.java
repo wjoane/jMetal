@@ -67,7 +67,6 @@ public class NSGAIISteadyStateRunner extends AbstractAlgorithmRunner {
     algorithm = new NSGAIIBuilder<DoubleSolution>(problem, populationSize,
             new TerminationByEvaluations(maxEvaluations),crossover, mutation)
             .setSelectionOperator(selection)
-            .setMatingPoolSize(2)
             .setOffspringPopulationSize(1)
             .build();
 

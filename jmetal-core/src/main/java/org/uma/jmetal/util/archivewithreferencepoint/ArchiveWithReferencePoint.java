@@ -86,6 +86,9 @@ public abstract class ArchiveWithReferencePoint <S extends Solution<?>> extends 
       referencePointSolution.setObjective(i, this.referencePoint.get(i));
     }
 
+    getSolutionList().stream().filter(solution -> dominanceTest(solution, referencePointSolution)!= 0) ;
+
+    /*
     int i = 0 ;
     while (i < getSolutionList().size()) {
       if (dominanceTest(getSolutionList().get(i), referencePointSolution) == 0) {
@@ -94,7 +97,7 @@ public abstract class ArchiveWithReferencePoint <S extends Solution<?>> extends 
         i++;
       }
     }
-
+    */
     referencePointSolution = null ;
   }
 
