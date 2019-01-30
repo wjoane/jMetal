@@ -74,9 +74,9 @@ public class NSGAII<S extends Solution<?>> extends AbstractGeneticAlgorithm<S, L
     this.matingPoolSize = offspringPopulationSize *
         crossoverOperator.getNumberOfRequiredParents() / crossoverOperator.getNumberOfGeneratedChildren() ;
 
-    int a = matingPoolSize % crossoverOperator.getNumberOfRequiredParents() ;
-    if (matingPoolSize % crossoverOperator.getNumberOfRequiredParents() != 0) {
-      matingPoolSize += a ;
+    int remainder = matingPoolSize % crossoverOperator.getNumberOfRequiredParents() ;
+    if (remainder != 0) {
+      matingPoolSize += remainder ;
     }
 
     algorithmStatusData = new HashMap<String, Object>();
