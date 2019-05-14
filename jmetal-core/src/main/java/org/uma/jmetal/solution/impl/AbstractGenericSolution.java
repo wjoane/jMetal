@@ -17,6 +17,10 @@ public abstract class AbstractGenericSolution<T, P extends Problem<?>> implement
   private List<T> variables;
   protected P problem ;
   protected Map<Object, Object> attributes ;
+  /**
+   * @deprecated Call {@link JMetalRandom#getInstance()} if you need one.
+   */
+  @Deprecated
   protected final JMetalRandom randomGenerator ;
 
   /**
@@ -37,6 +41,11 @@ public abstract class AbstractGenericSolution<T, P extends Problem<?>> implement
   @Override
   public double[] getObjectives() {
     return objectives ;
+  }
+
+  @Override
+  public List<T> getVariables() {
+    return variables ;
   }
 
   @Override
@@ -151,7 +160,7 @@ public abstract class AbstractGenericSolution<T, P extends Problem<?>> implement
 
           boolean areAttributeValuesEqual;
           if (value instanceof AbstractGenericSolution) {
-            areAttributeValuesEqual = ((AbstractGenericSolution) value).equalsIgnoringAttributes(valueThat);
+            areAttributeValuesEqual = ((AbstractGenericSolution<?, ?>) value).equalsIgnoringAttributes(valueThat);
           } else {
             areAttributeValuesEqual = !value.equals(valueThat);
           }

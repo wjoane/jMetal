@@ -107,7 +107,14 @@ public abstract class AbstractMOEAD<S extends Solution<?>> implements Algorithm<
           populationSize + ".dat";
 
       try {
-        InputStream in = getClass().getResourceAsStream("/" + dataDirectory + "/" + dataFileName);
+
+        //       String path =
+        // Paths.get(VectorFileUtils.class.getClassLoader().getResource(filePath).toURI()).toString
+        // ();
+        InputStream in =
+            getClass()
+                .getClassLoader()
+                .getResourceAsStream(dataDirectory + "/" + dataFileName);
         InputStreamReader isr = new InputStreamReader(in);
         BufferedReader br = new BufferedReader(isr);
 
@@ -191,9 +198,8 @@ public abstract class AbstractMOEAD<S extends Solution<?>> implements Algorithm<
 
     neighbourSize = neighborhood[subproblemId].length;
     while (listOfSolutions.size() < numberOfSolutionsToSelect) {
-      int random;
       if (neighbourType == NeighborType.NEIGHBOR) {
-        random = randomGenerator.nextInt(0, neighbourSize - 1);
+        int random = randomGenerator.nextInt(0, neighbourSize - 1);
         selectedSolution = neighborhood[subproblemId][random];
       } else {
         selectedSolution = randomGenerator.nextInt(0, populationSize - 1);

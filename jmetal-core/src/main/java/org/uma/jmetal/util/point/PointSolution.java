@@ -1,9 +1,8 @@
 package org.uma.jmetal.util.point;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 import org.uma.jmetal.solution.Solution;
+
+import java.util.*;
 
 /**
  * Solution used to wrap a {@link Point} object. Only objectives are used.
@@ -81,11 +80,17 @@ public class PointSolution implements Solution<Double> {
     return objectives ;
   }
 
+  @Override
+  public List<Double> getVariables() {
+    return Collections.emptyList() ;
+  }
+
   @Override public Double getVariableValue(int index) {
     return null;
   }
 
   @Override public void setVariableValue(int index, Double value) {
+	  //This method is an intentionally-blank override.
   }
 
   @Override public String getVariableValueString(int index) {
@@ -135,5 +140,10 @@ public class PointSolution implements Solution<Double> {
   @Override
 	public String toString() {
 		return Arrays.toString(objectives);
+	}
+
+	@Override
+	public Map<Object, Object> getAttributes() {
+		return attributes;
 	}
 }

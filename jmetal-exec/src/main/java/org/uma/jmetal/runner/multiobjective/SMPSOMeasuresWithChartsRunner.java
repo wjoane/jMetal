@@ -4,21 +4,19 @@ import org.knowm.xchart.BitmapEncoder;
 import org.uma.jmetal.algorithm.Algorithm;
 import org.uma.jmetal.algorithm.multiobjective.smpso.SMPSOBuilder;
 import org.uma.jmetal.algorithm.multiobjective.smpso.SMPSOMeasures;
-import org.uma.jmetal.measure.MeasureListener;
-import org.uma.jmetal.measure.MeasureManager;
-import org.uma.jmetal.measure.impl.BasicMeasure;
-import org.uma.jmetal.measure.impl.CountingMeasure;
 import org.uma.jmetal.operator.MutationOperator;
 import org.uma.jmetal.operator.impl.mutation.PolynomialMutation;
 import org.uma.jmetal.problem.DoubleProblem;
-import org.uma.jmetal.problem.multiobjective.dtlz.DTLZ1;
-import org.uma.jmetal.problem.multiobjective.dtlz.DTLZ3;
 import org.uma.jmetal.solution.DoubleSolution;
 import org.uma.jmetal.util.*;
 import org.uma.jmetal.util.archive.BoundedArchive;
 import org.uma.jmetal.util.archive.impl.CrowdingDistanceArchive;
 import org.uma.jmetal.util.chartcontainer.ChartContainer;
 import org.uma.jmetal.util.evaluator.impl.SequentialSolutionListEvaluator;
+import org.uma.jmetal.util.measure.MeasureListener;
+import org.uma.jmetal.util.measure.MeasureManager;
+import org.uma.jmetal.util.measure.impl.BasicMeasure;
+import org.uma.jmetal.util.measure.impl.CountingMeasure;
 import org.uma.jmetal.util.pseudorandom.impl.MersenneTwisterGenerator;
 
 import java.io.IOException;
@@ -49,8 +47,8 @@ public class SMPSOMeasuresWithChartsRunner extends AbstractAlgorithmRunner {
       problemName = args[0] ;
       referenceParetoFront = args[1] ;
     } else {
-      problemName = "org.uma.jmetal.problem.multiobjective.zdt.ZDT3";
-      referenceParetoFront = "jmetal-problem/src/test/resources/pareto_fronts/ZDT3.pf" ;
+      problemName = "org.uma.jmetal.problem.multiobjective.zdt.ZDT1";
+      referenceParetoFront = "jmetal-problem/src/test/resources/pareto_fronts/ZDT4.pf" ;
     }
 
     problem = (DoubleProblem) ProblemUtils.<DoubleSolution> loadProblem(problemName);
@@ -82,7 +80,7 @@ public class SMPSOMeasuresWithChartsRunner extends AbstractAlgorithmRunner {
 
     ChartContainer chart = new ChartContainer(algorithm.getName(), 80);
     chart.setFrontChart(0, 1, referenceParetoFront);
-    chart.setVarChart(0, 1);
+    //chart.setVarChart(0, 1);
     chart.initChart();
 
     solutionListMeasure.register(new ChartListener(chart));

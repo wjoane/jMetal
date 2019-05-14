@@ -3,8 +3,10 @@ package org.uma.jmetal.solution.impl;
 import org.uma.jmetal.problem.BinaryProblem;
 import org.uma.jmetal.solution.BinarySolution;
 import org.uma.jmetal.util.binarySet.BinarySet;
+import org.uma.jmetal.util.pseudorandom.JMetalRandom;
 
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Defines an implementation of a binary solution
@@ -20,7 +22,7 @@ public class DefaultBinarySolution
   public DefaultBinarySolution(BinaryProblem problem) {
     super(problem) ;
 
-    initializeBinaryVariables();
+    initializeBinaryVariables(JMetalRandom.getInstance());
     initializeObjectiveValues();
   }
 
@@ -39,7 +41,7 @@ public class DefaultBinarySolution
     attributes = new HashMap<Object, Object>(solution.attributes) ;
   }
 
-  private BinarySet createNewBitSet(int numberOfBits) {
+  private static BinarySet createNewBitSet(int numberOfBits, JMetalRandom randomGenerator) {
     BinarySet bitSet = new BinarySet(numberOfBits) ;
 
     for (int i = 0; i < numberOfBits; i++) {
@@ -87,9 +89,14 @@ public class DefaultBinarySolution
     return result ;
   }
   
-  private void initializeBinaryVariables() {
+  private void initializeBinaryVariables(JMetalRandom randomGenerator) {
     for (int i = 0; i < problem.getNumberOfVariables(); i++) {
-      setVariableValue(i, createNewBitSet(problem.getNumberOfBits(i)));
+      setVariableValue(i, createNewBitSet(problem.getNumberOfBits(i), randomGenerator));
     }
   }
+
+	@Override
+	public Map<Object, Object> getAttributes() {
+		return attributes;
+	}
 }

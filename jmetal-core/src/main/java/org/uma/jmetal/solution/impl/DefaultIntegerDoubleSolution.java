@@ -2,8 +2,10 @@ package org.uma.jmetal.solution.impl;
 
 import org.uma.jmetal.problem.IntegerDoubleProblem;
 import org.uma.jmetal.solution.IntegerDoubleSolution;
+import org.uma.jmetal.util.pseudorandom.JMetalRandom;
 
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Defines an implementation of a class for solutions having integers and doubles
@@ -25,7 +27,7 @@ public class DefaultIntegerDoubleSolution
     numberOfIntegerVariables = problem.getNumberOfIntegerVariables() ;
     numberOfDoubleVariables = problem.getNumberOfDoubleVariables() ;
 
-    initializeIntegerDoubleVariables() ;
+    initializeIntegerDoubleVariables(JMetalRandom.getInstance()) ;
     initializeObjectiveValues() ;
   }
 
@@ -78,7 +80,7 @@ public class DefaultIntegerDoubleSolution
     return getVariableValue(index).toString() ;
   }
   
-  private void initializeIntegerDoubleVariables() {
+  private void initializeIntegerDoubleVariables(JMetalRandom randomGenerator) {
     for (int i = 0 ; i < numberOfIntegerVariables; i++) {
       Integer value = randomGenerator.nextInt((Integer)getLowerBound(i), (Integer)getUpperBound(i)) ;
       setVariableValue(i, value) ;
@@ -89,4 +91,9 @@ public class DefaultIntegerDoubleSolution
       setVariableValue(i, value) ;
     }
   }
+  
+	@Override
+	public Map<Object, Object> getAttributes() {
+		return attributes;
+	}
 }
