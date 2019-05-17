@@ -2,8 +2,8 @@ package org.uma.jmetal.algorithm.multiobjective.adm;
 
 import org.uma.jmetal.algorithm.Algorithm;
 import org.uma.jmetal.algorithm.InteractiveAlgorithm;
+import org.uma.jmetal.algorithm.multiobjective.nsgaiii.util.ReferencePoint;
 import org.uma.jmetal.problem.Problem;
-import org.uma.jmetal.util.referencePoint.ReferencePoint;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,24 +22,24 @@ public abstract class ArtificialDecisionMaker<S, R> implements Algorithm<R> {
     this.paretoOptimalSolutions = new ArrayList<>();
   }
 
-  protected abstract List<ReferencePoint> generatePreferenceInformation();
+  protected abstract List<Double> generatePreferenceInformation();
   protected abstract boolean isStoppingConditionReached();
   protected abstract void initProgress();
   protected abstract void updateProgress();
   protected abstract List<Integer> relevantObjectiveFunctions(R front);
-  protected abstract List<ReferencePoint>  calculateReferencePoints(
+  protected abstract List<Double>  calculateReferencePoints(
       List<Integer> indexOfRelevantObjectiveFunctions,R front,List<S> paretoOptimalSolutions);
   protected abstract void updateParetoOptimal(R front,List<S> paretoOptimalSolutions);
-  public abstract List<ReferencePoint> getReferencePoints();
+  public abstract List<List<Double>> getReferencePoints();
   public abstract List<Double> getDistances();
   @Override
   public void run() {
-    List<ReferencePoint> initialReferencePoints=generatePreferenceInformation();
+    List<Double> initialReferencePoints=generatePreferenceInformation();
     R front;
-    List<ReferencePoint> interestingPoint=initialReferencePoints;
+    List<Double> interestingPoint=initialReferencePoints;
     initProgress();
     while (!isStoppingConditionReached()) {
-      this.algorithm.updateInterestPoint(interestingPoint);
+      this.algorithm.updatePointOfInterest(interestingPoint);
       this.algorithm.run();
       front=this.algorithm.getResult();
       updateParetoOptimal(front,paretoOptimalSolutions);

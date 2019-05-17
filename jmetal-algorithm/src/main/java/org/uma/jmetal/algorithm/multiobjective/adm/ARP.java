@@ -18,6 +18,8 @@ import org.uma.jmetal.util.comparator.ObjectiveComparator;
 import org.uma.jmetal.util.distance.impl.EuclideanDistanceBetweenSolutionsInObjectiveSpace;
 import org.uma.jmetal.util.point.Point;
 import org.uma.jmetal.util.point.impl.ArrayPoint;
+import org.uma.jmetal.util.point.impl.IdealPoint;
+import org.uma.jmetal.util.point.impl.NadirPoint;
 import org.uma.jmetal.util.point.util.distance.EuclideanDistance;
 import org.uma.jmetal.util.pseudorandom.JMetalRandom;
 
@@ -30,7 +32,7 @@ public class ARP<S extends Solution<?>> extends ArtificialDecisionMaker<S,List<S
   protected List<Double> idealOjectiveVector = null;
   protected List<Double> nadirObjectiveVector = null;
   protected List<Double> rankingCoeficient = null;
-  protected ReferencePoint asp = null;
+  protected List<Double> asp = null;
   protected double tolerance;
   protected int numberReferencePoints;
   protected JMetalRandom random = null;
@@ -39,8 +41,8 @@ public class ARP<S extends Solution<?>> extends ArtificialDecisionMaker<S,List<S
   protected double varyingProbability;
   protected int evaluations;
   protected int maxEvaluations;
-  protected List<ReferencePoint> allReferencePoints;
-  protected ReferencePoint currentReferencePoint;
+  protected List<List<Double>> allReferencePoints;
+  protected List<Double> currentReferencePoint;
   protected List<Double> distances;
   protected List<Double> distancesRP;
   private List<Double> min = null;
@@ -50,10 +52,13 @@ public class ARP<S extends Solution<?>> extends ArtificialDecisionMaker<S,List<S
       InteractiveAlgorithm<S,List<S>> algorithm,double considerationProbability,double tolerance,int maxEvaluations
   ,List<Double> rankingCoeficient,int numberReferencePoints,List<Double> asp,String aspFile, int aspOrden) {
     super(problem, algorithm);
+    this.numberOfObjectives=problem.getNumberOfObjectives();
+    this.idealOjectiveVector = Util.initializeList(this.numberOfObjectives);
+    this.nadirObjectiveVector = Util.initializeList(this.numberOfObjectives);
     this.considerationProbability = considerationProbability;
     this.varyingProbability = considerationProbability;
     this.tolerance = tolerance;
-    numberOfObjectives=problem.getNumberOfObjectives();
+
     this.random = JMetalRandom.getInstance();
     this.maxEvaluations = maxEvaluations;
     this.rankingCoeficient = rankingCoeficient;
@@ -89,14 +94,7 @@ public class ARP<S extends Solution<?>> extends ArtificialDecisionMaker<S,List<S
       }*/
       }
     }
-    if(asp!=null){
-      this.asp= new IdealPoint(numberOfObjectives);
-      int i=0;
-      for (Double obj:asp) {
-        this.asp.setObjective(i,obj);
-        i++;
-      }
-    }
+    this.asp = asp;
   }
 
 
@@ -112,53 +110,38 @@ public class ARP<S extends Solution<?>> extends ArtificialDecisionMaker<S,List<S
       Collections.sort(solutionList, new ObjectiveComparator<>(j));
       double objetiveMinn = solutionList.get(0).getObjective(j);
       double objetiveMaxn = solutionList.get(solutionList.size() - 1).getObjective(j);
-      idealOjectiveVector.setObjective(j,objetiveMinn);
-      nadirObjectiveVector.setObjective(j,objetiveMaxn);
+      idealOjectiveVector.set(j,objetiveMinn);
+      nadirObjectiveVector.set(j,objetiveMaxn);
     }
     if(problem instanceof AbstractDoubleProblem){
       AbstractDoubleProblem aux =(AbstractDoubleProblem)problem;
       for (int i = 0; i < numberOfObjectives ; i++) {
-        idealOjectiveVector.setObjective(i,aux.getLowerBound(i));
-        nadirObjectiveVector.setObjective(i,aux.getUpperBound(i));
+        idealOjectiveVector.set(i,aux.getLowerBound(i));
+        nadirObjectiveVector.set(i,aux.getUpperBound(i));
       }
     }else if(problem instanceof AbstractIntegerProblem){
       AbstractIntegerProblem aux =(AbstractIntegerProblem)problem;
       for (int i = 0; i < numberOfObjectives ; i++) {
-        idealOjectiveVector.setObjective(i,aux.getLowerBound(i));
-        nadirObjectiveVector.setObjective(i,aux.getUpperBound(i));
+        idealOjectiveVector.set(i,aux.getLowerBound(i).doubleValue());
+        nadirObjectiveVector.set(i,aux.getUpperBound(i).doubleValue());
       }
     }else if(problem instanceof AbstractIntegerDoubleProblem){
       AbstractIntegerDoubleProblem aux =(AbstractIntegerDoubleProblem)problem;
       for (int i = 0; i < numberOfObjectives ; i++) {
-        idealOjectiveVector.setObjective(i,aux.getLowerBound(i).doubleValue());
-        nadirObjectiveVector.setObjective(i,aux.getUpperBound(i).doubleValue());
+        idealOjectiveVector.set(i,aux.getLowerBound(i).doubleValue());
+        nadirObjectiveVector.set(i,aux.getUpperBound(i).doubleValue());
       }
     }
     if(asp==null)
       asp = idealOjectiveVector;
   }
 
-  private IdealPoint createReferencePointIdeal(List<Double> list){
-    IdealPoint solution =  new IdealPoint(numberOfObjectives);
-    for (int i = 0; i < list.size() ; i++) {
-      solution.setObjective(i,list.get(i));
-      solution.setVariableValue(i,list.get(i));
-    }
-    return solution;
-  }
-  private NadirPoint createReferencePointNadir(List<Double> list){
-    NadirPoint solution =  new NadirPoint(numberOfObjectives);
-    for (int i = 0; i < list.size() ; i++) {
-      solution.setObjective(i,list.get(i));
-      solution.setVariableValue(i,list.get(i));
-    }
-    return solution;
-  }
-  @Override
-  protected List<ReferencePoint> generatePreferenceInformation() {
 
-    idealOjectiveVector = createReferencePointIdeal(min);//new IdealPoint(numberOfObjectives);
-    nadirObjectiveVector = createReferencePointNadir(max);
+  @Override
+  protected List<Double> generatePreferenceInformation() {
+
+     Collections.copy(idealOjectiveVector,min);//new IdealPoint(numberOfObjectives);
+    Collections.copy(nadirObjectiveVector,max);
 
     List<S> solutions = new ArrayList<>();
     S sol = problem.createSolution();
@@ -166,9 +149,9 @@ public class ARP<S extends Solution<?>> extends ArtificialDecisionMaker<S,List<S
     solutions.add(sol);
    // updateObjectiveVector(solutions);
    // solutionRun = solutions.get(0);
-    List<ReferencePoint> referencePoints  = new ArrayList<>();
+    List<Double> referencePoints  = new ArrayList<>();
     for (int i=0;i < numberReferencePoints;i++){
-      ReferencePoint referencePoint = new IdealPoint(numberOfObjectives);
+      List<Double> referencePoint = Util.initializeList(numberOfObjectives);
       for (int j = 0; j < numberOfObjectives; j++) {
         double rand = random.nextDouble(0.0, 1.0);
        // double mult=0.25;
@@ -176,15 +159,16 @@ public class ARP<S extends Solution<?>> extends ArtificialDecisionMaker<S,List<S
          // mult=10;
        // }
         if (rand < considerationProbability * rankingCoeficient.get(i)) {
-          referencePoint.setObjective(j, asp.getObjective(j));
+          referencePoint.set(j, asp.get(j));
         } else {
-          referencePoint.setObjective(j, nadirObjectiveVector.getObjective(j));
+          referencePoint.set(j, nadirObjectiveVector.get(j));
         }
       }
-      referencePoints.add(referencePoint);
+      referencePoints.addAll(referencePoint);
+      if(i==0) currentReferencePoint = referencePoint;
     }
-    currentReferencePoint = referencePoints.get(0);
-    allReferencePoints.addAll(referencePoints);
+
+    allReferencePoints.add(referencePoints);
     return referencePoints;
   }
 
@@ -242,7 +226,7 @@ public class ARP<S extends Solution<?>> extends ArtificialDecisionMaker<S,List<S
     S solution = getSolution(front,currentReferencePoint);
     for (Integer i : order) {
       double rand = random.nextDouble(0.0, 1.0);
-      if ((asp.getObjective(i) - solution.getObjective(i)) < tolerance
+      if ((asp.get(i) - solution.getObjective(i)) < tolerance
           && rand < considerationProbability) {
         indexRelevantObjectivesFunctions.add(i);
       } else if (rand < varyingProbability) {
@@ -254,9 +238,9 @@ public class ARP<S extends Solution<?>> extends ArtificialDecisionMaker<S,List<S
   }
 
   @Override
-  protected List<ReferencePoint> calculateReferencePoints(
+  protected List<Double> calculateReferencePoints(
       List<Integer> indexOfRelevantObjectiveFunctions, List<S> front,List<S> paretoOptimalSolutions) {
-    List<ReferencePoint> result = new ArrayList<>();
+    List<Double> result = new ArrayList<>();
     List<S> temporal = new ArrayList<>(front);
     S solution = null;
   //  if(distances.isEmpty()){
@@ -281,40 +265,30 @@ public class ARP<S extends Solution<?>> extends ArtificialDecisionMaker<S,List<S
      // if (indexOfRelevantObjectiveFunctions.size() == numberOfObjectives) {
        // result.add(getReferencePointFromSolution(solution));
       //} else {
-        ReferencePoint referencePoint = new IdealPoint(numberOfObjectives);
-        for (int i = 0; i < referencePoint.getNumberOfObjectives(); i++) {
+        List<Double> referencePoint = Util.initializeList(numberOfObjectives);
+        for (int i = 0; i < numberOfObjectives; i++) {
           if (indexOfRelevantObjectiveFunctions.contains(i)) {
-            referencePoint.setObjective(i,
-                asp.getObjective(i) - (asp.getObjective(i) - solution.getObjective(i)) / 2);
+            referencePoint.set(i,
+                asp.get(i) - (asp.get(i) - solution.getObjective(i)) / 2);
           } else {
             //predict the i position of reference point
-            referencePoint.setObjective(i, prediction(i,front,solution));//paretoOptimalSolutions
+            referencePoint.set(i, prediction(i,front,solution));//paretoOptimalSolutions
            // referencePoint.setObjective(i,
              ///   asp.getObjective(i) - (asp.getObjective(i) - solution.getObjective(i)) / 2);
           }
         }
-        result.add(referencePoint);
+        result.addAll(referencePoint);
       //}
+      if(numRefPoint==0) currentReferencePoint= referencePoint;
     }
-
-    currentReferencePoint = result.get(0);
-    allReferencePoints.addAll(result);
+    allReferencePoints.add(result);
 
     return result;
   }
 
-  private void calculateDistanceRP(ReferencePoint solution, ReferencePoint referencePoint) {
-    EuclideanDistanceBetweenSolutionsInObjectiveSpace euclidean = new EuclideanDistanceBetweenSolutionsInObjectiveSpace();
-    //EuclideanDistance euclideanDistance = new EuclideanDistance();
 
-    //double distance = euclideanDistance.compute(getPointFromSolution(solution),
-    //    getPointFromReferencePoint(referencePoint));
-    double distance = euclidean
-        .getDistance(getSolutionFromRP(solution), getSolutionFromRP(referencePoint));
-    distances.add(distance);
-  }
 
-  private void calculateDistance(S solution, ReferencePoint referencePoint) {
+  private void calculateDistance(S solution, List<Double> referencePoint) {
     EuclideanDistanceBetweenSolutionsInObjectiveSpace euclidean = new EuclideanDistanceBetweenSolutionsInObjectiveSpace();
     //EuclideanDistance euclideanDistance = new EuclideanDistance();
 
@@ -325,28 +299,17 @@ public class ARP<S extends Solution<?>> extends ArtificialDecisionMaker<S,List<S
     //System.out.println(distance);
     distances.add(distance);
   }
-  private DoubleSolution getSolutionFromRP(ReferencePoint referencePoint){
+  private DoubleSolution getSolutionFromRP(List<Double> referencePoint){
     DoubleSolution result = (DoubleSolution)problem.createSolution();
     for (int i = 0; i < result.getNumberOfObjectives(); i++) {
-      result.setObjective(i,referencePoint.getObjective(i));
-      result.setVariableValue(i,referencePoint.getObjective(i));
+      result.setObjective(i,referencePoint.get(i));
+      result.setVariableValue(i,referencePoint.get(i));
 
     }
     return result;
   }
 
-  private void calculateDistanceRP(S solution, ReferencePoint referencePoint){
-    EuclideanDistance euclideanDistance = new EuclideanDistance();
 
-    double distance = euclideanDistance.compute(getPointFromSolution(solution),
-        getPointFromReferencePoint(referencePoint));
-    distancesRP.add(distance);
-  }
-  private ReferencePoint getReferencePointFromSolution(S solution) {
-    ReferencePoint result = new IdealPoint(solution.getNumberOfObjectives());
-    result.update(solution);
-    return result;
-  }
  /* @Override
   protected double calculateComponentReferencePoint(int index,List<S> front) {
     S solution = getSolution(front,currentReferencePoint);
@@ -374,9 +337,9 @@ public class ARP<S extends Solution<?>> extends ArtificialDecisionMaker<S,List<S
   }
 
   @Override
-  public List<ReferencePoint> getReferencePoints() {
+  public List<List<Double>> getReferencePoints() {
 
-    allReferencePoints.remove(allReferencePoints.size()-1);
+   allReferencePoints.remove(allReferencePoints.size()-1);
    return allReferencePoints;
   }
 
@@ -388,7 +351,7 @@ public class ARP<S extends Solution<?>> extends ArtificialDecisionMaker<S,List<S
     return distances;
   }
 
-  private S getSolution(List<S> front, ReferencePoint referencePoint) {
+  private S getSolution(List<S> front, List<Double> referencePoint) {
     S result = front.get(0);
     EuclideanDistanceBetweenSolutionsInObjectiveSpace euclidean = new EuclideanDistanceBetweenSolutionsInObjectiveSpace();
     // EuclideanDistance euclideanDistance = new EuclideanDistance();
@@ -404,7 +367,7 @@ public class ARP<S extends Solution<?>> extends ArtificialDecisionMaker<S,List<S
     result = map.get(map.firstKey());
     return result;
   }
-  private S getMaxSolution(List<S> front, ReferencePoint referencePoint) {
+  private S getMaxSolution(List<S> front, List<Double> referencePoint) {
     S result = front.get(0);
     EuclideanDistanceBetweenSolutionsInObjectiveSpace euclidean = new EuclideanDistanceBetweenSolutionsInObjectiveSpace();
     // EuclideanDistance euclideanDistance = new EuclideanDistance();
@@ -420,30 +383,16 @@ public class ARP<S extends Solution<?>> extends ArtificialDecisionMaker<S,List<S
     result = map.get(map.lastKey());
     return result;
   }
-  private Point getPointFromSolution(S solution) {
-    Point result = new ArrayPoint(solution.getNumberOfObjectives());
-    for (int i = 0; i < solution.getNumberOfObjectives(); i++) {
-      result.setDimensionValue(i, solution.getObjective(i));
-    }
-    return result;
-  }
 
-  private Point getPointFromReferencePoint(ReferencePoint referencePoint) {
-    Point result = new ArrayPoint(referencePoint.getNumberOfObjectives());
-    for (int i = 0; i < referencePoint.getNumberOfObjectives(); i++) {
-      result.setDimensionValue(i, referencePoint.getObjective(i));
-    }
-    return result;
-  }
-  private S referencePointToSolution(ReferencePoint referencePoint){
+  private S referencePointToSolution(List<Double> referencePoint){
    S result = problem.createSolution();
-    for (int i = 0; i < referencePoint.getNumberOfObjectives(); i++) {
-      result.setObjective(i,referencePoint.getObjective(i));
+    for (int i = 0; i < problem.getNumberOfObjectives(); i++) {
+      result.setObjective(i,referencePoint.get(i));
     }
     return result;
   }
 
-  public S getProjection(ReferencePoint referencePoint) {
+  public S getProjection(List<Double> referencePoint) {
     S solution = problem.createSolution();
    double [] [] weights = new double[1][rankingCoeficient.size()];
    int i=0;
@@ -453,16 +402,16 @@ public class ARP<S extends Solution<?>> extends ArtificialDecisionMaker<S,List<S
     }
     List<Double> interestPoint = new ArrayList<>();
 
-    for (int j = 0; j < referencePoint.getNumberOfObjectives(); j++) {
-      interestPoint.add(referencePoint.getObjective(j));
+    for (int j = 0; j < problem.getNumberOfObjectives(); j++) {
+      interestPoint.add(referencePoint.get(j));
     }
     List<Double> nadir = new ArrayList<>();
-    for (int j = 0; j < nadirObjectiveVector.getNumberOfObjectives(); j++) {
-      nadir.add(nadirObjectiveVector.getObjective(j));
+    for (int j = 0; j < problem.getNumberOfObjectives(); j++) {
+      nadir.add(nadirObjectiveVector.get(j));
     }
     List<Double> utopia = new ArrayList<>();
-    for (int j = 0; j <idealOjectiveVector.getNumberOfObjectives() ; j++) {
-      utopia.add(idealOjectiveVector.getObjective(j));
+    for (int j = 0; j <problem.getNumberOfObjectives() ; j++) {
+      utopia.add(idealOjectiveVector.get(j));
     }
     ASFWASFGA<S> asf = new ASFWASFGA<S>(weights, interestPoint);
     asf.setNadir(nadir);
