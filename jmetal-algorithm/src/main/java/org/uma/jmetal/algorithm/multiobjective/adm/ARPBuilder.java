@@ -8,32 +8,27 @@ import org.uma.jmetal.util.JMetalException;
 
 import java.util.List;
 
-/**
- * @author Antonio J. Nebro <antonio@lcc.uma.es>
- */
+/** @author Antonio J. Nebro <antonio@lcc.uma.es> */
 public class ARPBuilder<S extends Solution<?>> implements AlgorithmBuilder<ARP<S>> {
 
-  /**
-   * NSGAIIBuilder class
-   */
+  /** NSGAIIBuilder class */
   private final Problem<S> problem;
+
   private int maxEvaluations;
-  private InteractiveAlgorithm<S,List<S>> algorithm;
+  private InteractiveAlgorithm<S, List<S>> algorithm;
   private double considerationProbability;
   private double tolerance;
   private List<Double> rankingCoeficient;
   private int numberReferencePoints;
   private List<Double> asp;
   private String aspFile;
-  private int aspOrden =0;
-  /**
-   * ARPBuilder constructor
-   */
-  public ARPBuilder(Problem<S> problem, InteractiveAlgorithm<S,List<S>> algorithm) {
+  private int aspOrden = 0;
+  /** ARPBuilder constructor */
+  public ARPBuilder(Problem<S> problem, InteractiveAlgorithm<S, List<S>> algorithm) {
     this.problem = problem;
     this.maxEvaluations = 25000;
     this.algorithm = algorithm;
-    this.numberReferencePoints =1;
+    this.numberReferencePoints = 1;
   }
 
   public ARPBuilder<S> setMaxEvaluations(int maxEvaluations) {
@@ -45,13 +40,13 @@ public class ARPBuilder<S extends Solution<?>> implements AlgorithmBuilder<ARP<S
     return this;
   }
 
-  public ARPBuilder<S>  setAsp(List<Double> asp) {
+  public ARPBuilder<S> setAsp(List<Double> asp) {
     this.asp = asp;
     return this;
   }
 
-  public ARPBuilder<S> setAlgorithm(InteractiveAlgorithm<S,List<S>> algorithm) {
-    if (algorithm==null) {
+  public ARPBuilder<S> setAlgorithm(InteractiveAlgorithm<S, List<S>> algorithm) {
+    if (algorithm == null) {
       throw new JMetalException("algorithm is null");
     }
     this.algorithm = algorithm;
@@ -60,7 +55,8 @@ public class ARPBuilder<S extends Solution<?>> implements AlgorithmBuilder<ARP<S
 
   public ARPBuilder<S> setConsiderationProbability(double considerationProbability) {
     if (considerationProbability < 0.0) {
-      throw new JMetalException("considerationProbability is negative: " + considerationProbability);
+      throw new JMetalException(
+          "considerationProbability is negative: " + considerationProbability);
     }
     this.considerationProbability = considerationProbability;
     return this;
@@ -95,13 +91,22 @@ public class ARPBuilder<S extends Solution<?>> implements AlgorithmBuilder<ARP<S
   }
 
   public ARP<S> build() {
-    ARP<S> algorithmRun = null ;
-    algorithmRun = new ARP<S>(problem,algorithm,considerationProbability,tolerance, maxEvaluations,
-          rankingCoeficient,numberReferencePoints,asp,aspFile,aspOrden);
+    ARP<S> algorithmRun = null;
+    algorithmRun =
+        new ARP<S>(
+            problem,
+            algorithm,
+            considerationProbability,
+            tolerance,
+            maxEvaluations,
+            rankingCoeficient,
+            numberReferencePoints,
+            asp,
+            aspFile,
+            aspOrden);
 
-    return algorithmRun ;
+    return algorithmRun;
   }
-
 
   /* Getters */
   public Problem<S> getProblem() {
@@ -111,5 +116,4 @@ public class ARPBuilder<S extends Solution<?>> implements AlgorithmBuilder<ARP<S
   public int getMaxIterations() {
     return maxEvaluations;
   }
-
 }
