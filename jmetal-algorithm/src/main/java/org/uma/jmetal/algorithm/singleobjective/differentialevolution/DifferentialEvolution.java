@@ -15,6 +15,7 @@ import java.util.List;
 
 /**
  * This class implements a differential evolution algorithm.
+ *
  * @author Antonio J. Nebro <antonio@lcc.uma.es>
  */
 @SuppressWarnings("serial")
@@ -36,23 +37,34 @@ public class DifferentialEvolution extends AbstractDifferentialEvolution<DoubleS
    * @param selectionOperator
    * @param evaluator
    */
-  public DifferentialEvolution(DoubleProblem problem, int maxEvaluations, int populationSize,
+  public DifferentialEvolution(
+      DoubleProblem problem,
+      int maxEvaluations,
+      int populationSize,
       DifferentialEvolutionCrossover crossoverOperator,
-      DifferentialEvolutionSelection selectionOperator, SolutionListEvaluator<DoubleSolution> evaluator) {
-    setProblem(problem); ;
+      DifferentialEvolutionSelection selectionOperator,
+      SolutionListEvaluator<DoubleSolution> evaluator) {
+    setProblem(problem);
+    ;
     this.maxEvaluations = maxEvaluations;
     this.populationSize = populationSize;
     this.crossoverOperator = crossoverOperator;
     this.selectionOperator = selectionOperator;
     this.evaluator = evaluator;
-
+    this.population = null;
     comparator = new ObjectiveComparator<DoubleSolution>(0);
   }
 
-  public DifferentialEvolution(DoubleProblem problem, int maxEvaluations, int populationSize,
-                               DifferentialEvolutionCrossover crossoverOperator,
-                               DifferentialEvolutionSelection selectionOperator, SolutionListEvaluator<DoubleSolution> evaluator,List<DoubleSolution> pop) {
-    setProblem(problem); ;
+  public DifferentialEvolution(
+      DoubleProblem problem,
+      int maxEvaluations,
+      int populationSize,
+      DifferentialEvolutionCrossover crossoverOperator,
+      DifferentialEvolutionSelection selectionOperator,
+      SolutionListEvaluator<DoubleSolution> evaluator,
+      List<DoubleSolution> pop) {
+    setProblem(problem);
+    ;
     this.maxEvaluations = maxEvaluations;
     this.populationSize = populationSize;
     this.crossoverOperator = crossoverOperator;
@@ -62,7 +74,6 @@ public class DifferentialEvolution extends AbstractDifferentialEvolution<DoubleS
     comparator = new ObjectiveComparator<DoubleSolution>(0);
   }
 
-
   public int getEvaluations() {
     return evaluations;
   }
@@ -71,36 +82,47 @@ public class DifferentialEvolution extends AbstractDifferentialEvolution<DoubleS
     this.evaluations = evaluations;
   }
 
-  @Override protected void initProgress() {
+  @Override
+  protected void initProgress() {
     evaluations = populationSize;
   }
 
-  @Override protected void updateProgress() {
+  @Override
+  protected void updateProgress() {
     evaluations += populationSize;
   }
 
-  @Override protected boolean isStoppingConditionReached() {
+  @Override
+  protected boolean isStoppingConditionReached() {
     return evaluations >= maxEvaluations;
   }
 
-  @Override protected List<DoubleSolution> createInitialPopulation() {
-    List<DoubleSolution> population = new ArrayList<>(populationSize);
-    for (int i = 0; i < populationSize; i++) {
-      DoubleSolution newIndividual = getProblem().createSolution();
-      population.add(newIndividual);
+  @Override
+  protected List<DoubleSolution> createInitialPopulation() {
+
+    List<DoubleSolution> population = this.population;
+    if (population == null) {
+     population= new ArrayList<>(populationSize);
+      for (int i = 0; i < populationSize; i++) {
+        DoubleSolution newIndividual = getProblem().createSolution();
+        population.add(newIndividual);
+      }
     }
     return population;
   }
 
-  @Override protected List<DoubleSolution> evaluatePopulation(List<DoubleSolution> population) {
+  @Override
+  protected List<DoubleSolution> evaluatePopulation(List<DoubleSolution> population) {
     return evaluator.evaluate(population, getProblem());
   }
 
-  @Override protected List<DoubleSolution> selection(List<DoubleSolution> population) {
+  @Override
+  protected List<DoubleSolution> selection(List<DoubleSolution> population) {
     return population;
   }
 
-  @Override protected List<DoubleSolution> reproduction(List<DoubleSolution> matingPopulation) {
+  @Override
+  protected List<DoubleSolution> reproduction(List<DoubleSolution> matingPopulation) {
     List<DoubleSolution> offspringPopulation = new ArrayList<>();
 
     for (int i = 0; i < populationSize; i++) {
@@ -116,8 +138,9 @@ public class DifferentialEvolution extends AbstractDifferentialEvolution<DoubleS
     return offspringPopulation;
   }
 
-  @Override protected List<DoubleSolution> replacement(List<DoubleSolution> population,
-      List<DoubleSolution> offspringPopulation) {
+  @Override
+  protected List<DoubleSolution> replacement(
+      List<DoubleSolution> population, List<DoubleSolution> offspringPopulation) {
     List<DoubleSolution> pop = new ArrayList<>();
 
     for (int i = 0; i < populationSize; i++) {
@@ -128,24 +151,25 @@ public class DifferentialEvolution extends AbstractDifferentialEvolution<DoubleS
       }
     }
 
-    Collections.sort(pop, comparator) ;
+    Collections.sort(pop, comparator);
     return pop;
   }
 
-  /**
-   * Returns the best individual
-   */
-  @Override public DoubleSolution getResult() {
-    Collections.sort(getPopulation(), comparator) ;
+  /** Returns the best individual */
+  @Override
+  public DoubleSolution getResult() {
+    Collections.sort(getPopulation(), comparator);
 
     return getPopulation().get(0);
   }
 
-  @Override public String getName() {
-    return "DE" ;
+  @Override
+  public String getName() {
+    return "DE";
   }
 
-  @Override public String getDescription() {
-    return "Differential Evolution Algorithm" ;
+  @Override
+  public String getDescription() {
+    return "Differential Evolution Algorithm";
   }
 }

@@ -1,12 +1,22 @@
 package org.uma.jmetal.algorithm.multiobjective.adm;
 
+import org.uma.jmetal.algorithm.Algorithm;
 import org.uma.jmetal.algorithm.InteractiveAlgorithm;
 import org.uma.jmetal.algorithm.multiobjective.mombi.util.ASFWASFGA;
 import org.uma.jmetal.algorithm.singleobjective.differentialevolution.DifferentialEvolution;
 import org.uma.jmetal.algorithm.singleobjective.differentialevolution.DifferentialEvolutionBuilder;
+import org.uma.jmetal.algorithm.singleobjective.geneticalgorithm.GeneticAlgorithmBuilder;
 import org.uma.jmetal.algorithm.singleobjective.particleswarmoptimization.StandardPSO;
 import org.uma.jmetal.algorithm.singleobjective.particleswarmoptimization.StandardPSO2007;
+import org.uma.jmetal.operator.CrossoverOperator;
+import org.uma.jmetal.operator.MutationOperator;
+import org.uma.jmetal.operator.SelectionOperator;
 import org.uma.jmetal.operator.impl.crossover.DifferentialEvolutionCrossover;
+import org.uma.jmetal.operator.impl.crossover.SBXCrossover;
+import org.uma.jmetal.operator.impl.crossover.SinglePointCrossover;
+import org.uma.jmetal.operator.impl.mutation.BitFlipMutation;
+import org.uma.jmetal.operator.impl.mutation.PolynomialMutation;
+import org.uma.jmetal.operator.impl.selection.BinaryTournamentSelection;
 import org.uma.jmetal.operator.impl.selection.DifferentialEvolutionSelection;
 import org.uma.jmetal.problem.DoubleProblem;
 import org.uma.jmetal.problem.Problem;
@@ -15,12 +25,14 @@ import org.uma.jmetal.problem.impl.AbstractIntegerDoubleProblem;
 import org.uma.jmetal.problem.impl.AbstractIntegerProblem;
 import org.uma.jmetal.problem.multiobjective.dtlz.DTLZ1;
 import org.uma.jmetal.problem.singleobjective.ReferencePointProblem;
+import org.uma.jmetal.problem.singleobjective.Sphere;
 import org.uma.jmetal.solution.DoubleSolution;
 import org.uma.jmetal.solution.Solution;
 import org.uma.jmetal.util.comparator.ObjectiveComparator;
 import org.uma.jmetal.util.distance.impl.EuclideanDistanceBetweenSolutionsInObjectiveSpace;
 import org.uma.jmetal.util.distance.impl.EuclideanDistanceBetweenSolutionsInSolutionSpace;
 import org.uma.jmetal.util.evaluator.SolutionListEvaluator;
+import org.uma.jmetal.util.evaluator.impl.MultithreadedSolutionListEvaluator;
 import org.uma.jmetal.util.point.Point;
 import org.uma.jmetal.util.point.impl.ArrayPoint;
 import org.uma.jmetal.util.point.util.distance.EuclideanDistance;
@@ -299,12 +311,16 @@ public class ArtificialDecisionMakerPSO<S extends Solution<?>>
     }
     //  System.out.println("Iteracion " + evaluations);
     // System.out.println("");
-    pso =
+    /*pso =
         new StandardPSO(
             rfProblem, swarm.size(), iterationIntern, numPart, evaluator, swarm, aspList);
 
     pso.run();
-    DoubleSolution psoSolution = pso.getResult();
+    DoubleSolution psoSolution = pso.getResult();*/
+
+
+
+
 
     //  distances.add(psoSolution.getObjective(0));
 
@@ -327,6 +343,28 @@ public class ArtificialDecisionMakerPSO<S extends Solution<?>>
         .build() ;
     de.run();
      DoubleSolution psoSolution = de.getResult();*/
+
+
+
+
+    Algorithm<DoubleSolution> algorithm;
+    DoubleProblem problem = new Sphere(20) ;
+
+    CrossoverOperator<DoubleSolution> crossoverOperator =
+            new SBXCrossover(0.9, 20.0) ;
+    MutationOperator<DoubleSolution> mutationOperator =
+            new PolynomialMutation(1.0 / rfProblem.getNumberOfVariables(), 20.0) ;
+    SelectionOperator<List<DoubleSolution>, DoubleSolution> selectionOperator = new BinaryTournamentSelection<DoubleSolution>() ;
+
+    algorithm = new GeneticAlgorithmBuilder<DoubleSolution>(problem, crossoverOperator, mutationOperator)
+            .setPopulationSize(100)
+            .setMaxEvaluations(iterationIntern)
+            .setSelectionOperator(selectionOperator)
+            .setVariant(GeneticAlgorithmBuilder.GeneticAlgorithmVariant.STEADY_STATE)
+            .build() ;
+    algorithm.run();
+    DoubleSolution psoSolution = algorithm.getResult();
+
     S solution = null;
     // if(solutionRun!=null) {
     // if(distances.isEmpty()){
