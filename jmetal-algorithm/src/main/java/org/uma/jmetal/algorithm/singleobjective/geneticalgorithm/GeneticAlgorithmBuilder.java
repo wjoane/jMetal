@@ -28,7 +28,7 @@ public class GeneticAlgorithmBuilder<S extends Solution<?>> {
   private MutationOperator<S> mutationOperator;
   private SelectionOperator<List<S>, S> selectionOperator;
   private SolutionListEvaluator<S> evaluator;
-
+  private List<S> population = null;
   private GeneticAlgorithmVariant variant ;
   private SelectionOperator<List<S>, S> defaultSelectionOperator = new BinaryTournamentSelection<S>() ;
 
@@ -50,6 +50,10 @@ public class GeneticAlgorithmBuilder<S extends Solution<?>> {
     this.variant = GeneticAlgorithmVariant.GENERATIONAL ;
   }
 
+  public GeneticAlgorithmBuilder<S> setInitialPopulation(List<S> pop){
+    this.population = pop;
+    return this;
+  }
   public GeneticAlgorithmBuilder<S> setMaxEvaluations(int maxEvaluations) {
     this.maxEvaluations = maxEvaluations;
 
@@ -82,11 +86,43 @@ public class GeneticAlgorithmBuilder<S extends Solution<?>> {
 
   public Algorithm<S> build() {
     if (variant == GeneticAlgorithmVariant.GENERATIONAL) {
-      return new GenerationalGeneticAlgorithm<S>(problem, maxEvaluations, populationSize,
-          crossoverOperator, mutationOperator, selectionOperator, evaluator);
+      if (population == null) {
+        return new GenerationalGeneticAlgorithm<S>(
+            problem,
+            maxEvaluations,
+            populationSize,
+            crossoverOperator,
+            mutationOperator,
+            selectionOperator,
+            evaluator);
+      }else{
+        return new GenerationalGeneticAlgorithm<S>(
+                problem,
+                maxEvaluations,
+                populationSize,
+                crossoverOperator,
+                mutationOperator,
+                selectionOperator,
+                evaluator,population);
+      }
     } else if (variant == GeneticAlgorithmVariant.STEADY_STATE) {
-      return new SteadyStateGeneticAlgorithm<S>(problem, maxEvaluations, populationSize,
-          crossoverOperator, mutationOperator, selectionOperator);
+      if (population == null) {
+        return new SteadyStateGeneticAlgorithm<S>(
+            problem,
+            maxEvaluations,
+            populationSize,
+            crossoverOperator,
+            mutationOperator,
+            selectionOperator);
+      }else{
+        return new SteadyStateGeneticAlgorithm<S>(
+                problem,
+                maxEvaluations,
+                populationSize,
+                crossoverOperator,
+                mutationOperator,
+                selectionOperator,population);
+      }
     } else {
       throw new JMetalException("Unknown variant: " + variant) ;
     }

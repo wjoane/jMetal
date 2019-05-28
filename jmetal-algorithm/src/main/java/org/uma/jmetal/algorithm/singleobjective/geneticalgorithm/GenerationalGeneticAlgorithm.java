@@ -5,10 +5,12 @@ import org.uma.jmetal.operator.CrossoverOperator;
 import org.uma.jmetal.operator.MutationOperator;
 import org.uma.jmetal.operator.SelectionOperator;
 import org.uma.jmetal.problem.Problem;
+import org.uma.jmetal.solution.DoubleSolution;
 import org.uma.jmetal.solution.Solution;
 import org.uma.jmetal.util.comparator.ObjectiveComparator;
 import org.uma.jmetal.util.evaluator.SolutionListEvaluator;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -21,7 +23,7 @@ public class GenerationalGeneticAlgorithm<S extends Solution<?>> extends Abstrac
   private Comparator<S> comparator;
   private int maxEvaluations;
   private int evaluations;
-
+  private int populationSize;
   private SolutionListEvaluator<S> evaluator;
 
   /**
@@ -37,10 +39,39 @@ public class GenerationalGeneticAlgorithm<S extends Solution<?>> extends Abstrac
     this.crossoverOperator = crossoverOperator;
     this.mutationOperator = mutationOperator;
     this.selectionOperator = selectionOperator;
-
+    this.populationSize= populationSize;
     this.evaluator = evaluator;
 
     comparator = new ObjectiveComparator<S>(0);
+  }
+
+  public GenerationalGeneticAlgorithm(Problem<S> problem, int maxEvaluations, int populationSize,
+                                      CrossoverOperator<S> crossoverOperator, MutationOperator<S> mutationOperator,
+                                      SelectionOperator<List<S>, S> selectionOperator, SolutionListEvaluator<S> evaluator, List<S> pop) {
+    super(problem);
+    this.maxEvaluations = maxEvaluations;
+    this.setMaxPopulationSize(populationSize);
+    this.population = pop;
+    this.crossoverOperator = crossoverOperator;
+    this.mutationOperator = mutationOperator;
+    this.selectionOperator = selectionOperator;
+    this.populationSize= populationSize;
+    this.evaluator = evaluator;
+
+    comparator = new ObjectiveComparator<S>(0);
+  }
+
+  @Override
+  protected List<S> createInitialPopulation() {
+    List<S> population = this.population;
+    if (population == null) {
+      population= new ArrayList<>(populationSize);
+      for (int i = 0; i < populationSize; i++) {
+        S newIndividual = getProblem().createSolution();
+        population.add(newIndividual);
+      }
+    }
+    return population;
   }
 
   @Override protected boolean isStoppingConditionReached() {
