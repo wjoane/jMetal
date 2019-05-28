@@ -8,6 +8,8 @@ import org.uma.jmetal.util.JMetalException;
 import org.uma.jmetal.util.evaluator.SolutionListEvaluator;
 import org.uma.jmetal.util.evaluator.impl.SequentialSolutionListEvaluator;
 
+import java.util.List;
+
 /**
  * DifferentialEvolutionBuilder class
  * @author Antonio J. Nebro <antonio@lcc.uma.es>
@@ -19,6 +21,7 @@ public class DifferentialEvolutionBuilder {
   private DifferentialEvolutionCrossover crossoverOperator;
   private DifferentialEvolutionSelection selectionOperator;
   private SolutionListEvaluator<DoubleSolution> evaluator;
+ private List<DoubleSolution> pop =null;
 
   public DifferentialEvolutionBuilder(DoubleProblem problem) {
     this.problem = problem;
@@ -36,6 +39,11 @@ public class DifferentialEvolutionBuilder {
 
     this.populationSize = populationSize;
 
+    return this;
+  }
+
+  public DifferentialEvolutionBuilder setInitialPopulation(List<DoubleSolution> list){
+    pop=list;
     return this;
   }
 
@@ -68,8 +76,15 @@ public class DifferentialEvolutionBuilder {
   }
 
   public DifferentialEvolution build() {
-    return new DifferentialEvolution(problem, maxEvaluations, populationSize, crossoverOperator,
-        selectionOperator, evaluator);
+    DifferentialEvolution df= null;
+    if (pop == null) {
+      df=new DifferentialEvolution(
+          problem, maxEvaluations, populationSize, crossoverOperator, selectionOperator, evaluator);
+    }else{
+      df=new DifferentialEvolution(
+              problem, maxEvaluations, populationSize, crossoverOperator, selectionOperator, evaluator,pop);
+    }
+    return df;
   }
 
   /* Getters */

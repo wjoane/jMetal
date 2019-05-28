@@ -2,13 +2,19 @@ package org.uma.jmetal.algorithm.multiobjective.adm;
 
 import org.uma.jmetal.algorithm.InteractiveAlgorithm;
 import org.uma.jmetal.algorithm.multiobjective.mombi.util.ASFWASFGA;
+import org.uma.jmetal.algorithm.singleobjective.differentialevolution.DifferentialEvolution;
+import org.uma.jmetal.algorithm.singleobjective.differentialevolution.DifferentialEvolutionBuilder;
+import org.uma.jmetal.algorithm.singleobjective.particleswarmoptimization.StandardPSO;
 import org.uma.jmetal.algorithm.singleobjective.particleswarmoptimization.StandardPSO2007;
+import org.uma.jmetal.operator.impl.crossover.DifferentialEvolutionCrossover;
+import org.uma.jmetal.operator.impl.selection.DifferentialEvolutionSelection;
 import org.uma.jmetal.problem.DoubleProblem;
 import org.uma.jmetal.problem.Problem;
 import org.uma.jmetal.problem.impl.AbstractDoubleProblem;
 import org.uma.jmetal.problem.impl.AbstractIntegerDoubleProblem;
 import org.uma.jmetal.problem.impl.AbstractIntegerProblem;
 import org.uma.jmetal.problem.multiobjective.dtlz.DTLZ1;
+import org.uma.jmetal.problem.singleobjective.ReferencePointProblem;
 import org.uma.jmetal.solution.DoubleSolution;
 import org.uma.jmetal.solution.Solution;
 import org.uma.jmetal.util.comparator.ObjectiveComparator;
@@ -45,7 +51,7 @@ public class ArtificialDecisionMakerPSO<S extends Solution<?>>
   protected List<Double> distances;
   protected List<Double> distancesRP;
   private S solutionRun = null;
-  private StandardPSO2007 pso;
+  private StandardPSO pso;
   private ReferencePointProblem rfProblem;
   private SolutionListEvaluator<DoubleSolution> evaluator;
   private DoubleProblem auxProblem;
@@ -156,7 +162,8 @@ public class ArtificialDecisionMakerPSO<S extends Solution<?>>
 
   @Override
   protected List<Double> generatePreferenceInformation() {
-
+    idealOjectiveVector= Util.initializeList(this.numberOfObjectives);
+    nadirObjectiveVector = Util.initializeList(this.numberOfObjectives);
     Collections.copy(idealOjectiveVector, min); // new IdealPoint(numberOfObjectives);
     Collections.copy(nadirObjectiveVector, max);
 
@@ -315,7 +322,7 @@ public class ArtificialDecisionMakerPSO<S extends Solution<?>>
         .setCrossover(crossover)
         .setSelection(selection)
         .setSolutionListEvaluator(evaluator)
-        .setMaxEvaluations(250000)
+        .setMaxEvaluations(iterationIntern)
         .setPopulationSize(swarm.size()).setInitialPopulation(swarm)
         .build() ;
     de.run();
@@ -372,9 +379,9 @@ public class ArtificialDecisionMakerPSO<S extends Solution<?>>
           //   psoSolution.getVariableValue(i));
         }
           if(i==0) currentReferencePoint = referencePoint;
-          result.addAll(referencePoint);
-      }
 
+      }
+      result.addAll(referencePoint);
 
       // }
     }

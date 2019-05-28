@@ -33,8 +33,8 @@ import org.uma.jmetal.problem.multiobjective.dtlz.DTLZ4;
 import org.uma.jmetal.problem.multiobjective.dtlz.DTLZ5;
 import org.uma.jmetal.problem.multiobjective.dtlz.DTLZ6;
 import org.uma.jmetal.problem.multiobjective.dtlz.DTLZ7;
-import org.uma.jmetal.runner.AbstractAlgorithmRunner;
 import org.uma.jmetal.solution.DoubleSolution;
+import org.uma.jmetal.util.AbstractAlgorithmRunner;
 import org.uma.jmetal.util.AlgorithmRunner;
 import org.uma.jmetal.util.JMetalException;
 import org.uma.jmetal.util.JMetalLogger;
@@ -43,10 +43,6 @@ import org.uma.jmetal.util.evaluator.impl.SequentialSolutionListEvaluator;
 import org.uma.jmetal.util.fileoutput.SolutionListOutput;
 import org.uma.jmetal.util.fileoutput.impl.DefaultFileOutputContext;
 import org.uma.jmetal.util.pseudorandom.JMetalRandom;
-import org.uma.jmetal.util.referencePoint.ReferencePoint;
-import org.uma.jmetal.util.referencePoint.impl.IdealPoint;
-import org.uma.jmetal.util.referencePoint.impl.NadirPoint;
-
 import java.io.BufferedWriter;
 import java.io.FileNotFoundException;
 import java.nio.file.Files;
@@ -227,10 +223,7 @@ public class ARPRunner extends AbstractAlgorithmRunner {
     selection = new BinaryTournamentSelection<DoubleSolution>(
         new RankingAndCrowdingDistanceComparator<DoubleSolution>());
 
-    IdealPoint idealPoint = new IdealPoint(problem.getNumberOfObjectives());
-    idealPoint.update(problem.createSolution());
-    NadirPoint nadirPoint = new NadirPoint(problem.getNumberOfObjectives());
-    nadirPoint.update(problem.createSolution());
+
     double considerationProbability = 0.9;
     List<Double> rankingCoeficient = new ArrayList<>();
     for (int i = 0; i < problem.getNumberOfObjectives() ; i++) {
@@ -309,7 +302,7 @@ public class ARPRunner extends AbstractAlgorithmRunner {
             .build();
       }else {
         algorithmRun = new WASFGA<DoubleSolution>(problem, populationSize, 100, crossover, mutation,
-            selection, new SequentialSolutionListEvaluator<DoubleSolution>(), referencePoint,weightsName);
+            selection, new SequentialSolutionListEvaluator<DoubleSolution>(),epsilon, referencePoint,weightsName);
       }
       algorithm = new ARPBuilder<DoubleSolution>(problem, algorithmRun)
           .setConsiderationProbability(0.9)
@@ -343,7 +336,7 @@ public class ARPRunner extends AbstractAlgorithmRunner {
       //   printQualityIndicators(population, referenceParetoFront) ;
       //  }
      // System.out.println("Reference Points-----" + ((ARP) algorithm).getReferencePoints().size());
-      writeLargerTextFile("ReferencePoint"  + ".txt", ((ARP) algorithm).getReferencePoints());
+      writeLargerTextFile("ReferencePoint"  + ".txt", ((ARP) algorithm).getReferencePoints(),problem.getNumberOfObjectives());
       writeLargerDoubleFile("Distances"  + ".txt", ((ARP) algorithm).getDistances());
     }//for borrar
   }
@@ -355,22 +348,16 @@ public class ARPRunner extends AbstractAlgorithmRunner {
     return result;
   }
 
-  private static List<Double> getReferencePoint(ReferencePoint referencePoint){
-    List<Double> result = new ArrayList<>();
-    for (int i = 0; i < referencePoint.getNumberOfObjectives(); i++) {
-      result.add(referencePoint.getObjective(i));
-    }
-    return result;
-  }
-  private static void writeLargerTextFile(String aFileName, List<ReferencePoint> list)  {
+
+  private static void writeLargerTextFile(String aFileName, List<List<Double>> list,int numberOfObjectives)  {
     Path path = Paths.get(aFileName);
 
     try (BufferedWriter writer = Files.newBufferedWriter(path)){
       int i =0;
       while(i<list.size()){
         String line="";
-        for (int j = 0; j <list.get(i).getNumberOfObjectives() ; j++) {
-          line += list.get(i).getObjective(j) + " ";
+        for (int j = 0; j <numberOfObjectives ; j++) {
+          line += list.get(i).get(j) + " ";
         }
         line = line.substring(0,line.lastIndexOf(" "));
         i++;

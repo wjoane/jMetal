@@ -48,7 +48,21 @@ public class DifferentialEvolution extends AbstractDifferentialEvolution<DoubleS
 
     comparator = new ObjectiveComparator<DoubleSolution>(0);
   }
-  
+
+  public DifferentialEvolution(DoubleProblem problem, int maxEvaluations, int populationSize,
+                               DifferentialEvolutionCrossover crossoverOperator,
+                               DifferentialEvolutionSelection selectionOperator, SolutionListEvaluator<DoubleSolution> evaluator,List<DoubleSolution> pop) {
+    setProblem(problem); ;
+    this.maxEvaluations = maxEvaluations;
+    this.populationSize = populationSize;
+    this.crossoverOperator = crossoverOperator;
+    this.selectionOperator = selectionOperator;
+    this.evaluator = evaluator;
+    this.population = pop;
+    comparator = new ObjectiveComparator<DoubleSolution>(0);
+  }
+
+
   public int getEvaluations() {
     return evaluations;
   }
