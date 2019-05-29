@@ -355,13 +355,13 @@ public class ArtificialDecisionMakerPSO<S extends Solution<?>>
     MutationOperator<DoubleSolution> mutationOperator =
             new PolynomialMutation(1.0 / rfProblem.getNumberOfVariables(), 20.0) ;
     SelectionOperator<List<DoubleSolution>, DoubleSolution> selectionOperator = new BinaryTournamentSelection<DoubleSolution>() ;
-    if(swarm.size()<=1){
+    if(swarm.size()<100){
       while (swarm.size()<100 ) {
         swarm.addAll(createSwarm(front));
       }
     }
 
-    algorithm = new GeneticAlgorithmBuilder<DoubleSolution>(problem, crossoverOperator, mutationOperator)
+    algorithm = new GeneticAlgorithmBuilder<DoubleSolution>(rfProblem, crossoverOperator, mutationOperator)
             .setPopulationSize(100)
             .setMaxEvaluations(iterationIntern)
             .setSelectionOperator(selectionOperator)
