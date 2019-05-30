@@ -80,5 +80,17 @@
             <artifactId>jfuzzylite</artifactId>
             <version>5.0</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/com.github.haifengl/smile-core -->
+        <dependency>
+            <groupId>com.github.haifengl</groupId>
+            <artifactId>smile-core</artifactId>
+            <version>1.5.2</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/tech.tablesaw/tablesaw-core -->
+        <dependency>
+            <groupId>tech.tablesaw</groupId>
+            <artifactId>tablesaw-core</artifactId>
+            <version>0.33.2</version>
+        </dependency>
     </dependencies>
 </project>

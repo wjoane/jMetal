@@ -311,12 +311,12 @@ public class ArtificialDecisionMakerPSO<S extends Solution<?>>
     }
     //  System.out.println("Iteracion " + evaluations);
     // System.out.println("");
-    /*pso =
+    pso =
         new StandardPSO(
             rfProblem, swarm.size(), iterationIntern, numPart, evaluator, swarm, aspList);
 
     pso.run();
-    DoubleSolution psoSolution = pso.getResult();*/
+    DoubleSolution psoSolution = pso.getResult();
 
 
 
@@ -347,7 +347,7 @@ public class ArtificialDecisionMakerPSO<S extends Solution<?>>
 
 
 
-    Algorithm<DoubleSolution> algorithm;
+   /* Algorithm<DoubleSolution> algorithm;
     DoubleProblem problem = new Sphere(20) ;
 
     CrossoverOperator<DoubleSolution> crossoverOperator =
@@ -369,7 +369,7 @@ public class ArtificialDecisionMakerPSO<S extends Solution<?>>
             .setInitialPopulation(swarm)
             .build() ;
     algorithm.run();
-    DoubleSolution psoSolution = algorithm.getResult();
+    DoubleSolution psoSolution = algorithm.getResult();*/
 
     S solution = null;
     // if(solutionRun!=null) {

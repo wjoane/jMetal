@@ -18,15 +18,14 @@ import java.io.FileNotFoundException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
+
 import org.uma.jmetal.algorithm.Algorithm;
 import org.uma.jmetal.algorithm.InteractiveAlgorithm;
 import org.uma.jmetal.algorithm.multiobjective.adm.ArtificialDecisionMakerPSO;
 import org.uma.jmetal.algorithm.multiobjective.adm.ArtificialDecisionMakerPSOBuilder;
 import org.uma.jmetal.algorithm.multiobjective.rnsgaii.RNSGAIIBuilder;
+import org.uma.jmetal.algorithm.multiobjective.smpso.SMPSORP;
 import org.uma.jmetal.algorithm.multiobjective.wasfga.WASFGA;
 import org.uma.jmetal.operator.CrossoverOperator;
 import org.uma.jmetal.operator.MutationOperator;
@@ -34,6 +33,7 @@ import org.uma.jmetal.operator.SelectionOperator;
 import org.uma.jmetal.operator.impl.crossover.SBXCrossover;
 import org.uma.jmetal.operator.impl.mutation.PolynomialMutation;
 import org.uma.jmetal.operator.impl.selection.BinaryTournamentSelection;
+import org.uma.jmetal.problem.DoubleProblem;
 import org.uma.jmetal.problem.Problem;
 import org.uma.jmetal.problem.multiobjective.dtlz.DTLZ1;
 import org.uma.jmetal.problem.multiobjective.dtlz.DTLZ2;
@@ -47,6 +47,8 @@ import org.uma.jmetal.util.AbstractAlgorithmRunner;
 import org.uma.jmetal.util.AlgorithmRunner;
 import org.uma.jmetal.util.JMetalException;
 import org.uma.jmetal.util.JMetalLogger;
+import org.uma.jmetal.util.archivewithreferencepoint.ArchiveWithReferencePoint;
+import org.uma.jmetal.util.archivewithreferencepoint.impl.CrowdingDistanceArchiveWithReferencePoint;
 import org.uma.jmetal.util.comparator.RankingAndCrowdingDistanceComparator;
 import org.uma.jmetal.util.evaluator.impl.SequentialSolutionListEvaluator;
 import org.uma.jmetal.util.fileoutput.SolutionListOutput;
@@ -80,7 +82,7 @@ public class ARPPSORunner extends AbstractAlgorithmRunner {
     String problemName = "DTLZ6" ;
     int numberObjectives = 3;
     int numberVariables = 12;
-    String algorithmName ="WASFGA";
+    String algorithmName ="SMPSORP";
     String weightsName = "MOEAD_Weights/W3D_100.dat";
     int aspOrden =1;
     int populationSize=100;
@@ -306,10 +308,36 @@ public class ARPPSORunner extends AbstractAlgorithmRunner {
               .setMaxEvaluations(10000)
              .setPopulationSize(populationSize)
             .build() ;
-      }else {
+      } if(algorithmName.equalsIgnoreCase("WASFGA")) {
         algorithmRun = new WASFGA<DoubleSolution>(problem, populationSize, 100, crossover, mutation,
             selection, new SequentialSolutionListEvaluator<DoubleSolution>(),epsilon ,referencePoint,
             weightsName);
+      }else{
+        int swarmSize = 100;
+        List<List<Double>> referencePoints;
+        referencePoints = new ArrayList<>();
+
+        referencePoints.add(Arrays.asList(0.0, 0.0,0.0));
+        List<ArchiveWithReferencePoint<DoubleSolution>> archivesWithReferencePoints = new ArrayList<>();
+
+        for (int i = 0; i < referencePoints.size(); i++) {
+          archivesWithReferencePoints.add(
+                  new CrowdingDistanceArchiveWithReferencePoint<DoubleSolution>(
+                          swarmSize/referencePoints.size(), referencePoints.get(i))) ;
+        }
+        algorithmRun = new SMPSORP((DoubleProblem)problem,
+                swarmSize,
+                archivesWithReferencePoints,
+                referencePoints,
+                mutation,
+                250,
+                0.0, 1.0,
+                0.0, 1.0,
+                2.5, 1.5,
+                2.5, 1.5,
+                0.1, 0.1,
+                -1.0, -1.0,
+                new SequentialSolutionListEvaluator<>());
       }
       algorithm = new ArtificialDecisionMakerPSOBuilder<DoubleSolution>(problem, algorithmRun,iterationIntern)
           .setConsiderationProbability(0.9)//0.3
