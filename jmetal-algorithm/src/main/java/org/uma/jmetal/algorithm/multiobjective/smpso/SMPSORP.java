@@ -441,6 +441,12 @@ public class SMPSORP extends AbstractParticleSwarmOptimization<DoubleSolution, L
 
       }
     }
+    List<DoubleSolution> aux = getSwarm();
+    if(aux==null){
+      aux=createInitialSwarm();
+    }
+   // initializeVelocity(aux);
+    //initializeParticlesMemory(aux);
     cleanLeaders();
     changeReferencePoints(referencePoints);
   }
