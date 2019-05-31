@@ -441,16 +441,18 @@ public class SMPSORP extends AbstractParticleSwarmOptimization<DoubleSolution, L
 
       }
     }
-    List<DoubleSolution> aux = getSwarm();
+   /* List<DoubleSolution> aux = getSwarm();
     if(aux==null){
       aux=createInitialSwarm();
-    }
-    initializeVelocity(aux);
-    initializeParticlesMemory(aux);
+     aux= evaluateSwarm(aux);
+    }*/
+
+    //setSwarm(aux);
     cleanLeaders();
     changeReferencePoints(referencePoints);
+
   }
-  private void cleanLeaders() {
+  private void cleanLeaders(){
     leaders = new ArrayList<>();
 
     for (int i = 0; i < referencePoints.size(); i++) {
@@ -458,11 +460,11 @@ public class SMPSORP extends AbstractParticleSwarmOptimization<DoubleSolution, L
               new CrowdingDistanceArchiveWithReferencePoint<DoubleSolution>(
                       swarmSize / referencePoints.size(), referencePoints.get(i)));
     }
-    List<DoubleSolution> aux = getSwarm();
-    if(aux==null){
-      aux=createInitialSwarm();
-    }
-    initializeLeader(aux);
+    setSwarm(createInitialSwarm());
+    evaluateSwarm(getSwarm());
+    initializeVelocity(getSwarm());
+    initializeParticlesMemory(getSwarm()) ;
+    initializeLeader(getSwarm()) ;
     referencePointSolutions = new ArrayList<>();
     for (int i = 0; i < referencePoints.size(); i++) {
       DoubleSolution refPoint = problem.createSolution();
