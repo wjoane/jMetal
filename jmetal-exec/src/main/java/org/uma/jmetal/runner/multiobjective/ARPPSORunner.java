@@ -330,7 +330,7 @@ public class ARPPSORunner extends AbstractAlgorithmRunner {
                 archivesWithReferencePoints,
                 referencePoints,
                 mutation,
-                250,
+                100,
                 0.0, 1.0,
                 0.0, 1.0,
                 2.5, 1.5,
