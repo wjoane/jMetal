@@ -30,10 +30,11 @@ public class ArtificialDecisionMakerPSOBuilder<S extends Solution<?>> implements
   private String aspFile;
   private int aspOrden =0;
   private int iterationIntern;
+  private String innerAlgorithm;
   /**
    * ARPBuilder constructor
    */
-  public ArtificialDecisionMakerPSOBuilder(Problem<S> problem, InteractiveAlgorithm<S,List<S>> algorithm,int iterationIntern
+  public ArtificialDecisionMakerPSOBuilder(Problem<S> problem, InteractiveAlgorithm<S,List<S>> algorithm,int iterationIntern, String innerAlgorithm
       ) {
     this.problem = problem;
     this.maxEvaluations = 25000;
@@ -41,6 +42,7 @@ public class ArtificialDecisionMakerPSOBuilder<S extends Solution<?>> implements
     this.numberReferencePoints =1;
     this.evaluator  = new SequentialSolutionListEvaluator<>();
     this.iterationIntern = iterationIntern;
+    this.innerAlgorithm = innerAlgorithm;
   }
 
   public ArtificialDecisionMakerPSOBuilder<S> setMaxEvaluations(int maxEvaluations) {
@@ -110,7 +112,7 @@ public class ArtificialDecisionMakerPSOBuilder<S extends Solution<?>> implements
   public ArtificialDecisionMakerPSO<S> build() {
     ArtificialDecisionMakerPSO<S> algorithmRun = null ;
     algorithmRun = new ArtificialDecisionMakerPSO<S>(problem,algorithm,considerationProbability,tolerance, maxEvaluations,
-          rankingCoeficient,numberReferencePoints,asp,evaluator,aspFile,aspOrden,iterationIntern);
+          rankingCoeficient,numberReferencePoints,asp,evaluator,aspFile,aspOrden,iterationIntern,innerAlgorithm);
 
     return algorithmRun ;
   }

@@ -83,6 +83,7 @@ public class ARPPSORunner extends AbstractAlgorithmRunner {
     int numberObjectives = 3;
     int numberVariables = 12;
     String algorithmName ="SMPSORP";
+    String innerAlgorithm = "PSO";
     String weightsName = "MOEAD_Weights/W3D_100.dat";
     int aspOrden =1;
     int populationSize=100;
@@ -106,6 +107,7 @@ public class ARPPSORunner extends AbstractAlgorithmRunner {
         algorithmName = args[3];
         aspOrden = Integer.parseInt(args[4]);
         iterationIntern = Integer.parseInt(args[5]);
+        innerAlgorithm = args[6];
       }
     }
 
@@ -339,7 +341,7 @@ public class ARPPSORunner extends AbstractAlgorithmRunner {
                 -1.0, -1.0,
                 new SequentialSolutionListEvaluator<>());
       }
-      algorithm = new ArtificialDecisionMakerPSOBuilder<DoubleSolution>(problem, algorithmRun,iterationIntern)
+      algorithm = new ArtificialDecisionMakerPSOBuilder<DoubleSolution>(problem, algorithmRun,iterationIntern,innerAlgorithm)
           .setConsiderationProbability(0.9)//0.3
           .setMaxEvaluations(10)
           .setTolerance(0.9)//0.001

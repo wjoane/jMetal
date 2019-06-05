@@ -6,6 +6,7 @@ import org.uma.jmetal.algorithm.multiobjective.mombi.util.ASFWASFGA;
 import org.uma.jmetal.algorithm.singleobjective.differentialevolution.DifferentialEvolution;
 import org.uma.jmetal.algorithm.singleobjective.differentialevolution.DifferentialEvolutionBuilder;
 import org.uma.jmetal.algorithm.singleobjective.geneticalgorithm.GeneticAlgorithmBuilder;
+import org.uma.jmetal.algorithm.singleobjective.geneticalgorithm.GeneticAlgorithmBuilder.GeneticAlgorithmVariant;
 import org.uma.jmetal.algorithm.singleobjective.particleswarmoptimization.StandardPSO;
 import org.uma.jmetal.algorithm.singleobjective.particleswarmoptimization.StandardPSO2007;
 import org.uma.jmetal.operator.CrossoverOperator;
@@ -70,6 +71,7 @@ public class ArtificialDecisionMakerPSO<S extends Solution<?>>
   private int iterationIntern;
   private List<Double> min = null;
   private List<Double> max = null;
+  private String innerAlgorithm;
   // private List<DoubleSolution> prueba;
   public ArtificialDecisionMakerPSO(
       Problem<S> problem,
@@ -83,7 +85,8 @@ public class ArtificialDecisionMakerPSO<S extends Solution<?>>
       SolutionListEvaluator<DoubleSolution> evaluator,
       String aspFile,
       int aspOrden,
-      int iterationIntern) {
+      int iterationIntern,
+      String innerAlgorithm) {
     super(problem, algorithm);
     // crear pso monoobjectivo
     // el pso se crea cuando se le pasa el frente
@@ -97,6 +100,7 @@ public class ArtificialDecisionMakerPSO<S extends Solution<?>>
     this.evaluator = evaluator;
     this.random = JMetalRandom.getInstance();
     this.maxEvaluations = maxEvaluations;
+    this.innerAlgorithm = innerAlgorithm;
     this.rankingCoeficient = rankingCoeficient;
     if (rankingCoeficient == null || rankingCoeficient.isEmpty()) {
       initialiceRankingCoeficient();
@@ -311,12 +315,86 @@ public class ArtificialDecisionMakerPSO<S extends Solution<?>>
     }
     //  System.out.println("Iteracion " + evaluations);
     // System.out.println("");
-    pso =
-        new StandardPSO(
-            rfProblem, swarm.size(), iterationIntern, numPart, evaluator, swarm, aspList);
+    DoubleSolution psoSolution =null;
+    switch (innerAlgorithm){
+      case "PSO":
+        pso =
+            new StandardPSO(
+                rfProblem, swarm.size(), iterationIntern, numPart, evaluator, swarm, aspList);
 
-    pso.run();
-    DoubleSolution psoSolution = pso.getResult();
+        pso.run();
+        psoSolution = pso.getResult();
+        break;
+      case "DE":
+        DifferentialEvolutionSelection selection;
+        DifferentialEvolutionCrossover crossover;
+        crossover = new DifferentialEvolutionCrossover(0.5, 0.5, "rand/1/bin") ;
+        selection = new DifferentialEvolutionSelection();
+
+        if(swarm.size()<=4){
+          while (swarm.size()<100 ) {
+            swarm.addAll(createSwarm(front));
+          }
+        }
+        DifferentialEvolution de = new DifferentialEvolutionBuilder(rfProblem)
+            .setCrossover(crossover)
+            .setSelection(selection)
+            .setSolutionListEvaluator(evaluator)
+            .setMaxEvaluations(iterationIntern)
+            .setPopulationSize(swarm.size()).setInitialPopulation(swarm)
+            .build() ;
+        de.run();
+         psoSolution = de.getResult();
+        break;
+        case "GA_STEADY_STATE" :
+          Algorithm<DoubleSolution> algorithm;
+
+          CrossoverOperator<DoubleSolution> crossoverOperator =
+              new SBXCrossover(0.9, 20.0) ;
+          MutationOperator<DoubleSolution> mutationOperator =
+              new PolynomialMutation(1.0 / rfProblem.getNumberOfVariables(), 20.0) ;
+          SelectionOperator<List<DoubleSolution>, DoubleSolution> selectionOperator = new BinaryTournamentSelection<DoubleSolution>() ;
+          if(swarm.size()<100){
+            while (swarm.size()<100 ) {
+              swarm.addAll(createSwarm(front));
+            }
+          }
+
+          algorithm = new GeneticAlgorithmBuilder<DoubleSolution>(rfProblem, crossoverOperator, mutationOperator)
+              .setPopulationSize(100)
+              .setMaxEvaluations(iterationIntern)
+              .setSelectionOperator(selectionOperator)
+              .setVariant(GeneticAlgorithmBuilder.GeneticAlgorithmVariant.STEADY_STATE)
+              .setInitialPopulation(swarm)
+              .build() ;
+          algorithm.run();
+           psoSolution = algorithm.getResult();
+           break;
+           default:
+
+             crossoverOperator =
+                 new SBXCrossover(0.9, 20.0) ;
+             mutationOperator =
+                 new PolynomialMutation(1.0 / rfProblem.getNumberOfVariables(), 20.0) ;
+             selectionOperator = new BinaryTournamentSelection<DoubleSolution>() ;
+             if(swarm.size()<100){
+               while (swarm.size()<100 ) {
+                 swarm.addAll(createSwarm(front));
+               }
+             }
+
+             algorithm = new GeneticAlgorithmBuilder<DoubleSolution>(rfProblem, crossoverOperator, mutationOperator)
+                 .setPopulationSize(100)
+                 .setMaxEvaluations(iterationIntern)
+                 .setSelectionOperator(selectionOperator)
+                 .setVariant(GeneticAlgorithmVariant.GENERATIONAL)
+                 .setInitialPopulation(swarm)
+                 .build() ;
+             algorithm.run();
+             psoSolution = algorithm.getResult();
+
+    }
+
 
 
 
