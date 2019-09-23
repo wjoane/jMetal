@@ -1,0 +1,356 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>Auto-configuration of evolutionary algorithms: NSGA-II &#8212; jmetal 6.0-SNAPSHOT documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Installation" href="installation.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="auto-configuration-of-evolutionary-algorithms-nsga-ii">
+<h1>Auto-configuration of evolutionary algorithms: NSGA-II<a class="headerlink" href="#auto-configuration-of-evolutionary-algorithms-nsga-ii" title="Permalink to this headline">¶</a></h1>
+<p>Before reading this section, readers are referred to the paper “Automatic configuration of NSGA-II with jMetal and irace”, presented in GECCO 2019 (DOI: <a class="reference external" href="https://doi.org/10.1145/3319619.3326832">https://doi.org/10.1145/3319619.3326832</a>)</p>
+<div class="section" id="motivation">
+<h2>Motivation<a class="headerlink" href="#motivation" title="Permalink to this headline">¶</a></h2>
+<p>A current trend in multi-objective optimization is to use automatic parameter configuration tools to find accurate settings of metaheuristics to effectively solve a number of problems. The idea is to avoid the traditional approach of carrying out a number of pilot tests, which are typically conducted without following a systematic strategy. In this context, an algorithm configuration is a complete assignment of values to all required parameters of the algorithm.</p>
+<p>The auto-configuration tool we have selected is irace, an R package that implements an
+elitist iterated racing algorithm, where algorithm configurations
+are sampled from a sampling distribution, uniformly at random at the beginning, but biased towards the best configurations found in later iterations. At each iteration, the generated configurations and
+the “elite” ones from previous iterations are raced by evaluating
+them on training problem instances. A statistical test is used to
+decide which configurations should be eliminated from the race.
+When the race terminates, the surviving configurations become
+elites for the next iteration.</p>
+<p>The issue we studied in the aforementioned paper is how to use jMetal combined with irace to allow the automatic configuration of multiobjective metaheuristics. As this is our first approximation to this matter, we decided to focus on NSGA-II and its use to solve continuous problems.</p>
+</div>
+<div class="section" id="nsga-ii-parameters">
+<h2>NSGA-II parameters<a class="headerlink" href="#nsga-ii-parameters" title="Permalink to this headline">¶</a></h2>
+<p>The standard NSGA-II is a generational evolutionary algorithm featured by using a ranking method based on Pareto ranking and the crowding distance density estimator, both in the selection and replacement steps.
+When it is used to solve continuous problems, NSGA-II adopts the
+simulated binary crossover (SBX) and the polynomial mutation. No
+external archive is included in NSGA-II.
+However, as we intend to configure NSGA-II in an automatic
+way, we need to relax the aforementioned features in order to have
+enough flexibility to modify the search capabilities of the algorithm.
+This way, we are going to consider that any multi-objective evolutionary
+algorithm with the typical parameters (selection, crossover,
+and mutation) and using ranking and crowding in the replacement
+step can be considered as a variant of NSGA-II.</p>
+<p>The parameters or components of NSGA-II that can be adjusted are included in this table:</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 42%" />
+<col style="width: 58%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Parameter name</p></th>
+<th class="head"><p>Allowed values</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><em>algorithmResult</em></p></td>
+<td><p><em>externalArchive</em>, <em>population</em></p></td>
+</tr>
+<tr class="row-odd"><td><p><em>populationSize</em></p></td>
+<td><p>100</p></td>
+</tr>
+<tr class="row-even"><td><p><em>populationSizeWithArchive</em></p></td>
+<td><p>10,20,50,100,200,400</p></td>
+</tr>
+<tr class="row-odd"><td><p><em>offspringPopulationSize</em></p></td>
+<td><p>1,5,10,20,50,100,200,400</p></td>
+</tr>
+<tr class="row-even"><td><p><em>createInitialSolutions</em></p></td>
+<td><p><em>random</em>, <em>latinHypercubeSampling</em>, <em>scatterSearch</em></p></td>
+</tr>
+<tr class="row-odd"><td><p><em>variation</em></p></td>
+<td><p><em>crossoverAndMutationVariation</em></p></td>
+</tr>
+<tr class="row-even"><td><p><em>crossover</em></p></td>
+<td><p><em>SBX</em>, <em>BLX_Alpha</em></p></td>
+</tr>
+<tr class="row-odd"><td><p><em>crossoverProbability</em></p></td>
+<td><p>[0.0, 1.0]</p></td>
+</tr>
+<tr class="row-even"><td><p><em>crossoverRepairStrategy</em></p></td>
+<td><p><em>random</em>, <em>round</em>, <em>bounds</em></p></td>
+</tr>
+<tr class="row-odd"><td><p><em>sbxCrossoverDistributionIndex</em></p></td>
+<td><p>[5.0, 400.0]</p></td>
+</tr>
+<tr class="row-even"><td><p><em>blxAlphaCrossoverAlphaValue</em></p></td>
+<td><p>[0.0, 1.0]</p></td>
+</tr>
+<tr class="row-odd"><td><p><em>mutation</em></p></td>
+<td><p><em>uniform</em>, <em>polynomial</em></p></td>
+</tr>
+<tr class="row-even"><td><p><em>mutationProbability</em></p></td>
+<td><p>[0.0, 1.0]</p></td>
+</tr>
+<tr class="row-odd"><td><p><em>mutationRepairStrategy</em></p></td>
+<td><p><em>random</em>, <em>round</em>, <em>bounds</em></p></td>
+</tr>
+<tr class="row-even"><td><p><em>polynomialMutationDistributionIndex</em></p></td>
+<td><p>[5.0, 400.0]</p></td>
+</tr>
+<tr class="row-odd"><td><p><em>uniformMutationPerturbation</em></p></td>
+<td><p>[0.0, 1.0]</p></td>
+</tr>
+<tr class="row-even"><td><p><em>selection</em></p></td>
+<td><p><em>random</em>, <em>tournament</em></p></td>
+</tr>
+<tr class="row-odd"><td><p><em>selectionTournamentSize</em></p></td>
+<td><p>[2, 10]</p></td>
+</tr>
+</tbody>
+</table>
+<p>Our <em>autoNSGAII</em> can optionally adopt an external archive to store the non-dominated solutions found during the search process. The archive size of bounded and the crowding distance estimator is used to remove solutions with the archive is full. Then, in case of using no archive, the result of the algorithm is the population, which is configured with the <em>populationSize</em> parameter; otherwise, the output is the external archive, whose maximum size is <em>populationSize</em> parameter value, but then the population size can be tuned by taking values from the set (10, 20, 50, 100, 200, 400).</p>
+<p>In the classical NSGA-II, the offspring population size is equal to the population size, but we can set its value from 1 (which leads to a steady-state selection scheme) to 400.</p>
+<p>The initial population is typically filled with randomly created solutions, but we also allows to use a latin hypercube sampling scheme and a strategy similar to the one used in the scatter search algorithm.</p>
+<p>The <em>autoNSGAII</em> has a <em>variation</em> component than can take a single value named <em>crossoverAndMutationVariation</em>. It is intended to represent the typical crossover and mutation operators of a genetic algorithm (additional values, e.g., <em>DifferentialiEvolutionVariation</em> are expected to be added in the future). The <em>crossover</em> operators included are <em>SBX</em> (simulated binary crossover) and <em>BLX_Alpha</em>, which are featured by a given probability and a <em>crossoverRepairStrategy</em>, which defines what to do when the crossover produces a variable value out of the allowed bounds (please, refer to Section 3.2 and Figure 3 in the paper). The <em>SBX</em> and <em>BLX_Alpha</em> require, if selected, a distribution index (a value in the range [5.0, 400]) and an alpha value (in the range [0.0, 1.0]), respectively. Similarly, there are two possible mutation operators to choose from, <em>polynomial</em> and <em>uniform</em>, requiring both a mutation probability and a repairing strategy; the polynomial mutation has, as the SBX crossover, a distribution index parameter (in the range [5.0, 400]) and the <em>uniform</em> mutation needs a perturbation value (in the range [0.0, 1.0]).</p>
+<p>Finally, the <em>selection</em> operator be <em>random</em> or <em>tournament</em>; this last one can take a value between 2 (i.e., binary tournament) and 10.</p>
+<p>As we intend to use irace as auto-tuning package, it requires a text file containing information about the parameters, the values they can take, an their relationships. We have created then a file called <code class="docutils literal notranslate"><span class="pre">parameters-NSGAII.txt</span></code> containing the required data:</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span>algorithmResult                          &quot;--algorithmResult &quot;                     c       (externalArchive,population)
+populationSize                           &quot;--populationSize &quot;                      o       (100)
+populationSizeWithArchive                &quot;--populationSizeWithArchive &quot;           o       (10,20,50,100,200)         | algorithmResult %in% c(&quot;externalArchive&quot;)
+#
+maximumNumberOfEvaluations               &quot;--maximumNumberOfEvaluations &quot;          c       (25000)
+createInitialSolutions                   &quot;--createInitialSolutions &quot;              c       (random,latinHypercubeSampling,scatterSearch)
+#
+variation                                &quot;--variation &quot;                           c       (crossoverAndMutationVariation)
+offspringPopulationSize                  &quot;--offspringPopulationSize &quot;             o       (1,10,50,100)
+crossover                                &quot;--crossover &quot;                           c       (SBX,BLX_ALPHA)
+crossoverProbability                     &quot;--crossoverProbability &quot;                r       (0.0, 1.0)                     | crossover %in% c(&quot;SBX&quot;,&quot;BLX_ALPHA&quot;)
+crossoverRepairStrategy                  &quot;--crossoverRepairStrategy &quot;             c       (random, round, bounds)        | crossover %in% c(&quot;SBX&quot;,&quot;BLX_ALPHA&quot;)
+sbxDistributionIndex                     &quot;--sbxDistributionIndex &quot;                r       (5.0, 400.0)                   | crossover %in% c(&quot;SBX&quot;)
+blxAlphaCrossoverAlphaValue              &quot;--blxAlphaCrossoverAlphaValue &quot;         r       (0.0, 1.0)                     | crossover %in% c(&quot;BLX_ALPHA&quot;)
+mutation                                 &quot;--mutation &quot;                            c       (uniform, polynomial)
+mutationProbability                      &quot;--mutationProbability &quot;                 r       (0.0, 1.0)                     | mutation %in% c(&quot;uniform&quot;,&quot;polynomial&quot;)
+mutationRepairStrategy                   &quot;--mutationRepairStrategy &quot;              c       (random, round, bounds)        | mutation %in% c(&quot;uniform&quot;,&quot;polynomial&quot;)
+polynomialMutationDistributionIndex      &quot;--polynomialMutationDistributionIndex &quot; r       (5.0, 400.0)                   | mutation %in% c(&quot;polynomial&quot;)
+uniformMutationPerturbation              &quot;--uniformMutationPerturbation &quot;         r       (0.0, 1.0)                     | mutation %in% c(&quot;uniform&quot;)
+#
+selection                                &quot;--selection &quot;                           c       (tournament, random)
+selectionTournamentSize                  &quot;--selectionTournamentSize &quot;             i       (2, 10)                        | selection %in% c(&quot;tournament&quot;)
+#
+</pre></div>
+</div>
+<p>To know about the syntax of irace configuration files, please refer to the irace documentation.</p>
+</div>
+<div class="section" id="the-evolutionaryalgorithm-class">
+<h2>The <code class="docutils literal notranslate"><span class="pre">EvolutionaryAlgorithm</span></code> class<a class="headerlink" href="#the-evolutionaryalgorithm-class" title="Permalink to this headline">¶</a></h2>
+<p>Once we have defined the parameters of NSGA-II that can be tuned, the next issue to deal with is to have an implementation of the algorithm that can be configured with any valid combination of parameter values. The implementation of NSGA-II provided by jMetal is based on inheritance from the <code class="docutils literal notranslate"><span class="pre">AbstractEvolutionaryAlgorithm</span></code> class, so adapting it for auto-configuration is not a simple task, so our decision has been to create a new Maven subproject, called <code class="docutils literal notranslate"><span class="pre">jmetal-auto</span></code> from scratch and include in it all the classes related to the auto-configuration of metaheuristics. This way we do not interfere in the existing code, but with the disadvantage that we are going to have duplications of some functionalities. In particular,</p>
+<p>The following code snippet include the most relevant parts of the <code class="docutils literal notranslate"><span class="pre">EvolutionaryAlgorithm</span></code> class, which is the algorithm template we have defined for developing autoconfigurable metaheuristics. It is not an abstract but a regular class containing the basic components of an evolutionary algorithm, including the selection, variation and replacement steps.</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kn">package</span> <span class="nn">org.uma.jmetal.auto.algorithm</span><span class="o">;</span>
+<span class="o">...</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">EvolutionaryAlgorithm</span><span class="o">&lt;</span><span class="n">S</span> <span class="kd">extends</span> <span class="n">Solution</span><span class="o">&lt;?&gt;&gt;{</span>
+  <span class="o">...</span>
+  <span class="kd">public</span> <span class="nf">EvolutionaryAlgorithm</span><span class="o">(</span>
+    <span class="n">String</span> <span class="n">name</span><span class="o">,</span>
+    <span class="n">Evaluation</span><span class="o">&lt;</span><span class="n">S</span><span class="o">&gt;</span> <span class="n">evaluation</span><span class="o">,</span>
+    <span class="n">InitialSolutionsCreation</span><span class="o">&lt;</span><span class="n">S</span><span class="o">&gt;</span> <span class="n">initialPopulationCreation</span><span class="o">,</span>
+    <span class="n">Termination</span> <span class="n">termination</span><span class="o">,</span>
+    <span class="n">MatingPoolSelection</span><span class="o">&lt;</span><span class="n">S</span><span class="o">&gt;</span> <span class="n">selection</span><span class="o">,</span>
+    <span class="n">Variation</span><span class="o">&lt;</span><span class="n">S</span><span class="o">&gt;</span> <span class="n">variation</span><span class="o">,</span>
+    <span class="n">Replacement</span><span class="o">&lt;</span><span class="n">S</span><span class="o">&gt;</span> <span class="n">replacement</span><span class="o">,</span>
+    <span class="n">Archive</span><span class="o">&lt;</span><span class="n">S</span><span class="o">&gt;</span> <span class="n">externalArchive</span><span class="o">)</span> <span class="o">{</span>
+    <span class="o">...</span>
+ <span class="o">}</span>
+
+  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">()</span> <span class="o">{</span>
+    <span class="n">population</span> <span class="o">=</span> <span class="n">createInitialPopulation</span><span class="o">.</span><span class="na">create</span><span class="o">();</span>
+    <span class="n">population</span> <span class="o">=</span> <span class="n">evaluation</span><span class="o">.</span><span class="na">evaluate</span><span class="o">(</span><span class="n">population</span><span class="o">);</span>
+    <span class="n">initProgress</span><span class="o">();</span>
+    <span class="k">while</span> <span class="o">(!</span><span class="n">termination</span><span class="o">.</span><span class="na">isMet</span><span class="o">(</span><span class="n">attributes</span><span class="o">))</span> <span class="o">{</span>
+      <span class="n">List</span><span class="o">&lt;</span><span class="n">S</span><span class="o">&gt;</span> <span class="n">matingPopulation</span> <span class="o">=</span> <span class="n">selection</span><span class="o">.</span><span class="na">select</span><span class="o">(</span><span class="n">population</span><span class="o">);</span>
+      <span class="n">List</span><span class="o">&lt;</span><span class="n">S</span><span class="o">&gt;</span> <span class="n">offspringPopulation</span> <span class="o">=</span> <span class="n">variation</span><span class="o">.</span><span class="na">variate</span><span class="o">(</span><span class="n">population</span><span class="o">,</span> <span class="n">matingPopulation</span><span class="o">);</span>
+      <span class="n">offspringPopulation</span> <span class="o">=</span> <span class="n">evaluation</span><span class="o">.</span><span class="na">evaluate</span><span class="o">(</span><span class="n">offspringPopulation</span><span class="o">);</span>
+      <span class="n">updateArchive</span><span class="o">(</span><span class="n">offspringPopulation</span><span class="o">);</span>
+
+      <span class="n">population</span> <span class="o">=</span> <span class="n">replacement</span><span class="o">.</span><span class="na">replace</span><span class="o">(</span><span class="n">population</span><span class="o">,</span> <span class="n">offspringPopulation</span><span class="o">);</span>
+      <span class="n">updateProgress</span><span class="o">();</span>
+    <span class="o">}</span>
+  <span class="o">}</span>
+
+  <span class="kd">private</span> <span class="kt">void</span> <span class="nf">updateArchive</span><span class="o">(</span><span class="n">List</span><span class="o">&lt;</span><span class="n">S</span><span class="o">&gt;</span> <span class="n">population</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">externalArchive</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+      <span class="k">for</span> <span class="o">(</span><span class="n">S</span> <span class="n">solution</span> <span class="o">:</span> <span class="n">population</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">externalArchive</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">solution</span><span class="o">);</span>
+      <span class="o">}</span>
+    <span class="o">}</span>
+  <span class="o">}</span>
+
+  <span class="o">...</span>
+
+  <span class="nd">@Override</span>
+  <span class="kd">public</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">S</span><span class="o">&gt;</span> <span class="nf">getResult</span><span class="o">()</span> <span class="o">{</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">externalArchive</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+      <span class="k">return</span> <span class="n">externalArchive</span><span class="o">.</span><span class="na">getSolutionList</span><span class="o">();</span>
+    <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+      <span class="k">return</span> <span class="n">population</span><span class="o">;</span>
+    <span class="o">}</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+<p>To configure NSGA-II, we have developed a package <code class="docutils literal notranslate"><span class="pre">org.uma.jmetal.auto.component</span></code> which provides components that can be used with the <code class="docutils literal notranslate"><span class="pre">EvolutionaryAlgorithm</span></code> class. Each component has an interface and a number of implementations. It is worth mentioning that two of the components, <code class="docutils literal notranslate"><span class="pre">evaluation</span></code> and <code class="docutils literal notranslate"><span class="pre">termination</span></code>, will not typically be used in the auto-configuration of the algorithm, but the <code class="docutils literal notranslate"><span class="pre">termination</span></code> is particularly interesting because it allows to define different stopping conditions: by number of evaluations, by computing time, and when the user presses a key.</p>
+</div>
+<div class="section" id="the-autonsgaii-class">
+<h2>The <code class="docutils literal notranslate"><span class="pre">AutoNSGAII</span></code> class<a class="headerlink" href="#the-autonsgaii-class" title="Permalink to this headline">¶</a></h2>
+<p>An example of configuring and running NSGA-II with these <code class="docutils literal notranslate"><span class="pre">EvolutionaryAlgorithm</span></code> class is provided in <code class="docutils literal notranslate"><span class="pre">org.uma.jmetal.auto.algorithm.nsgaii.NSGAII</span></code>, where that class is instantiated with the components leading to an standard NSGA-II. However, our purpose is to have the ability of automatically configure NSGA-II, so we need something more flexible.</p>
+<p>The approach we have adopted is to get a sequence of pairs &lt;parameter, value&gt; as input, which is parsed to properly get a version of NSGA-II. This task is performed by class <code class="docutils literal notranslate"><span class="pre">org.uma.jmetal.auto.algorithm.nsgaii.AutoNSGAII</span></code>. This way, to get an NSGA-II algorithm with standard settings the following string must be passed to class <code class="docutils literal notranslate"><span class="pre">AutoNSGAII</span></code> from the command line:</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span>--problemName org.uma.jmetal.problem.multiobjective.zdt.ZDT1 &quot;
++ &quot;--referenceFrontFileName ZDT1.pf &quot;
++ &quot;--maximumNumberOfEvaluations 25000 &quot;
++ &quot;--algorithmResult population &quot;
++ &quot;--populationSize 100 &quot;
++ &quot;--offspringPopulationSize 100 &quot;
++ &quot;--createInitialSolutions random &quot;
++ &quot;--variation crossoverAndMutationVariation &quot;
++ &quot;--selection tournament &quot;
++ &quot;--selectionTournamentSize 2 &quot;
++ &quot;--rankingForSelection dominanceRanking &quot;
++ &quot;--densityEstimatorForSelection crowdingDistance &quot;
++ &quot;--crossover SBX &quot;
++ &quot;--crossoverProbability 0.9 &quot;
++ &quot;--crossoverRepairStrategy bounds &quot;
++ &quot;--sbxDistributionIndex 20.0 &quot;
++ &quot;--mutation polynomial &quot;
++ &quot;--mutationProbability 0.01 &quot;
++ &quot;--mutationRepairStrategy bounds &quot;
++ &quot;--polynomialMutationDistributionIndex 20.0 &quot;
+</pre></div>
+</div>
+<p>We include a class named <code class="docutils literal notranslate"><span class="pre">org.uma.jmetal.auto.algorithm.nsgaii.NSGAWithParameters&quot;</span> <span class="pre">showing</span> <span class="pre">how</span> <span class="pre">to</span> <span class="pre">use</span> <span class="pre">this</span> <span class="pre">parameter</span> <span class="pre">string</span> <span class="pre">with</span> <span class="pre">``AutoNSGAII</span></code>.</p>
+</div>
+<div class="section" id="auto-configuring-nsga-ii-with-irace">
+<h2>Auto-configuring NSGA-II with irace<a class="headerlink" href="#auto-configuring-nsga-ii-with-irace" title="Permalink to this headline">¶</a></h2>
+<p>To replicate the results presented in <a class="reference external" href="https://doi.org/10.1145/3319619.3326832">https://doi.org/10.1145/3319619.3326832</a> all the needed resources are include in the folder <code class="docutils literal notranslate"><span class="pre">jmetal-auto/src/main/resources/irace</span></code>. Just copy the contents of that folder to the machine where you are going to run the experiments. Take into account that irace will generate thousands of configurations, so using a multi-core machine is advisable (we use a Linux virtual machine with 24 cores). We have tested the software in both Linux and macOS. A requirement of irace is to have R installed.</p>
+<p>The contents of irace folder is the following:</p>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">irace.tar.gz</span></code>: file containing irace</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">parameters-NSGAII.txt</span></code>: file describing the parameters that can be tuned, including their allowed values and their dependences. You are free to modify some parameter values if you know their meaning.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">instances-list.txt</span></code>: the problems to be solved and their reference Pareto fronts are included here. It currently contains the following:</p></li>
+</ol>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">org</span><span class="o">.</span><span class="na">uma</span><span class="o">.</span><span class="na">jmetal</span><span class="o">.</span><span class="na">problem</span><span class="o">.</span><span class="na">multiobjective</span><span class="o">.</span><span class="na">zdt</span><span class="o">.</span><span class="na">ZDT1</span> <span class="o">--</span><span class="n">referenceFrontFileName</span> <span class="n">ZDT1</span><span class="o">.</span><span class="na">pf</span>
+<span class="n">org</span><span class="o">.</span><span class="na">uma</span><span class="o">.</span><span class="na">jmetal</span><span class="o">.</span><span class="na">problem</span><span class="o">.</span><span class="na">multiobjective</span><span class="o">.</span><span class="na">zdt</span><span class="o">.</span><span class="na">ZDT2</span> <span class="o">--</span><span class="n">referenceFrontFileName</span> <span class="n">ZDT2</span><span class="o">.</span><span class="na">pf</span>
+<span class="n">org</span><span class="o">.</span><span class="na">uma</span><span class="o">.</span><span class="na">jmetal</span><span class="o">.</span><span class="na">problem</span><span class="o">.</span><span class="na">multiobjective</span><span class="o">.</span><span class="na">zdt</span><span class="o">.</span><span class="na">ZDT3</span> <span class="o">--</span><span class="n">referenceFrontFileName</span> <span class="n">ZDT3</span><span class="o">.</span><span class="na">pf</span>
+<span class="n">org</span><span class="o">.</span><span class="na">uma</span><span class="o">.</span><span class="na">jmetal</span><span class="o">.</span><span class="na">problem</span><span class="o">.</span><span class="na">multiobjective</span><span class="o">.</span><span class="na">zdt</span><span class="o">.</span><span class="na">ZDT4</span> <span class="o">--</span><span class="n">referenceFrontFileName</span> <span class="n">ZDT4</span><span class="o">.</span><span class="na">pf</span>
+<span class="n">org</span><span class="o">.</span><span class="na">uma</span><span class="o">.</span><span class="na">jmetal</span><span class="o">.</span><span class="na">problem</span><span class="o">.</span><span class="na">multiobjective</span><span class="o">.</span><span class="na">zdt</span><span class="o">.</span><span class="na">ZDT6</span> <span class="o">--</span><span class="n">referenceFrontFileName</span> <span class="n">ZDT6</span><span class="o">.</span><span class="na">pf</span>
+</pre></div>
+</div>
+<p>We must note that <strong>currently we can only auto-configure NSGA-II with benchmark problems</strong> included in jMetal.</p>
+<ol class="arabic simple" start="4">
+<li><p><code class="docutils literal notranslate"><span class="pre">scenario-NSGAII.txt</span></code>: default irace parameters (we usually keep this file unchanged)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">target-runner</span></code>. Bash script which is executed in every run of irace. It contains as <code class="docutils literal notranslate"><span class="pre">FIXED_PARAMS</span></code> the path of the <code class="docutils literal notranslate"><span class="pre">jmetal-auto-6.0-SNAPSHOT-jar-with-dependencies.jar</span></code> which is included in the resources directory (this file can be generated with Maven just running <code class="docutils literal notranslate"><span class="pre">mvn</span> <span class="pre">package</span></code> from the project root directory).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">run.sh</span></code>. Bash script to run irace. VERY IMPORTANT: the number of cores to be used by irace are indicated in the <code class="docutils literal notranslate"><span class="pre">IRACE_PARAMS</span></code> variable (the default value is 24).</p></li>
+</ol>
+<p>To run irace simply run the following command:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./run.sh NSGAII
+</pre></div>
+</div>
+<p>Then irace will create a directory called <code class="docutils literal notranslate"><span class="pre">execdir</span></code> where it will write a number of output files. Two of those files are of particular interest: <code class="docutils literal notranslate"><span class="pre">irace.stderr.out</span></code>, which should be empty if everything is ok, and <code class="docutils literal notranslate"><span class="pre">irace.sdtout.err</span></code>, which contains the configurations being tested and, when irace stops, the best configurations founds. These configurations can be used with the <code class="docutils literal notranslate"><span class="pre">NSGAWithParameters</span></code> program.</p>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">jmetal</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">CONTENTS:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Auto-configuration of evolutionary algorithms: NSGA-II</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#motivation">Motivation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#nsga-ii-parameters">NSGA-II parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#the-evolutionaryalgorithm-class">The <code class="docutils literal notranslate"><span class="pre">EvolutionaryAlgorithm</span></code> class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#the-autonsgaii-class">The <code class="docutils literal notranslate"><span class="pre">AutoNSGAII</span></code> class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#auto-configuring-nsga-ii-with-irace">Auto-configuring NSGA-II with irace</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="installation.html" title="previous chapter">Installation</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, Antonio J. Nebro.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.1.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/autoconfiguration.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
