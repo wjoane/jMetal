@@ -33,6 +33,11 @@ import org.uma.jmetal.util.fileoutput.impl.DefaultFileOutputContext;
 import org.uma.jmetal.util.observer.impl.EvaluationObserver;
 import org.uma.jmetal.util.observer.impl.RunTimeChartObserver;
 
+/**
+ * Class to configure and run the NSGA-II using the {@link EvolutionaryAlgorithm} class.
+ *
+ * @author Antonio J. Nebro (ajnebro@uma.es)
+ */
 public class NSGAII {
   public static void main(String[] args) {
     DoubleProblem problem = new ZDT1();

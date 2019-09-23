@@ -13,13 +13,13 @@ jMetal is a Java-based framework for multi-objective optimization with metaheuri
 This Web site is devoted to describing the new features of jMetal 6.0. Please, note that **this is an active development branch**, where some ideas are still not completely defined and many changes will take place until the version is closed. In its current state, this branch is not intended to newcomers but to users already familiarized with jMetal. It is worth mentioning that we have taken as starting point all the code included in jMetal 5.8, so this branch is fully functional and in fact we are currently using it in our research work. Comments and suggestions
 are welcome; we encourage interested users in contributing to open new issues in the project repository.
 
-A summary of the features of jMetal 6.0 are listed next:
+A summary of the incoming features of jMetal 6.0 are listed next:
 
 * Use of Sphinx for the documentation. In jMetal 5 the documentation is based on Markdown files; it not complete and some parts are outdated.
 
 * Support for automatic configuration of metaheuristics. We include a sub-project called ``jmetal-auto``, which currently contains a version of NSGA-II that can be fully auto tuned using ``irace``, as is described in the paper "Automatic Configuration of NSGA-II with jMetal and irace", presented at GECCO 2019 (DOI: https://doi.org/10.1145/3319619.3326832).
 
-* Improved experimentation. The output of an experiment (i.e., the execution of a number of algorithms on a set of problems) is an CSV file which can be further analyzed to produce Latex tables and graphics with statistical information. We plan to use Tablesaw and Smile for the analysis tasks. All the experimentation code is located in sub-package ``jmetal-lab``.
+* Improved experimentation. The output of an experiment (i.e., the execution of a number of algorithms on a set of problems) is an CSV file which can be further analyzed to produce Latex tables and graphics with statistical information. We plan to use Tablesaw (https://github.com/jtablesaw/tablesaw) and Smile (http://haifengl.github.io/smile/) for the analysis tasks. All the experimentation code is located in sub-package ``jmetal-lab``.
 
 * All the core packages in ``jmetal-core`` (``solution``, ``problem``, ``algorithm``, ``operator``, ``quality indicator``), are being reviewed, tested, and refactored. Some relevant changes already addressed are:
 

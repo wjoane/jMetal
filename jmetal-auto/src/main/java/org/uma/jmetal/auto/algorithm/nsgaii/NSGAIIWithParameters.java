@@ -8,6 +8,11 @@ import org.uma.jmetal.util.fileoutput.impl.DefaultFileOutputContext;
 import org.uma.jmetal.util.observer.impl.EvaluationObserver;
 import org.uma.jmetal.util.observer.impl.RunTimeChartObserver;
 
+/**
+ *  Class configuring NSGA-II using arguments in the form <key, value> and the {@link AutoNSGAII} class.
+ *
+ *  @author Antonio J. Nebro (ajnebro@uma.es)
+ */
 public class NSGAIIWithParameters {
 
   public static void main(String[] args) {
