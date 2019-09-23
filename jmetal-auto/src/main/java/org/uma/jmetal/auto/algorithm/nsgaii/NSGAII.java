@@ -91,8 +91,7 @@ public class NSGAII {
             termination,
             selection,
             variation,
-            replacement,
-            null);
+            replacement);
 
     EvaluationObserver evaluationObserver = new EvaluationObserver(1000);
     RunTimeChartObserver<DoubleSolution> runTimeChartObserver =

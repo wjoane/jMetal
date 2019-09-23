@@ -113,17 +113,17 @@ As we intend to use irace as auto-tuning package, it requires a text file contai
 
 To know about the syntax of irace configuration files, please refer to the irace documentation. 
 
-``AutoNSGA-II`` implementation
-------------------------------
+The ``EvolutionaryAlgorithm`` class
+-----------------------------------
 Once we have defined the parameters of NSGA-II that can be tuned, the next issue to deal with is to have an implementation of the algorithm that can be configured with any valid combination of parameter values. The implementation of NSGA-II provided by jMetal is based on inheritance from the ``AbstractEvolutionaryAlgorithm`` class, so adapting it for auto-configuration is not a simple task, so our decision has been to create a new Maven subproject, called ``jmetal-auto`` from scratch and include in it all the classes related to the auto-configuration of metaheuristics. This way we do not interfere in the existing code, but with the disadvantage that we are going to have duplications of some functionalities. In particular, 
-
-
 
 The following code snippet include the most relevant parts of the ``EvolutionaryAlgorithm`` class, which is the algorithm template we have defined for developing autoconfigurable metaheuristics. It is not an abstract but a regular class containing the basic components of an evolutionary algorithm, including the selection, variation and replacement steps. 
 
 
 .. code-block:: java
 
+  package org.uma.jmetal.auto.algorithm;
+  ...
   public class EvolutionaryAlgorithm<S extends Solution<?>>{
     ...
     public EvolutionaryAlgorithm(
@@ -173,45 +173,78 @@ The following code snippet include the most relevant parts of the ``Evolutionary
     }
   }
 
+To configure NSGA-II, we have developed a package ``org.uma.jmetal.auto.component`` which provides components that can be used with the ``EvolutionaryAlgorithm`` class. Each component has an interface and a number of implementations. It is worth mentioning that two of the components, ``evaluation`` and ``termination``, will not typically be used in the auto-configuration of the algorithm, but the ``termination`` is particularly interesting because it allows to define different stopping conditions: by number of evaluations, by computing time, and when the user presses a key. 
 
 
+The ``AutoNSGAII`` class
+------------------------
+An example of configuring and running NSGA-II with these ``EvolutionaryAlgorithm`` class is provided in ``org.uma.jmetal.auto.algorithm.nsgaii.NSGAII``, where that class is instantiated with the components leading to an standard NSGA-II. However, our purpose is to have the ability of automatically configure NSGA-II, so we need something more flexible. 
 
-.. , as we focus here mainly on implementation issues. The motivation for including auto configuration (or auto tuning) of multi-objecive evolutionary algorithms in jMetal, the proposed architecture, the aspects that can be tuned in NSGA-II, and the results of an experiment showing a use case are described in that paper.
-
-
-
-
-
-
-
-Configuration file:
-
-
-
-
-
-API
----
-
+The approach we have adopted is to get a sequence of pairs <parameter, value> as input, which is parsed to properly get a version of NSGA-II. This task is performed by class ``org.uma.jmetal.auto.algorithm.nsgaii.AutoNSGAII``. This way, to get an NSGA-II algorithm with standard settings the following string must be passed to class ``AutoNSGAII`` from the command line: 
 
 .. code-block:: java
 
-   public interface Algorithm<Result> extends Runnable, Serializable, DescribedEntity {
-      void run() ;
-      Result getResult() ;
-   }
+                --problemName org.uma.jmetal.problem.multiobjective.zdt.ZDT1 "
+                + "--referenceFrontFileName ZDT1.pf "
+                + "--maximumNumberOfEvaluations 25000 "
+                + "--algorithmResult population "
+                + "--populationSize 100 "
+                + "--offspringPopulationSize 100 "
+                + "--createInitialSolutions random "
+                + "--variation crossoverAndMutationVariation "
+                + "--selection tournament "
+                + "--selectionTournamentSize 2 "
+                + "--rankingForSelection dominanceRanking "
+                + "--densityEstimatorForSelection crowdingDistance "
+                + "--crossover SBX "
+                + "--crossoverProbability 0.9 "
+                + "--crossoverRepairStrategy bounds "
+                + "--sbxDistributionIndex 20.0 "
+                + "--mutation polynomial "
+                + "--mutationProbability 0.01 "
+                + "--mutationRepairStrategy bounds "
+                + "--polynomialMutationDistributionIndex 20.0 "
+
+We include a class named ``org.uma.jmetal.auto.algorithm.nsgaii.NSGAWithParameters" showing how to use this parameter string with ``AutoNSGAII``.
+
+Auto-configuring NSGA-II with irace
+-----------------------------------
+
+To replicate the results presented in https://doi.org/10.1145/3319619.3326832 all the needed resources are include in the folder ``jmetal-auto/src/main/resources/irace``. Just copy the contents of that folder to the machine where you are going to run the experiments. Take into account that irace will generate thousands of configurations, so using a multi-core machine is advisable (we use a Linux virtual machine with 24 cores). We have tested the software in both Linux and macOS. A requirement of irace is to have R installed.
+
+The contents of irace folder is the following:
+
+1. ``irace.tar.gz``: file containing irace
+2. ``parameters-NSGAII.txt``: file describing the parameters that can be tuned, including their allowed values and their dependences. You are free to modify some parameter values if you know their meaning.
+3. ``instances-list.txt``: the problems to be solved and their reference Pareto fronts are included here. It currently contains the following:
+
+.. code-block:: java
+
+  org.uma.jmetal.problem.multiobjective.zdt.ZDT1 --referenceFrontFileName ZDT1.pf
+  org.uma.jmetal.problem.multiobjective.zdt.ZDT2 --referenceFrontFileName ZDT2.pf
+  org.uma.jmetal.problem.multiobjective.zdt.ZDT3 --referenceFrontFileName ZDT3.pf
+  org.uma.jmetal.problem.multiobjective.zdt.ZDT4 --referenceFrontFileName ZDT4.pf
+  org.uma.jmetal.problem.multiobjective.zdt.ZDT6 --referenceFrontFileName ZDT6.pf
+
+We must note that **currently we can only auto-configure NSGA-II with benchmark problems** included in jMetal.
+
+4. ``scenario-NSGAII.txt``: default irace parameters (we usually keep this file unchanged)
+5. ``target-runner``. Bash script which is executed in every run of irace. It contains as ``FIXED_PARAMS`` the path of the ``jmetal-auto-6.0-SNAPSHOT-jar-with-dependencies.jar`` which is included in the resources directory (this file can be generated with Maven just running ``mvn package`` from the project root directory).
+6. ``run.sh``. Bash script to run irace. VERY IMPORTANT: the number of cores to be used by irace are indicated in the ``IRACE_PARAMS`` variable (the default value is 24).
 
 
 
 
-+------------+------------+-----------+
-| Header 1   | Header 2   | Header 3  |
-+============+============+===========+
-| body row 1 | column 2   | column 3  |
-+------------+------------+-----------+
-| body row 2 | Cells may span columns.|
-+------------+------------+-----------+
-| body row 3 | Cells may  | - Cells   |
-+------------+ span rows. | - contain |
-| body row 4 |            | - blocks. |
-+------------+------------+-----------+
+
+.. 
+  +------------+------------+-----------+
+  | Header 1   | Header 2   | Header 3  |
+  +============+============+===========+
+  | body row 1 | column 2   | column 3  |
+  +------------+------------+-----------+
+  | body row 2 | Cells may span columns.|
+  +------------+------------+-----------+
+  | body row 3 | Cells may  | - Cells   |
+  +------------+ span rows. | - contain |
+  | body row 4 |            | - blocks. |
+  +------------+------------+-----------+
