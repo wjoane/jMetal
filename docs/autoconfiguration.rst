@@ -232,7 +232,14 @@ We must note that **currently we can only auto-configure NSGA-II with benchmark 
 5. ``target-runner``. Bash script which is executed in every run of irace. It contains as ``FIXED_PARAMS`` the path of the ``jmetal-auto-6.0-SNAPSHOT-jar-with-dependencies.jar`` which is included in the resources directory (this file can be generated with Maven just running ``mvn package`` from the project root directory).
 6. ``run.sh``. Bash script to run irace. VERY IMPORTANT: the number of cores to be used by irace are indicated in the ``IRACE_PARAMS`` variable (the default value is 24).
 
+To run irace simply run the following command:
 
+.. code-block:: bash
+
+  ./run.sh NSGAII 
+
+
+Then irace will create a directory called ``execdir`` where it will write a number of output files. Two of those files are of particular interest: ``irace.stderr.out``, which should be empty if everything is ok, and ``irace.sdtout.err``, which contains the configurations being tested and, when irace stops, the best configurations founds. These configurations can be used with the ``NSGAWithParameters`` program.
 
 
 
