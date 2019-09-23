@@ -150,3 +150,5 @@ coverage
 .Rhistory
 
 *.png
+
+docs/_build
