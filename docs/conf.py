@@ -57,3 +57,5 @@ html_theme = 'alabaster'
 html_static_path = ['_static']
 
 show_authors = 'true'
+
+master_doc = 'index'
