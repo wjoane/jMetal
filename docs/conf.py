@@ -56,10 +56,6 @@ html_theme = 'alabaster'
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
 
-<<<<<<< HEAD
 show_authors = 'true'
 
 master_doc = 'index'
-=======
-show_authors = 'True'
->>>>>>> cd66972abee7ce4392515b2aac587613a19b17c9
