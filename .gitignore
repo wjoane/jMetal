@@ -152,5 +152,9 @@ coverage
 *.png
 
 docs/_build
+<<<<<<< HEAD
 docs/_static
 docs/_templates
+=======
+
+>>>>>>> cd66972abee7ce4392515b2aac587613a19b17c9
