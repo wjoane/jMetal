@@ -29,12 +29,12 @@ public class EvolutionaryAlgorithm<S extends Solution<?>>
   private Variation<S> variation;
   private Replacement<S> replacement;
 
-  protected Map<String, Object> attributes;
+  private Map<String, Object> attributes;
 
-  protected long initTime;
-  protected long totalComputingTime;
-  protected int evaluations;
-  protected Observable<Map<String, Object>> observable;
+  private long initTime;
+  private long totalComputingTime;
+  private int evaluations;
+  private Observable<Map<String, Object>> observable;
 
   private final String name;
 
@@ -151,7 +151,7 @@ public class EvolutionaryAlgorithm<S extends Solution<?>>
     observable.setChanged();
     observable.notifyObservers(attributes);
 
-    totalComputingTime = System.currentTimeMillis() - initTime ;
+    totalComputingTime = getCurrentComputingTime() ;
   }
 
   public long getCurrentComputingTime() {
