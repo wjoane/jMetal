@@ -28,7 +28,7 @@ public class PESA2Builder<S extends Solution<?>> implements AlgorithmBuilder<PES
   public PESA2Builder(Problem<S> problem, CrossoverOperator<S> crossoverOperator,
       MutationOperator<S> mutationOperator) {
     this.problem = problem;
-    maxEvaluations = 250;
+    maxEvaluations = 25000;
     populationSize = 100;
     archiveSize = 100 ;
     biSections = 5 ;
