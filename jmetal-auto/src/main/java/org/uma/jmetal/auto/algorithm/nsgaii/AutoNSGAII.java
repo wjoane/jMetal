@@ -208,45 +208,4 @@ public class AutoNSGAII {
   public static void print(List<Parameter<?>> parameterList) {
     parameterList.forEach(item -> System.out.println(item));
   }
-
-  public static void main(String[] args) {
-    String[] parameters =
-        ("--problemName org.uma.jmetal.problem.multiobjective.zdt.ZDT1 "
-                + "--referenceFrontFileName ZDT1.pf "
-                + "--maximumNumberOfEvaluations 25000 "
-                + "--algorithmResult population "
-                + "--populationSize 100 "
-                + "--offspringPopulationSize 100 "
-                + "--createInitialSolutions random "
-                + "--variation crossoverAndMutationVariation "
-                + "--selection tournament "
-                + "--selectionTournamentSize 2 "
-                + "--crossover SBX "
-                + "--crossoverProbability 0.9 "
-                + "--crossoverRepairStrategy bounds "
-                + "--sbxDistributionIndex 20.0 "
-                + "--mutation polynomial "
-                + "--mutationProbability 0.01 "
-                + "--mutationRepairStrategy bounds "
-                + "--polynomialMutationDistributionIndex 20.0 ")
-            .split("\\s+");
-
-    AutoNSGAII nsgaiiWithParameters = new AutoNSGAII();
-    nsgaiiWithParameters.parseAndCheckParameters(parameters);
-
-    nsgaiiWithParameters.print(nsgaiiWithParameters.fixedParameterList);
-    nsgaiiWithParameters.print(nsgaiiWithParameters.autoConfigurableParameterList);
-
-    EvolutionaryAlgorithm<DoubleSolution> nsgaII = nsgaiiWithParameters.create();
-    nsgaII.run();
-
-    new SolutionListOutput(nsgaII.getResult())
-        .setSeparator("\t")
-        .setVarFileOutputContext(new DefaultFileOutputContext("VAR.tsv"))
-        .setFunFileOutputContext(new DefaultFileOutputContext("FUN.tsv"))
-        .print();
-
-    // NSGAIIiraceParameterFile nsgaiiiraceParameterFile = new NSGAIIiraceParameterFile();
-    // nsgaiiiraceParameterFile.generateConfigurationFile(nsgaiiWithParameters.autoConfigurableParameterList);
-  }
 }

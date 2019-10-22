@@ -51,7 +51,7 @@ public class SBXCrossover implements CrossoverOperator<DoubleSolution> {
 
   /** Constructor */
   public SBXCrossover(double crossoverProbability, double distributionIndex, RepairDoubleSolution solutionRepair, RandomGenerator<Double> randomGenerator) {
-    Check.isValidProbability(crossoverProbability);
+    Check.probabilityIsValid(crossoverProbability);
     Check.that(distributionIndex >= 0, "Distribution index is negative: " + distributionIndex);
 
     this.crossoverProbability = crossoverProbability ;

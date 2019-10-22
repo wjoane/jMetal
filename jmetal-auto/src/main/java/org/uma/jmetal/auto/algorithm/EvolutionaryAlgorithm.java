@@ -29,17 +29,18 @@ public class EvolutionaryAlgorithm<S extends Solution<?>>
   private Variation<S> variation;
   private Replacement<S> replacement;
 
-  protected Map<String, Object> attributes;
+  private Map<String, Object> attributes;
 
-  protected long initTime;
-  protected long totalComputingTime;
-  protected int evaluations;
-  protected Observable<Map<String, Object>> observable;
+  private long initTime;
+  private long totalComputingTime;
+  private int evaluations;
+  private Observable<Map<String, Object>> observable;
 
   private final String name;
 
   /**
    * Constructor
+   *
    * @param name Algorithm name
    * @param evaluation
    * @param initialPopulationCreation
@@ -73,6 +74,7 @@ public class EvolutionaryAlgorithm<S extends Solution<?>>
 
   /**
    * Constructor
+   *
    * @param name Algorithm name
    * @param evaluation
    * @param initialPopulationCreation
@@ -82,17 +84,27 @@ public class EvolutionaryAlgorithm<S extends Solution<?>>
    * @param replacement
    */
   public EvolutionaryAlgorithm(
-          String name,
-          Evaluation<S> evaluation,
-          InitialSolutionsCreation<S> initialPopulationCreation,
-          Termination termination,
-          MatingPoolSelection<S> selection,
-          Variation<S> variation,
-          Replacement<S> replacement) {
-    this(name, evaluation, initialPopulationCreation, termination, selection, variation, replacement, null) ;
+      String name,
+      Evaluation<S> evaluation,
+      InitialSolutionsCreation<S> initialPopulationCreation,
+      Termination termination,
+      MatingPoolSelection<S> selection,
+      Variation<S> variation,
+      Replacement<S> replacement) {
+    this(
+        name,
+        evaluation,
+        initialPopulationCreation,
+        termination,
+        selection,
+        variation,
+        replacement,
+        null);
   }
 
   public void run() {
+    initializeAttributes() ;
+
     population = createInitialPopulation.create();
     population = evaluation.evaluate(population);
     initProgress();
@@ -107,6 +119,10 @@ public class EvolutionaryAlgorithm<S extends Solution<?>>
     }
   }
 
+  private void initializeAttributes() {
+    initTime = System.currentTimeMillis() ;
+  }
+
   private void updateArchive(List<S> population) {
     if (externalArchive != null) {
       for (S solution : population) {
@@ -117,6 +133,8 @@ public class EvolutionaryAlgorithm<S extends Solution<?>>
 
   protected void initProgress() {
     evaluations = population.size();
+
+    updateArchive(population);
 
     attributes.put("EVALUATIONS", evaluations);
     attributes.put("POPULATION", population);
@@ -132,6 +150,8 @@ public class EvolutionaryAlgorithm<S extends Solution<?>>
 
     observable.setChanged();
     observable.notifyObservers(attributes);
+
+    totalComputingTime = getCurrentComputingTime() ;
   }
 
   public long getCurrentComputingTime() {

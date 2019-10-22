@@ -4,6 +4,9 @@ import org.uma.jmetal.util.checking.exception.*;
 
 import java.util.Collection;
 
+/**
+ * Static class for error checking
+ */
 public class Check {
   public static void isNotNull(Object object) {
     if (null == object) {
@@ -11,7 +14,7 @@ public class Check {
     }
   }
 
-  public static void isValidProbability(double value) {
+  public static void probabilityIsValid(double value) {
     if ((value < 0.0) || (value > 1.0)) {
       throw new InvalidProbabilityValueException(value) ;
     }

@@ -32,7 +32,7 @@ public class HUXCrossover implements CrossoverOperator<BinarySolution> {
 
   /** Constructor */
   public HUXCrossover(double crossoverProbability, RandomGenerator<Double> randomGenerator) {
-    Check.isValidProbability(crossoverProbability) ;
+    Check.probabilityIsValid(crossoverProbability) ;
 
     this.crossoverProbability = crossoverProbability;
     this.randomGenerator = randomGenerator;

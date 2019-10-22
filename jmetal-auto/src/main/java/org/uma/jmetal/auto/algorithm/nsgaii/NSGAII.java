@@ -28,14 +28,16 @@ import org.uma.jmetal.solution.doublesolution.DoubleSolution;
 import org.uma.jmetal.solution.util.RepairDoubleSolution;
 import org.uma.jmetal.solution.util.impl.RepairDoubleSolutionWithRandomValue;
 import org.uma.jmetal.util.comparator.DominanceComparator;
-import org.uma.jmetal.util.comparator.MultiComparator;
 import org.uma.jmetal.util.fileoutput.SolutionListOutput;
 import org.uma.jmetal.util.fileoutput.impl.DefaultFileOutputContext;
 import org.uma.jmetal.util.observer.impl.EvaluationObserver;
 import org.uma.jmetal.util.observer.impl.RunTimeChartObserver;
 
-import java.util.Arrays;
-
+/**
+ * Class to configure and run the NSGA-II using the {@link EvolutionaryAlgorithm} class.
+ *
+ * @author Antonio J. Nebro (ajnebro@uma.es)
+ */
 public class NSGAII {
   public static void main(String[] args) {
     DoubleProblem problem = new ZDT1();
@@ -89,8 +91,7 @@ public class NSGAII {
             termination,
             selection,
             variation,
-            replacement,
-            null);
+            replacement);
 
     EvaluationObserver evaluationObserver = new EvaluationObserver(1000);
     RunTimeChartObserver<DoubleSolution> runTimeChartObserver =
@@ -100,8 +101,6 @@ public class NSGAII {
 
     algorithm.getObservable().register(evaluationObserver);
     algorithm.getObservable().register(runTimeChartObserver);
-    //algorithm.getObservable().register(new RunTimeChartObserver<>("EVALS", 80,
-    // referenceParetoFront));
     //evaluation.getObservable().register(boundedArchiveObserver);
 
     algorithm.run();

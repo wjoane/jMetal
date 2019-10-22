@@ -15,12 +15,12 @@ public class CheckerTest {
 
   @Test (expected = InvalidProbabilityValueException.class)
   public void shouldIsValidProbabilityRaiseAnExceptionIfTheValueIsNegative() {
-    Check.isValidProbability(-1.0);
+    Check.probabilityIsValid(-1.0);
   }
 
   @Test (expected = InvalidProbabilityValueException.class)
   public void shouldIsValidProbabilityRaiseAnExceptionIfTheValueIsHigherThanOne() {
-    Check.isValidProbability(1.1);
+    Check.probabilityIsValid(1.1);
   }
 
   @Test (expected = ValueOutOfRangeException.class)
