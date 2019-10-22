@@ -25,7 +25,7 @@ public class PairwiseReplacement<S extends Solution<?>> implements Replacement<S
   }
 
   public List<S> replace(List<S> population, List<S> offspringPopulation) {
-    checker.isTrue(population.size() == offspringPopulation.size(), "The population size (" +
+    checker.that(population.size() == offspringPopulation.size(), "The population size (" +
             population.size()+ ") is not equal to the offspring population size (" + offspringPopulation.size()+")") ;
 
     List<S> temporaryPopulation = new ArrayList<>() ;

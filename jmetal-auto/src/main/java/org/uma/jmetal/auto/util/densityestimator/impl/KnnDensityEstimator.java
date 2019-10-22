@@ -41,7 +41,7 @@ public class KnnDensityEstimator<S extends Solution<?>> implements DensityEstima
   public void computeDensityEstimator(List<S> solutionList) {
     int size = solutionList.size();
 
-    Check.isTrue(size > 0, "The solution list size must be greater than zero");
+    Check.that(size > 0, "The solution list size must be greater than zero");
     if (size <= k) {
       return;
     }

@@ -27,7 +27,7 @@ public class DominanceComparatorV2<S extends Solution<?>> implements Comparator<
   public int compare(S solution1, S solution2) {
     Check.isNotNull(solution1);
     Check.isNotNull(solution2);
-    Check.isTrue(
+    Check.that(
         solution1.getNumberOfObjectives() == solution2.getNumberOfObjectives(),
         "Cannot compare because solution1 has "
             + solution1.getNumberOfObjectives()

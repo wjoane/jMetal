@@ -83,7 +83,7 @@ public class PolynomialMutation implements MutationOperator<DoubleSolution> {
       RepairDoubleSolution solutionRepair,
       RandomGenerator<Double> randomGenerator) {
     Check.isValidProbability(mutationProbability);
-    Check.isTrue(distributionIndex >= 0, "Distribution index is negative: " + distributionIndex);
+    Check.that(distributionIndex >= 0, "Distribution index is negative: " + distributionIndex);
     this.mutationProbability = mutationProbability;
     this.distributionIndex = distributionIndex;
     this.solutionRepair = solutionRepair;

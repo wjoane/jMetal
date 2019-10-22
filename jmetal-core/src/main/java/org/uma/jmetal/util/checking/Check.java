@@ -35,12 +35,6 @@ public class Check {
     }
   }
 
-  public static void isTrue(boolean expression, String message) {
-    if (!expression) {
-      throw new InvalidConditionException(message);
-    }
-  }
-
   public static void that(boolean expression, String message) {
     if (!expression) {
         throw new InvalidConditionException(message) ;

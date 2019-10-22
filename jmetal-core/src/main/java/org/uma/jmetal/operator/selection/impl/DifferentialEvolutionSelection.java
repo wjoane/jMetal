@@ -50,10 +50,10 @@ public class DifferentialEvolutionSelection
   @Override
   public List<DoubleSolution> execute(List<DoubleSolution> solutionList) {
     Check.isNotNull(solutionList);
-    Check.isTrue(
+    Check.that(
         (solutionListIndex >= 0) && (solutionListIndex <= solutionList.size()),
         "Index value invalid: " + solutionListIndex);
-    Check.isTrue(
+    Check.that(
         solutionList.size() >= numberOfSolutionsToSelect,
         "The population has less than " + (numberOfSolutionsToSelect + 1) + " solutions: " + solutionList.size());
 

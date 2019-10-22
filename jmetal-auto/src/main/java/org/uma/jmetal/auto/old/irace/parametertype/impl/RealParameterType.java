@@ -18,7 +18,7 @@ public class RealParameterType extends ParameterType {
   public RealParameterType(String name, String label, double lowerBound, double upperBound) {
     super(name, label);
 
-    Check.isTrue(lowerBound < upperBound, "The range is invalid");
+    Check.that(lowerBound < upperBound, "The range is invalid");
     this.range = "(" + lowerBound + ", " + upperBound + ")";
   }
 

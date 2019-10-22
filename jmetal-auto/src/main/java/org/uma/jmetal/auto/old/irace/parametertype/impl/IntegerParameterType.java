@@ -18,7 +18,7 @@ public class IntegerParameterType extends ParameterType {
   public IntegerParameterType(String name, String label, int lowerBound, int upperBound) {
     super(name, label) ;
 
-    Check.isTrue(lowerBound < upperBound, "The range is invalid");
+    Check.that(lowerBound < upperBound, "The range is invalid");
     this.range = "(" + lowerBound + ", " + upperBound +")";
   }
 

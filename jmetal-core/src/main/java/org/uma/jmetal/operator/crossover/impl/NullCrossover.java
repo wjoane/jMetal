@@ -21,7 +21,7 @@ public class NullCrossover<S extends Solution<?>>
   /** Execute() method */
   @Override public List<S> execute(List<S> source) {
     Check.isNotNull(source);
-    Check.isTrue(source.size() == 2, "There must be two parents instead of " + source.size());
+    Check.that(source.size() == 2, "There must be two parents instead of " + source.size());
 
     List<S> list = new ArrayList<>() ;
     list.add((S) source.get(0).copy()) ;
