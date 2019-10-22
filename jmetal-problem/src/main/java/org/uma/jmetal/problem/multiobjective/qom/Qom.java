@@ -3,10 +3,8 @@ package org.uma.jmetal.problem.multiobjective.qom;
 import org.uma.jmetal.problem.doubleproblem.impl.AbstractDoubleProblem;
 import org.uma.jmetal.solution.doublesolution.DoubleSolution;
 import org.uma.jmetal.util.JMetalException;
-import org.uma.jmetal.util.solutionattribute.impl.OverallConstraintViolation;
 
 import java.awt.*;
-import java.awt.geom.Area;
 import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.*;

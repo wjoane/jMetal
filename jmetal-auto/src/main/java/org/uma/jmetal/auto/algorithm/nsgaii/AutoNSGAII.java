@@ -24,8 +24,6 @@ import org.uma.jmetal.util.archive.Archive;
 import org.uma.jmetal.util.archive.impl.CrowdingDistanceArchive;
 import org.uma.jmetal.util.comparator.DominanceComparator;
 import org.uma.jmetal.util.comparator.MultiComparator;
-import org.uma.jmetal.util.fileoutput.SolutionListOutput;
-import org.uma.jmetal.util.fileoutput.impl.DefaultFileOutputContext;
 
 import java.util.ArrayList;
 import java.util.Arrays;

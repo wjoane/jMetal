@@ -6,7 +6,7 @@ import org.uma.jmetal.solution.doublesolution.DoubleSolution;
 
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 public class AutoNSGAIITest {
   @Test
