@@ -8,6 +8,7 @@ import org.uma.jmetal.util.pseudorandom.JMetalRandom;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Class implementing the selection operator used in DE: three different solutions are returned from
@@ -21,29 +22,35 @@ import java.util.List;
 @SuppressWarnings("serial")
 public class DifferentialEvolutionSelection
     implements SelectionOperator<List<DoubleSolution>, List<DoubleSolution>> {
-  private int solutionListIndex = Integer.MIN_VALUE;
+  private int currentSolutionIndex = Integer.MIN_VALUE;
   private BoundedRandomGenerator<Integer> randomGenerator;
-  private int numberOfSolutionsToSelect;
+  private int numberOfSolutionsToSelect ;
+  private boolean selectCurrentSolution ;
 
   /** Constructor */
   public DifferentialEvolutionSelection() {
-    this(3);
+    this((a, b) -> JMetalRandom.getInstance().nextInt(a, b), false);
   }
 
   /** Constructor */
-  public DifferentialEvolutionSelection(int numberOfSolutionsToSelect) {
-    this((a, b) -> JMetalRandom.getInstance().nextInt(a, b), numberOfSolutionsToSelect);
+  public DifferentialEvolutionSelection(boolean selectCurrentSolution) {
+    this((a, b) -> JMetalRandom.getInstance().nextInt(a, b), selectCurrentSolution);
   }
 
   /** Constructor */
   public DifferentialEvolutionSelection(
-      BoundedRandomGenerator<Integer> randomGenerator, int numberOfSolutionsToSelect) {
+      BoundedRandomGenerator<Integer> randomGenerator, boolean selectCurrentSolution) {
     this.randomGenerator = randomGenerator;
-    this.numberOfSolutionsToSelect = numberOfSolutionsToSelect;
+    this.selectCurrentSolution = selectCurrentSolution ;
+    if (selectCurrentSolution) {
+      numberOfSolutionsToSelect = 2 ;
+    } else {
+      numberOfSolutionsToSelect = 3 ;
+    }
   }
 
   public void setIndex(int index) {
-    this.solutionListIndex = index;
+    this.currentSolutionIndex = index;
   }
 
   /** Execute() method */
@@ -51,8 +58,8 @@ public class DifferentialEvolutionSelection
   public List<DoubleSolution> execute(List<DoubleSolution> solutionList) {
     Check.isNotNull(solutionList);
     Check.that(
-        (solutionListIndex >= 0) && (solutionListIndex <= solutionList.size()),
-        "Index value invalid: " + solutionListIndex);
+        (currentSolutionIndex >= 0) && (currentSolutionIndex <= solutionList.size()),
+        "Index value invalid: " + currentSolutionIndex);
     Check.that(
         solutionList.size() >= numberOfSolutionsToSelect,
         "The population has less than " + (numberOfSolutionsToSelect + 1) + " solutions: " + solutionList.size());
@@ -61,17 +68,15 @@ public class DifferentialEvolutionSelection
 
     do {
       int index = randomGenerator.getRandomValue(0, solutionList.size() - 1);
-      if (index != solutionListIndex && !indexList.contains(index)) {
+      if (index != currentSolutionIndex && !indexList.contains(index)) {
         indexList.add(index);
       }
     } while (indexList.size() < numberOfSolutionsToSelect);
 
-    List<DoubleSolution> parents = new ArrayList<>();
-
-    for (Integer index : indexList) {
-      parents.add(solutionList.get(index));
+    if (selectCurrentSolution) {
+      indexList.add(currentSolutionIndex) ;
     }
 
-    return parents;
+    return indexList.stream().map(index -> solutionList.get(index)).collect(Collectors.toList());
   }
 }

@@ -135,24 +135,29 @@ public class DifferentialEvolutionSelectionTest {
   }
 
   @Test
-  public void shouldExecuteReturnTwoDifferentSolutionsIfTheListHasThreeElements() {
-    selection = new DifferentialEvolutionSelection(2);
+  public void shouldExecuteReturnThreeDifferentSolutionsIncludingTheCurrentOne() {
+    selection = new DifferentialEvolutionSelection(true);
     selection.setIndex(1);
 
     population =
-        Arrays.asList(
-            mock(DoubleSolution.class), mock(DoubleSolution.class), mock(DoubleSolution.class));
+            Arrays.asList(
+                    mock(DoubleSolution.class),
+                    mock(DoubleSolution.class),
+                    mock(DoubleSolution.class));
 
     List<DoubleSolution> parents = selection.execute(population);
-    assertEquals(2, parents.size());
+    assertEquals(3, parents.size());
 
     // The index solution must not be in the result
     assertNotSame(population.get(1), parents.get(0));
     assertNotSame(population.get(1), parents.get(1));
+    assertSame(population.get(1), parents.get(2));
+
+    assertNotSame(parents.get(0), parents.get(1));
 
     assertThat(parents, hasItem(population.get(0)));
     assertThat(parents, hasItem(population.get(2)));
-    assertThat(parents, not(hasItem(population.get(1))));
+    assertThat(parents, hasItem(population.get(1)));
   }
 
   @Test
@@ -193,8 +198,7 @@ public class DifferentialEvolutionSelectionTest {
             (a, b) -> {
               customUses[0]++;
               return new Random().nextInt(b + 1 - a) + a;
-            },
-            3);
+            }, false);
     selection.setIndex(1);
     selection.execute(solutions);
     assertTrue("Default random generator used", defaultUses[0] == 0);
