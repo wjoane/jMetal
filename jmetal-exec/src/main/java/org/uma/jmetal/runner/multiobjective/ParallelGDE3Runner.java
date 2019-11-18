@@ -22,13 +22,11 @@ import java.util.List;
  *
  * @author Antonio J. Nebro <antonio@lcc.uma.es>
  */
-
 public class ParallelGDE3Runner extends AbstractAlgorithmRunner {
   /**
    * @param args Command line arguments.
-   * @throws SecurityException
-   * Invoking command:
-  java org.uma.jmetal.runner.multiobjective.ParallelGDE3Runner problemName [referenceFront]
+   * @throws SecurityException Invoking command: java
+   *     org.uma.jmetal.runner.multiobjective.ParallelGDE3Runner problemName [referenceFront]
    */
   public static void main(String[] args) throws FileNotFoundException {
     DoubleProblem problem;
@@ -36,41 +34,44 @@ public class ParallelGDE3Runner extends AbstractAlgorithmRunner {
     DifferentialEvolutionSelection selection;
     DifferentialEvolutionCrossover crossover;
 
-    String referenceParetoFront = "" ;
+    String referenceParetoFront = "";
 
-    String problemName ;
+    String problemName;
     if (args.length == 1) {
       problemName = args[0];
     } else if (args.length == 2) {
-      problemName = args[0] ;
-      referenceParetoFront = args[1] ;
+      problemName = args[0];
+      referenceParetoFront = args[1];
     } else {
       problemName = "org.uma.jmetal.problem.multiobjective.zdt.ZDT1";
-      referenceParetoFront = "jmetal-problem/src/test/resources/pareto_fronts/ZDT1.pf" ;
+      referenceParetoFront = "jmetal-problem/src/test/resources/pareto_fronts/ZDT1.pf";
     }
 
-    problem = (DoubleProblem) ProblemUtils.<DoubleSolution> loadProblem(problemName);
+    problem = (DoubleProblem) ProblemUtils.<DoubleSolution>loadProblem(problemName);
 
-    double cr = 0.5 ;
-    double f = 0.5 ;
-    crossover = new DifferentialEvolutionCrossover(cr, f, "rand/1/bin") ;
-    selection = new DifferentialEvolutionSelection() ;
+    double cr = 0.5;
+    double f = 0.5;
+    crossover =
+        new DifferentialEvolutionCrossover(
+            cr, f, DifferentialEvolutionCrossover.DE_VARIANT.RAND_1_BIN);
+    selection = new DifferentialEvolutionSelection();
 
-    SolutionListEvaluator<DoubleSolution> evaluator = new MultithreadedSolutionListEvaluator<DoubleSolution>(0, problem) ;
+    SolutionListEvaluator<DoubleSolution> evaluator =
+        new MultithreadedSolutionListEvaluator<DoubleSolution>(0, problem);
 
-    algorithm = new GDE3Builder(problem)
-        .setCrossover(crossover)
-        .setSelection(selection)
-        .setMaxEvaluations(25000)
-        .setPopulationSize(100)
-        .setSolutionSetEvaluator(evaluator)
-        .build() ;
+    algorithm =
+        new GDE3Builder(problem)
+            .setCrossover(crossover)
+            .setSelection(selection)
+            .setMaxEvaluations(25000)
+            .setPopulationSize(100)
+            .setSolutionSetEvaluator(evaluator)
+            .build();
 
-    AlgorithmRunner algorithmRunner = new AlgorithmRunner.Executor(algorithm)
-        .execute() ;
+    AlgorithmRunner algorithmRunner = new AlgorithmRunner.Executor(algorithm).execute();
 
-    List<DoubleSolution> population = ((GDE3)algorithm).getResult() ;
-    long computingTime = algorithmRunner.getComputingTime() ;
+    List<DoubleSolution> population = ((GDE3) algorithm).getResult();
+    long computingTime = algorithmRunner.getComputingTime();
 
     evaluator.shutdown();
 
@@ -78,7 +79,7 @@ public class ParallelGDE3Runner extends AbstractAlgorithmRunner {
 
     printFinalSolutionSet(population);
     if (!referenceParetoFront.equals("")) {
-      printQualityIndicators(population, referenceParetoFront) ;
+      printQualityIndicators(population, referenceParetoFront);
     }
   }
 }

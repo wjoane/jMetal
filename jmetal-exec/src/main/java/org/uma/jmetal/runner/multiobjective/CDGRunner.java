@@ -7,7 +7,7 @@
 //  but WITHOUT ANY WARRANTY; without even the implied warranty of
 //  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 //  GNU Lesser General Public License for more details.
-// 
+//
 //  You should have received a copy of the GNU Lesser General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -27,8 +27,7 @@ import java.io.FileNotFoundException;
 import java.util.List;
 
 /**
- * Class for configuring and running the CDG algorithm
- * The paper and Matlab code can be download at
+ * Class for configuring and running the CDG algorithm The paper and Matlab code can be download at
  * http://xinyecai.github.io/
  *
  * @author Feng Zhang
@@ -37,8 +36,8 @@ public class CDGRunner extends AbstractAlgorithmRunner {
   /**
    * @param args Command line arguments.
    * @throws ClassNotFoundException
-   * @throws SecurityException      Invoking command:
-   *                                java org.uma.jmetal.runner.multiobjective.CDGRunner problemName [referenceFront]
+   * @throws SecurityException Invoking command: java org.uma.jmetal.runner.multiobjective.CDGRunner
+   *     problemName [referenceFront]
    */
   public static void main(String[] args) throws FileNotFoundException, ClassNotFoundException {
     DoubleProblem problem;
@@ -53,19 +52,21 @@ public class CDGRunner extends AbstractAlgorithmRunner {
       problemName = args[0];
       referenceParetoFront = args[1];
     } else {
-       problemName = "(none)";
+      problemName = "(none)";
     }
-    System.out.println("Warning: the problem name is not used anymore and may be removed later.") ;
-    System.out.println("Warning: current problem name: " + problemName) ;
+    System.out.println("Warning: the problem name is not used anymore and may be removed later.");
+    System.out.println("Warning: current problem name: " + problemName);
 
     problem = new GLT4(10);
 
-
     double cr = 1.0;
     double f = 0.5;
-    crossover = new DifferentialEvolutionCrossover(cr, f, "rand/1/bin");
+    crossover =
+        new DifferentialEvolutionCrossover(
+            cr, f, DifferentialEvolutionCrossover.DE_VARIANT.RAND_1_BIN);
 
-    algorithm = new CDGBuilder(problem)
+    algorithm =
+        new CDGBuilder(problem)
             .setCrossover(crossover)
             .setMaxEvaluations(300 * 1000)
             .setPopulationSize(300)
@@ -73,9 +74,7 @@ public class CDGRunner extends AbstractAlgorithmRunner {
             .setNeighborhoodSelectionProbability(0.9)
             .build();
 
-
-    AlgorithmRunner algorithmRunner = new AlgorithmRunner.Executor(algorithm)
-            .execute();
+    AlgorithmRunner algorithmRunner = new AlgorithmRunner.Executor(algorithm).execute();
 
     List<DoubleSolution> population = algorithm.getResult();
     long computingTime = algorithmRunner.getComputingTime();

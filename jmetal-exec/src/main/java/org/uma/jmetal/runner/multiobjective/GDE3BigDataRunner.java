@@ -55,7 +55,7 @@ public class GDE3BigDataRunner {
 
     double cr = 1.5 ;
     double f = 0.5 ;
-    crossover = new DifferentialEvolutionCrossover(cr, f, "rand/1/bin") ;
+    crossover = new DifferentialEvolutionCrossover(cr, f, DifferentialEvolutionCrossover.DE_VARIANT.RAND_1_BIN) ;
 
     selection = new DifferentialEvolutionSelection() ;
 

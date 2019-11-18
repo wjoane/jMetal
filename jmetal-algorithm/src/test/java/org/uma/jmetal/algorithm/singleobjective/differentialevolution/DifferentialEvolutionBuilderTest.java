@@ -48,8 +48,7 @@ public class DifferentialEvolutionBuilderTest {
     DifferentialEvolutionCrossover crossover = builder.getCrossoverOperator();
     assertEquals(0.5, crossover.getCr(), EPSILON);
     assertEquals(0.5, crossover.getF(), EPSILON);
-    assertEquals(0.5, crossover.getK(), EPSILON);
-    assertTrue("rand/1/bin".equals(crossover.getVariant()));
+    assertTrue(DifferentialEvolutionCrossover.DE_VARIANT.RAND_1_BIN.equals(crossover.getVariant()));
   }
 
   @Test public void setValidPopulationSize() {
