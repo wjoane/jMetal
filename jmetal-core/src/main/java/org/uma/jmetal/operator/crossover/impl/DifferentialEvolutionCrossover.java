@@ -10,6 +10,7 @@ import org.uma.jmetal.util.pseudorandom.BoundedRandomGenerator;
 import org.uma.jmetal.util.pseudorandom.JMetalRandom;
 import org.uma.jmetal.util.pseudorandom.RandomGenerator;
 
+import java.time.chrono.MinguoDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.IntStream;
@@ -35,18 +36,23 @@ public class DifferentialEvolutionCrossover implements CrossoverOperator<DoubleS
     RAND_2_EXP,
     BEST_1_BIN,
     BEST_1_EXP,
+    BEST_2_BIN,
+    BEST_2_EXP,
+    RAND_TO_BEST_1_BIN,
+    RAND_TO_BEST_1_EXP,
     CURRENT_TO_RAND_1_BIN,
     CURRENT_TO_RAND_1_EXP
   }
 
-  private enum DE_CROSSOVER_TYPE {
+  public enum DE_CROSSOVER_TYPE {
     BIN,
     EXP
   }
 
-  private enum DE_MUTATION_TYPE {
+  public enum DE_MUTATION_TYPE {
     RAND,
     BEST,
+    RAND_TO_BEST,
     CURRENT_TO_RAND
   }
 
@@ -58,9 +64,9 @@ public class DifferentialEvolutionCrossover implements CrossoverOperator<DoubleS
   private double cr;
   private double f;
 
-  private int number_of_difference_vectors = 1;
-  private DE_CROSSOVER_TYPE crossover_type = DE_CROSSOVER_TYPE.BIN;
-  private DE_MUTATION_TYPE mutation_type = DE_MUTATION_TYPE.RAND;
+  private int numberOfDifferenceVectors = 1;
+  private DE_CROSSOVER_TYPE crossoverType = DE_CROSSOVER_TYPE.BIN;
+  private DE_MUTATION_TYPE mutationType = DE_MUTATION_TYPE.RAND;
 
   private DE_VARIANT variant;
 
@@ -144,13 +150,17 @@ public class DifferentialEvolutionCrossover implements CrossoverOperator<DoubleS
       case RAND_1_EXP:
       case BEST_1_BIN:
       case BEST_1_EXP:
+      case RAND_TO_BEST_1_BIN:
+      case RAND_TO_BEST_1_EXP:
       case CURRENT_TO_RAND_1_BIN:
       case CURRENT_TO_RAND_1_EXP:
-        number_of_difference_vectors = 1;
+        numberOfDifferenceVectors = 1;
         break;
       case RAND_2_BIN:
       case RAND_2_EXP:
-        number_of_difference_vectors = 2;
+      case BEST_2_BIN:
+      case BEST_2_EXP:
+        numberOfDifferenceVectors = 2;
         break;
       default:
         throw new JMetalException("DE variant type invalid: " + variant);
@@ -159,15 +169,19 @@ public class DifferentialEvolutionCrossover implements CrossoverOperator<DoubleS
     switch (variant) {
       case RAND_1_BIN:
       case BEST_1_BIN:
+      case RAND_TO_BEST_1_BIN:
       case CURRENT_TO_RAND_1_BIN:
       case RAND_2_BIN:
-        crossover_type = DE_CROSSOVER_TYPE.BIN;
+      case BEST_2_BIN:
+        crossoverType = DE_CROSSOVER_TYPE.BIN;
         break;
       case RAND_1_EXP:
       case BEST_1_EXP:
+      case RAND_TO_BEST_1_EXP:
       case CURRENT_TO_RAND_1_EXP:
       case RAND_2_EXP:
-        crossover_type = DE_CROSSOVER_TYPE.EXP;
+      case BEST_2_EXP:
+        crossoverType = DE_CROSSOVER_TYPE.EXP;
         break;
       default:
         throw new JMetalException("DE crossover type invalid: " + variant);
@@ -177,15 +191,22 @@ public class DifferentialEvolutionCrossover implements CrossoverOperator<DoubleS
       case RAND_1_BIN:
       case RAND_1_EXP:
       case RAND_2_BIN:
-        mutation_type = DE_MUTATION_TYPE.RAND;
+      case RAND_2_EXP:
+        mutationType = DE_MUTATION_TYPE.RAND;
         break;
       case BEST_1_BIN:
       case BEST_1_EXP:
-        mutation_type = DE_MUTATION_TYPE.BEST;
+      case BEST_2_BIN:
+      case BEST_2_EXP:
+        mutationType = DE_MUTATION_TYPE.BEST;
         break;
       case CURRENT_TO_RAND_1_BIN:
       case CURRENT_TO_RAND_1_EXP:
-        mutation_type = DE_MUTATION_TYPE.CURRENT_TO_RAND;
+        mutationType = DE_MUTATION_TYPE.CURRENT_TO_RAND;
+        break;
+      case RAND_TO_BEST_1_BIN:
+      case RAND_TO_BEST_1_EXP:
+        mutationType = DE_MUTATION_TYPE.RAND_TO_BEST;
         break;
       default:
         throw new JMetalException("DE mutation type invalid: " + variant);
@@ -203,6 +224,30 @@ public class DifferentialEvolutionCrossover implements CrossoverOperator<DoubleS
 
   public DE_VARIANT getVariant() {
     return variant;
+  }
+
+  public int getNumberOfDifferenceVectors() {
+    return numberOfDifferenceVectors;
+  }
+
+  public DE_CROSSOVER_TYPE getCrossoverType() {
+    return crossoverType;
+  }
+
+  public DE_MUTATION_TYPE getMutationType() {
+    return mutationType;
+  }
+
+  public int getNumberOfRequiredParents() {
+    return 1 + numberOfDifferenceVectors * 2;
+  }
+
+  public int getNumberOfGeneratedChildren() {
+    return 1;
+  }
+
+  public double getCrossoverProbability() {
+    return 1.0;
   }
 
   /* Setters */
@@ -239,148 +284,189 @@ public class DifferentialEvolutionCrossover implements CrossoverOperator<DoubleS
               parentSolutions.get(i).getVariables().toArray(parent[i]);
             });
 
-    if ((DE_VARIANT.RAND_1_BIN.equals(variant)) || DE_VARIANT.RAND_1_BIN.equals(variant)) {
+    if (crossoverType.equals(DE_CROSSOVER_TYPE.BIN)) {
       for (int j = 0; j < numberOfVariables; j++) {
         if (crRandomGenerator.getRandomValue(0.0, 1.0) < cr || j == jrand) {
-          double value = parent[2][j] + f * (parent[0][j] - parent[1][j]);
-
-          value =
-              solutionRepair.repairSolutionVariableValue(
-                  value, child.getLowerBound(j), child.getUpperBound(j));
+          double value = mutation(parent, j);
 
           child.setVariable(j, value);
         }
       }
-    } else if ((DE_VARIANT.BEST_1_BIN.equals(variant)) || DE_VARIANT.RAND_1_BIN.equals(variant)) {
-      for (int j = 0; j < numberOfVariables; j++) {
-        if (crRandomGenerator.getRandomValue(0.0, 1.0) < cr || j == jrand) {
-          double value = bestSolution.getVariable(j) + f * (parent[0][j] - parent[1][j]);
-
-          value =
-              solutionRepair.repairSolutionVariableValue(
-                  value, child.getLowerBound(j), child.getUpperBound(j));
-
-          child.setVariable(j, value);
-        }
-      }
-    } else if ((DE_VARIANT.RAND_2_BIN.equals(variant)) || DE_VARIANT.RAND_2_BIN.equals(variant)) {
-      for (int j = 0; j < numberOfVariables; j++) {
-        if (crRandomGenerator.getRandomValue(0.0, 1.0) < cr || j == jrand) {
-          double value =
-              parent[4][j] + f * (parent[0][j] - parent[1][j]) + f * (parent[2][j] - parent[3][j]);
-
-          value =
-              solutionRepair.repairSolutionVariableValue(
-                  value, child.getLowerBound(j), child.getUpperBound(j));
-
-          child.setVariable(j, value);
-        }
-      }
-    } else if (DE_VARIANT.RAND_1_EXP.equals(variant) || "best/1/exp".equals(variant)) {
-      int k = jRandomGenerator.getRandomValue(0, numberOfVariables - 1);
+    } else if (crossoverType.equals(DE_CROSSOVER_TYPE.EXP)) {
+      int j = jRandomGenerator.getRandomValue(0, numberOfVariables - 1);
       int l = 0;
 
       do {
-        double value = parent[2][k] + f * (parent[0][k] - parent[1][k]);
-        value =
-            solutionRepair.repairSolutionVariableValue(
-                value, child.getLowerBound(k), child.getUpperBound(k));
+        double value = mutation(parent, j);
 
-        child.setVariable(k, value);
+        child.setVariable(j, value);
 
-        k = (k + 1) % numberOfVariables;
+        j = (j + 1) % numberOfVariables;
         l++;
       } while ((crRandomGenerator.getRandomValue(0.0, 1.0) < cr) && (l < numberOfVariables));
-    } else if (DE_VARIANT.BEST_1_EXP.equals(variant) || "best/1/exp".equals(variant)) {
-      int k = jRandomGenerator.getRandomValue(0, numberOfVariables - 1);
-      int l = 0;
-
-      do {
-        double value = bestSolution.getVariable(k) + f * (parent[0][k] - parent[1][k]);
-        value =
-            solutionRepair.repairSolutionVariableValue(
-                value, child.getLowerBound(k), child.getUpperBound(k));
-
-        child.setVariable(k, value);
-
-        k = (k + 1) % numberOfVariables;
-        l++;
-      } while ((crRandomGenerator.getRandomValue(0.0, 1.0) < cr) && (l < numberOfVariables));
-    } else if (DE_VARIANT.RAND_2_EXP.equals(variant) || "best/1/exp".equals(variant)) {
-      int k = jRandomGenerator.getRandomValue(0, numberOfVariables - 1);
-      int l = 0;
-
-      do {
-        double value =
-            parent[4][k] + f * (parent[0][k] - parent[1][k] + f * (parent[2][k] - parent[3][k]));
-        value =
-            solutionRepair.repairSolutionVariableValue(
-                value, child.getLowerBound(k), child.getUpperBound(k));
-
-        child.setVariable(k, value);
-
-        k = (k + 1) % numberOfVariables;
-        l++;
-      } while ((crRandomGenerator.getRandomValue(0.0, 1.0) < cr) && (l < numberOfVariables));
-    } else if (DE_VARIANT.CURRENT_TO_RAND_1_BIN.equals(variant)
-        || "current-to-best/1/bin".equals(variant)) {
-      for (int j = 0; j < numberOfVariables; j++) {
-        if (crRandomGenerator.getRandomValue(0.0, 1.0) < cr || j == jrand) {
-          double value;
-          value =
-              currentSolution.getVariable(j)
-                  + f * (parent[2][j] - currentSolution.getVariable(j))
-                  + f * (parent[0][j] - parent[1][j]);
-
-          value =
-              solutionRepair.repairSolutionVariableValue(
-                  value, child.getLowerBound(j), child.getUpperBound(j));
-
-          child.setVariable(j, value);
-        }
-      }
-    } else if (DE_VARIANT.CURRENT_TO_RAND_1_EXP.equals(variant)
-        || "current-to-best/1/exp".equals(variant)) {
-      int k = jRandomGenerator.getRandomValue(0, numberOfVariables - 1);
-      int l = 0;
-
-      do {
-        double value =
-            currentSolution.getVariable(k)
-                + f * (parent[2][k] - currentSolution.getVariable(k))
-                + f * (parent[0][k] - parent[1][k]);
-
-        value =
-            solutionRepair.repairSolutionVariableValue(
-                value, child.getLowerBound(k), child.getUpperBound(k));
-
-        child.setVariable(k, value);
-
-        k = (k + 1) % numberOfVariables;
-        l++;
-      } while ((crRandomGenerator.getRandomValue(0.0, 1.0) < cr) && (l < numberOfVariables));
-    } else {
-      JMetalLogger.logger.severe(
-          "DifferentialEvolutionCrossover.execute: " + " unknown DE variant (" + variant + ")");
-      Class<String> cls = String.class;
-      String name = cls.getName();
-      throw new JMetalException("Exception in " + name + ".execute()");
     }
+
+    /*
+
+       if (DE_VARIANT.RAND_1_BIN.equals(variant)) {
+         for (int j = 0; j < numberOfVariables; j++) {
+           if (crRandomGenerator.getRandomValue(0.0, 1.0) < cr || j == jrand) {
+             double value = parent[2][j] + f * (parent[0][j] - parent[1][j]);
+
+             child.setVariable(j, value);
+           }
+         }
+       } else if (DE_VARIANT.BEST_1_BIN.equals(variant)) {
+         for (int j = 0; j < numberOfVariables; j++) {
+           if (crRandomGenerator.getRandomValue(0.0, 1.0) < cr || j == jrand) {
+             double value = bestSolution.getVariable(j) + f * (parent[0][j] - parent[1][j]);
+
+             child.setVariable(j, value);
+           }
+         }
+       } else if (DE_VARIANT.RAND_2_BIN.equals(variant)) {
+         for (int j = 0; j < numberOfVariables; j++) {
+           if (crRandomGenerator.getRandomValue(0.0, 1.0) < cr || j == jrand) {
+             double value =
+                 parent[4][j] + f * (parent[0][j] - parent[1][j]) + f * (parent[2][j] - parent[3][j]);
+
+             child.setVariable(j, value);
+           }
+         }
+       } else if (DE_VARIANT.RAND_1_EXP.equals(variant)) {
+         int k = jRandomGenerator.getRandomValue(0, numberOfVariables - 1);
+         int l = 0;
+
+         do {
+           double value = parent[2][k] + f * (parent[0][k] - parent[1][k]);
+
+           child.setVariable(k, value);
+
+           k = (k + 1) % numberOfVariables;
+           l++;
+         } while ((crRandomGenerator.getRandomValue(0.0, 1.0) < cr) && (l < numberOfVariables));
+       } else if (DE_VARIANT.BEST_1_EXP.equals(variant)) {
+         int k = jRandomGenerator.getRandomValue(0, numberOfVariables - 1);
+         int l = 0;
+
+         do {
+           double value = bestSolution.getVariable(k) + f * (parent[0][k] - parent[1][k]);
+
+           child.setVariable(k, value);
+
+           k = (k + 1) % numberOfVariables;
+           l++;
+         } while ((crRandomGenerator.getRandomValue(0.0, 1.0) < cr) && (l < numberOfVariables));
+       } else if (DE_VARIANT.RAND_2_EXP.equals(variant)) {
+         int k = jRandomGenerator.getRandomValue(0, numberOfVariables - 1);
+         int l = 0;
+
+         do {
+           double value =
+               parent[4][k] + f * (parent[0][k] - parent[1][k] + f * (parent[2][k] - parent[3][k]));
+
+           child.setVariable(k, value);
+
+           k = (k + 1) % numberOfVariables;
+           l++;
+         } while ((crRandomGenerator.getRandomValue(0.0, 1.0) < cr) && (l < numberOfVariables));
+       } else if (DE_VARIANT.CURRENT_TO_RAND_1_BIN.equals(variant)
+           || "current-to-best/1/bin".equals(variant)) {
+         for (int j = 0; j < numberOfVariables; j++) {
+           if (crRandomGenerator.getRandomValue(0.0, 1.0) < cr || j == jrand) {
+             double value;
+             value =
+                 currentSolution.getVariable(j)
+                     + f * (parent[2][j] - currentSolution.getVariable(j))
+                     + f * (parent[0][j] - parent[1][j]);
+
+             child.setVariable(j, value);
+           }
+         }
+       } else if (DE_VARIANT.CURRENT_TO_RAND_1_EXP.equals(variant)
+           || "current-to-best/1/exp".equals(variant)) {
+         int k = jRandomGenerator.getRandomValue(0, numberOfVariables - 1);
+         int l = 0;
+
+         do {
+           double value =
+               currentSolution.getVariable(k)
+                   + f * (parent[2][k] - currentSolution.getVariable(k))
+                   + f * (parent[0][k] - parent[1][k]);
+
+           k = (k + 1) % numberOfVariables;
+           l++;
+         } while ((crRandomGenerator.getRandomValue(0.0, 1.0) < cr) && (l < numberOfVariables));
+       } else {
+         JMetalLogger.logger.severe(
+             "DifferentialEvolutionCrossover.execute: " + " unknown DE variant (" + variant + ")");
+         Class<String> cls = String.class;
+         String name = cls.getName();
+         throw new JMetalException("Exception in " + name + ".execute()");
+       }
+    */
+
+    repairVariableValues(child);
 
     List<DoubleSolution> result = new ArrayList<>(1);
     result.add(child);
     return result;
   }
 
-  public int getNumberOfRequiredParents() {
-    return 1 + number_of_difference_vectors * 2;
+  private void repairVariableValues(DoubleSolution solution) {
+    IntStream.range(0, solution.getNumberOfVariables())
+        .forEach(
+            i ->
+                solution.setVariable(
+                    i,
+                    solutionRepair.repairSolutionVariableValue(
+                        solution.getVariable(i),
+                        solution.getLowerBound(i),
+                        solution.getUpperBound(i))));
   }
 
-  public int getNumberOfGeneratedChildren() {
-    return 1;
+  private double mutation(Double[][] parent, int index) {
+    double value = 0;
+    if (mutationType.equals(DE_MUTATION_TYPE.RAND)) {
+      value = randMutation(parent, index, numberOfDifferenceVectors);
+    } else if (mutationType.equals(DE_MUTATION_TYPE.BEST)) {
+      value = bestMutation(parent, index, numberOfDifferenceVectors);
+    } else if (mutationType.equals(DE_MUTATION_TYPE.RAND_TO_BEST)) {
+      value = bestRandToBestMutation(parent, index);
+    }
+
+    return value;
   }
 
-  public double getCrossoverProbability() {
-    return 1.0;
+  private double randMutation(Double[][] parent, int index, int numberOfDifferenceVectors) {
+    if (numberOfDifferenceVectors == 1) {
+      return parent[2][index] + f * (parent[0][index] - parent[1][index]);
+    } else if (numberOfDifferenceVectors == 2) {
+      return parent[4][index]
+          + f * (parent[0][index] - parent[1][index])
+          + f * (parent[2][index] - parent[3][index]);
+    } else {
+      throw new JMetalException(
+          "Number of difference vectors invalid: " + numberOfDifferenceVectors);
+    }
+  }
+
+  private double bestMutation(Double[][] parent, int index, int numberOfDifferenceVectors) {
+    if (numberOfDifferenceVectors == 1) {
+      return bestSolution.getVariable(index) + f * (parent[0][index] - parent[1][index]);
+    } else if (numberOfDifferenceVectors == 2) {
+      return bestSolution.getVariable(index)
+          + f * (parent[0][index] - parent[1][index])
+          + f * (parent[2][index] - parent[3][index]);
+    } else {
+      throw new JMetalException(
+          "Number of difference vectors invalid: " + numberOfDifferenceVectors);
+    }
+  }
+
+  private double bestRandToBestMutation(Double[][] parent, int index) {
+    return currentSolution.getVariable(index)
+        + f * (bestSolution.getVariable(index) - currentSolution.getVariable(index))
+        + f * (parent[0][index] - parent[1][index]);
   }
 }
