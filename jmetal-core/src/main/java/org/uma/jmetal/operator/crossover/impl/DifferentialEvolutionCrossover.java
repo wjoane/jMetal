@@ -5,12 +5,11 @@ import org.uma.jmetal.solution.doublesolution.DoubleSolution;
 import org.uma.jmetal.solution.util.RepairDoubleSolution;
 import org.uma.jmetal.solution.util.impl.RepairDoubleSolutionWithBoundValue;
 import org.uma.jmetal.util.JMetalException;
-import org.uma.jmetal.util.JMetalLogger;
+import org.uma.jmetal.util.checking.Check;
 import org.uma.jmetal.util.pseudorandom.BoundedRandomGenerator;
 import org.uma.jmetal.util.pseudorandom.JMetalRandom;
 import org.uma.jmetal.util.pseudorandom.RandomGenerator;
 
-import java.time.chrono.MinguoDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.IntStream;
@@ -287,7 +286,7 @@ public class DifferentialEvolutionCrossover implements CrossoverOperator<DoubleS
     if (crossoverType.equals(DE_CROSSOVER_TYPE.BIN)) {
       for (int j = 0; j < numberOfVariables; j++) {
         if (crRandomGenerator.getRandomValue(0.0, 1.0) < cr || j == jrand) {
-          double value = mutation(parent, j);
+          double value = mutate(parent, j);
 
           child.setVariable(j, value);
         }
@@ -297,7 +296,7 @@ public class DifferentialEvolutionCrossover implements CrossoverOperator<DoubleS
       int l = 0;
 
       do {
-        double value = mutation(parent, j);
+        double value = mutate(parent, j);
 
         child.setVariable(j, value);
 
@@ -425,7 +424,7 @@ public class DifferentialEvolutionCrossover implements CrossoverOperator<DoubleS
                         solution.getUpperBound(i))));
   }
 
-  private double mutation(Double[][] parent, int index) {
+  private double mutate(Double[][] parent, int index) {
     double value = 0;
     if (mutationType.equals(DE_MUTATION_TYPE.RAND)) {
       value = randMutation(parent, index, numberOfDifferenceVectors);
@@ -452,6 +451,7 @@ public class DifferentialEvolutionCrossover implements CrossoverOperator<DoubleS
   }
 
   private double bestMutation(Double[][] parent, int index, int numberOfDifferenceVectors) {
+    Check.isNotNull(bestSolution) ;
     if (numberOfDifferenceVectors == 1) {
       return bestSolution.getVariable(index) + f * (parent[0][index] - parent[1][index]);
     } else if (numberOfDifferenceVectors == 2) {
@@ -465,6 +465,8 @@ public class DifferentialEvolutionCrossover implements CrossoverOperator<DoubleS
   }
 
   private double bestRandToBestMutation(Double[][] parent, int index) {
+    Check.isNotNull(bestSolution) ;
+    Check.isNotNull(currentSolution) ;
     return currentSolution.getVariable(index)
         + f * (bestSolution.getVariable(index) - currentSolution.getVariable(index))
         + f * (parent[0][index] - parent[1][index]);

@@ -29,28 +29,21 @@ public class DifferentialEvolutionSelection
 
   /** Constructor */
   public DifferentialEvolutionSelection() {
-    this((a, b) -> JMetalRandom.getInstance().nextInt(a, b), false);
-  }
-
-  /** Constructor */
-  public DifferentialEvolutionSelection(boolean selectCurrentSolution) {
-    this((a, b) -> JMetalRandom.getInstance().nextInt(a, b), selectCurrentSolution);
+    this((a, b) -> JMetalRandom.getInstance().nextInt(a, b), 3);
   }
 
   /** Constructor */
   public DifferentialEvolutionSelection(
-      BoundedRandomGenerator<Integer> randomGenerator, boolean selectCurrentSolution) {
+      BoundedRandomGenerator<Integer> randomGenerator, int numberOfSolutionsToSelect) {
     this.randomGenerator = randomGenerator;
-    this.selectCurrentSolution = selectCurrentSolution ;
-    if (selectCurrentSolution) {
-      numberOfSolutionsToSelect = 2 ;
-    } else {
-      numberOfSolutionsToSelect = 3 ;
-    }
+    this.numberOfSolutionsToSelect =  numberOfSolutionsToSelect;
   }
 
   public void setIndex(int index) {
     this.currentSolutionIndex = index;
+  }
+  public void setSelectCurrentSolution() {
+    this.selectCurrentSolution = true ;
   }
 
   /** Execute() method */
@@ -74,7 +67,7 @@ public class DifferentialEvolutionSelection
     } while (indexList.size() < numberOfSolutionsToSelect);
 
     if (selectCurrentSolution) {
-      indexList.add(currentSolutionIndex) ;
+      indexList.set(indexList.size(), currentSolutionIndex) ;
     }
 
     return indexList.stream().map(index -> solutionList.get(index)).collect(Collectors.toList());
