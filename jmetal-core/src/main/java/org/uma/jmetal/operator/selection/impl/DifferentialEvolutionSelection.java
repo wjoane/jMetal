@@ -33,6 +33,11 @@ public class DifferentialEvolutionSelection
   }
 
   /** Constructor */
+  public DifferentialEvolutionSelection(int numberOfSolutionsToSelect) {
+    this((a, b) -> JMetalRandom.getInstance().nextInt(a, b), numberOfSolutionsToSelect);
+  }
+
+  /** Constructor */
   public DifferentialEvolutionSelection(
       BoundedRandomGenerator<Integer> randomGenerator, int numberOfSolutionsToSelect) {
     this.randomGenerator = randomGenerator;
@@ -55,19 +60,21 @@ public class DifferentialEvolutionSelection
         "Index value invalid: " + currentSolutionIndex);
     Check.that(
         solutionList.size() >= numberOfSolutionsToSelect,
-        "The population has less than " + (numberOfSolutionsToSelect + 1) + " solutions: " + solutionList.size());
+        "The population has less than " + numberOfSolutionsToSelect  + " solutions: " + solutionList.size());
 
-    List<Integer> indexList = new ArrayList<>(numberOfSolutionsToSelect);
+    List<Integer> indexList = new ArrayList<>();
+
+    int solutionsToSelect = selectCurrentSolution ? numberOfSolutionsToSelect - 1 : numberOfSolutionsToSelect ;
 
     do {
       int index = randomGenerator.getRandomValue(0, solutionList.size() - 1);
       if (index != currentSolutionIndex && !indexList.contains(index)) {
         indexList.add(index);
       }
-    } while (indexList.size() < numberOfSolutionsToSelect);
+    } while (indexList.size() < solutionsToSelect);
 
     if (selectCurrentSolution) {
-      indexList.set(indexList.size(), currentSolutionIndex) ;
+      indexList.add(currentSolutionIndex) ;
     }
 
     return indexList.stream().map(index -> solutionList.get(index)).collect(Collectors.toList());

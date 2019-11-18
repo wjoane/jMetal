@@ -16,14 +16,12 @@ import org.uma.jmetal.util.solutionattribute.impl.DominanceRanking;
 
 import java.util.*;
 
-/**
- * This class implements the GDE3 algorithm
- */
+/** This class implements the GDE3 algorithm */
 @SuppressWarnings("serial")
 public class GDE3 extends AbstractDifferentialEvolution<List<DoubleSolution>> {
   protected int maxEvaluations;
   protected int evaluations;
-  private int maxPopulationSize ;
+  private int maxPopulationSize;
 
   protected Comparator<DoubleSolution> dominanceComparator;
 
@@ -32,12 +30,14 @@ public class GDE3 extends AbstractDifferentialEvolution<List<DoubleSolution>> {
 
   protected SolutionListEvaluator<DoubleSolution> evaluator;
 
-  /**
-   * Constructor
-   */
-  public GDE3(DoubleProblem problem, int populationSize, int maxEvaluations,
-              DifferentialEvolutionSelection selection, DifferentialEvolutionCrossover crossover,
-              SolutionListEvaluator<DoubleSolution> evaluator) {
+  /** Constructor */
+  public GDE3(
+      DoubleProblem problem,
+      int populationSize,
+      int maxEvaluations,
+      DifferentialEvolutionSelection selection,
+      DifferentialEvolutionCrossover crossover,
+      SolutionListEvaluator<DoubleSolution> evaluator) {
     setProblem(problem);
     setMaxPopulationSize(populationSize);
     this.maxEvaluations = maxEvaluations;
@@ -48,29 +48,34 @@ public class GDE3 extends AbstractDifferentialEvolution<List<DoubleSolution>> {
     ranking = new DominanceRanking<DoubleSolution>();
     crowdingDistance = new CrowdingDistance<DoubleSolution>();
 
-    this.evaluator = evaluator ;
-  }
-  
-  public void setMaxPopulationSize(int maxPopulationSize) {
-    this.maxPopulationSize = maxPopulationSize ;
-  }
-  public int getMaxPopulationSize() {
-    return maxPopulationSize ;
+    this.evaluator = evaluator;
   }
 
-  @Override protected void initProgress() {
+  public void setMaxPopulationSize(int maxPopulationSize) {
+    this.maxPopulationSize = maxPopulationSize;
+  }
+
+  public int getMaxPopulationSize() {
+    return maxPopulationSize;
+  }
+
+  @Override
+  protected void initProgress() {
     evaluations = getMaxPopulationSize();
   }
 
-  @Override protected void updateProgress() {
-    evaluations += getMaxPopulationSize() ;
+  @Override
+  protected void updateProgress() {
+    evaluations += getMaxPopulationSize();
   }
 
-  @Override protected boolean isStoppingConditionReached() {
+  @Override
+  protected boolean isStoppingConditionReached() {
     return evaluations >= maxEvaluations;
   }
 
-  @Override protected List<DoubleSolution> createInitialPopulation() {
+  @Override
+  protected List<DoubleSolution> createInitialPopulation() {
     List<DoubleSolution> population = new ArrayList<>(getMaxPopulationSize());
     for (int i = 0; i < getMaxPopulationSize(); i++) {
       DoubleSolution newIndividual = getProblem().createSolution();
@@ -81,14 +86,17 @@ public class GDE3 extends AbstractDifferentialEvolution<List<DoubleSolution>> {
 
   /**
    * Evaluate population method
+   *
    * @param population The list of solutions to be evaluated
    * @return A list of evaluated solutions
    */
-  @Override protected List<DoubleSolution> evaluatePopulation(List<DoubleSolution> population) {
+  @Override
+  protected List<DoubleSolution> evaluatePopulation(List<DoubleSolution> population) {
     return evaluator.evaluate(population, getProblem());
   }
 
-  @Override protected List<DoubleSolution> selection(List<DoubleSolution> population) {
+  @Override
+  protected List<DoubleSolution> selection(List<DoubleSolution> population) {
     List<DoubleSolution> matingPopulation = new LinkedList<>();
     for (int i = 0; i < getMaxPopulationSize(); i++) {
       // Obtain parents. Two parameters are required: the population and the
@@ -102,7 +110,8 @@ public class GDE3 extends AbstractDifferentialEvolution<List<DoubleSolution>> {
     return matingPopulation;
   }
 
-  @Override protected List<DoubleSolution> reproduction(List<DoubleSolution> matingPopulation) {
+  @Override
+  protected List<DoubleSolution> reproduction(List<DoubleSolution> matingPopulation) {
     List<DoubleSolution> offspringPopulation = new ArrayList<>();
 
     for (int i = 0; i < getMaxPopulationSize(); i++) {
@@ -122,8 +131,9 @@ public class GDE3 extends AbstractDifferentialEvolution<List<DoubleSolution>> {
     return offspringPopulation;
   }
 
-  @Override protected List<DoubleSolution> replacement(List<DoubleSolution> population,
-      List<DoubleSolution> offspringPopulation) {
+  @Override
+  protected List<DoubleSolution> replacement(
+      List<DoubleSolution> population, List<DoubleSolution> offspringPopulation) {
     List<DoubleSolution> tmpList = new ArrayList<>();
     for (int i = 0; i < getMaxPopulationSize(); i++) {
       // Dominance test
@@ -142,21 +152,15 @@ public class GDE3 extends AbstractDifferentialEvolution<List<DoubleSolution>> {
         tmpList.add(population.get(i));
       }
     }
-    Ranking<DoubleSolution> ranking = computeRanking(tmpList);
+    Ranking<DoubleSolution> ranking =  new DominanceRanking<DoubleSolution>(dominanceComparator);
+    ranking.computeRanking(tmpList) ;
 
     return crowdingDistanceSelection(ranking);
   }
 
-  @Override public List<DoubleSolution> getResult() {
+  @Override
+  public List<DoubleSolution> getResult() {
     return getNonDominatedSolutions(getPopulation());
-  }
-
-
-  protected Ranking<DoubleSolution> computeRanking(List<DoubleSolution> solutionList) {
-    Ranking<DoubleSolution> ranking = new DominanceRanking<DoubleSolution>();
-    ranking.computeRanking(solutionList);
-
-    return ranking;
   }
 
   protected List<DoubleSolution> crowdingDistanceSelection(Ranking<DoubleSolution> ranking) {
@@ -180,13 +184,13 @@ public class GDE3 extends AbstractDifferentialEvolution<List<DoubleSolution>> {
     return population.size() < getMaxPopulationSize();
   }
 
-  protected boolean subfrontFillsIntoThePopulation(Ranking<DoubleSolution> ranking, int rank,
-      List<DoubleSolution> population) {
+  protected boolean subfrontFillsIntoThePopulation(
+      Ranking<DoubleSolution> ranking, int rank, List<DoubleSolution> population) {
     return ranking.getSubFront(rank).size() < (getMaxPopulationSize() - population.size());
   }
 
-  protected void addRankedSolutionsToPopulation(Ranking<DoubleSolution> ranking, int rank,
-      List<DoubleSolution> population) {
+  protected void addRankedSolutionsToPopulation(
+      Ranking<DoubleSolution> ranking, int rank, List<DoubleSolution> population) {
     List<DoubleSolution> front;
 
     front = ranking.getSubFront(rank);
@@ -196,8 +200,8 @@ public class GDE3 extends AbstractDifferentialEvolution<List<DoubleSolution>> {
     }
   }
 
-  protected void addLastRankedSolutionsToPopulation(Ranking<DoubleSolution> ranking, int rank,
-      List<DoubleSolution> population) {
+  protected void addLastRankedSolutionsToPopulation(
+      Ranking<DoubleSolution> ranking, int rank, List<DoubleSolution> population) {
     List<DoubleSolution> currentRankedFront = ranking.getSubFront(rank);
 
     Collections.sort(currentRankedFront, new CrowdingDistanceComparator<DoubleSolution>());
@@ -213,11 +217,13 @@ public class GDE3 extends AbstractDifferentialEvolution<List<DoubleSolution>> {
     return SolutionListUtils.getNondominatedSolutions(solutionList);
   }
 
-  @Override public String getName() {
-    return "GDE3" ;
+  @Override
+  public String getName() {
+    return "GDE3";
   }
 
-  @Override public String getDescription() {
-    return "Generalized Differential Evolution version 3" ;
+  @Override
+  public String getDescription() {
+    return "Generalized Differential Evolution version 3";
   }
-} 
+}

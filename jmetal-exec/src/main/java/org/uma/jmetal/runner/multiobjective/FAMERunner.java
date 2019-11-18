@@ -33,8 +33,7 @@ import java.util.List;
 /**
  * Class to configure and run the FAME algorithm, described in:
  * A. Santiago, B. Dorronsoro, A.J. Nebro, J.J. Durillo, O. Castillo, H.J. Fraire
- * A Novel Multi-Objective Evolutionary Algorithm with Fuzzy Logic Based Adaptive Selection
- * of Operators: FAME.
+ * A Novel Multi-Objective Evolutionary Algorithm with Fuzzy Logic Based Adaptive Selection of Operators: FAME.
  * Information Sciences. Volume 471, January 2019, Pages 233-251.
  * DOI: https://doi.org/10.1016/j.ins.2018.09.005
  *

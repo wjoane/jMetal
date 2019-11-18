@@ -41,7 +41,7 @@ public class DifferentialEvolutionSelectionTest {
   @Test
   public void shouldExecuteRaiseAnExceptionIfTheListOfSolutionsHasOneSolution() {
     exception.expect(InvalidConditionException.class);
-    exception.expectMessage(containsString("The population has less than 4 solutions: " + 1));
+    exception.expectMessage(containsString("The population has less than 3 solutions: " + 1));
 
     selection = new DifferentialEvolutionSelection();
     selection.setIndex(0);
@@ -52,9 +52,22 @@ public class DifferentialEvolutionSelectionTest {
   }
 
   @Test
+  public void shouldExecuteRaiseAnExceptionIfTheSizeOFTheListOfSolutionsIsLowerThanTheNumberOfRequestedSolutions() {
+    exception.expect(InvalidConditionException.class);
+    exception.expectMessage(containsString("The population has less than 3 solutions: " + 2));
+
+    selection = new DifferentialEvolutionSelection(3);
+    selection.setIndex(0);
+
+    population = Arrays.asList(mock(DoubleSolution.class),mock(DoubleSolution.class));
+
+    selection.execute(population);
+  }
+
+  @Test
   public void shouldExecuteRaiseAnExceptionIfTheListOfSolutionsIsEmpty() {
     exception.expect(InvalidConditionException.class);
-    exception.expectMessage(containsString("The population has less than 4 solutions: " + 0));
+    exception.expectMessage(containsString("The population has less than 3 solutions: " + 0));
 
     selection = new DifferentialEvolutionSelection();
     selection.setIndex(0);
@@ -132,6 +145,37 @@ public class DifferentialEvolutionSelectionTest {
     assertThat(parents, hasItem(population.get(2)));
     assertThat(parents, hasItem(population.get(3)));
     assertThat(parents, not(hasItem(population.get(1))));
+  }
+
+  @Test
+  public void shouldExecuteReturnFiveDifferentSolutionsIfTheListHasSixElements() {
+    selection = new DifferentialEvolutionSelection(5);
+    selection.setIndex(2);
+
+    population =
+            Arrays.asList(
+                    mock(DoubleSolution.class),
+                    mock(DoubleSolution.class),
+                    mock(DoubleSolution.class),
+                    mock(DoubleSolution.class),
+                    mock(DoubleSolution.class),
+                    mock(DoubleSolution.class));
+
+    List<DoubleSolution> parents = selection.execute(population);
+    assertEquals(5, parents.size());
+
+    // The index solution must not be in the result
+    assertNotSame(population.get(2), parents.get(0));
+    assertNotSame(population.get(2), parents.get(1));
+    assertNotSame(population.get(2), parents.get(2));
+    assertNotSame(population.get(2), parents.get(3));
+    assertNotSame(population.get(2), parents.get(4));
+
+    assertThat(parents, hasItem(population.get(0)));
+    assertThat(parents, hasItem(population.get(1)));
+    assertThat(parents, hasItem(population.get(3)));
+    assertThat(parents, hasItem(population.get(4)));
+    assertThat(parents, not(hasItem(population.get(2))));
   }
 
   @Test
