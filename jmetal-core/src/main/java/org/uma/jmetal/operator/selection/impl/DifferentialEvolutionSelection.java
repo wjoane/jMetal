@@ -11,13 +11,14 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Class implementing the selection operator used in DE: three different solutions are returned from
- * a population. The three solutions must be also different from the one indicated by an index (its
- * position in the list). As a consequence, the operator requires a solution list with at least for
- * elements.
+ * Class implementing the selection operator used in DE: a number of different solutions are returned from
+ * a population. The number of solutions is requested in the class constructor (by default, its value is 3), and they
+ * must be also different from the one indicated by an index (typically, the current solution being processed by a DE
+ * algorithm). This current solution can belong to the returned list if the {@link #selectCurrentSolution} variable is
+ * set to True when invoking the {@link #setSelectCurrentSolution()} method; in this case, the current solution will
+ * be the last one of the returned list.
  *
  * @author Antonio J. Nebro <antonio@lcc.uma.es>
- * @author Juan J. Durillo
  */
 @SuppressWarnings("serial")
 public class DifferentialEvolutionSelection
@@ -47,6 +48,7 @@ public class DifferentialEvolutionSelection
   public void setIndex(int index) {
     this.currentSolutionIndex = index;
   }
+
   public void setSelectCurrentSolution() {
     this.selectCurrentSolution = true ;
   }
