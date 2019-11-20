@@ -2,24 +2,14 @@ package org.uma.jmetal.experiment.component;
 
 import org.uma.jmetal.experiment.Experiment;
 import org.uma.jmetal.experiment.ExperimentComponent;
-import org.uma.jmetal.experiment.util.ExperimentProblem;
-import org.uma.jmetal.qualityindicator.impl.GenericIndicator;
-import org.uma.jmetal.solution.Solution;
 import tech.tablesaw.api.DoubleColumn;
 import tech.tablesaw.api.StringColumn;
 import tech.tablesaw.api.Table;
 import tech.tablesaw.columns.Column;
-import tech.tablesaw.plotly.Plot;
-import tech.tablesaw.plotly.components.Axis;
-import tech.tablesaw.plotly.components.Figure;
-import tech.tablesaw.plotly.components.Grid;
 import tech.tablesaw.plotly.components.Layout;
 import tech.tablesaw.plotly.traces.BoxTrace;
 import tech.tablesaw.plotly.traces.HistogramTrace;
 
-import java.awt.*;
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -202,7 +192,7 @@ public class GenerateBoxplotsWithTablesaw implements ExperimentComponent {
 
   public static void main(String[] args) throws IOException {
     ExperimentComponent component =
-        new GenerateBoxplotsWithTablesaw("QualityIndicatorSummaryV2.csv", 4, 3, false, ".");
+        new GenerateBoxplotsWithTablesaw("QualityIndicatorSummary.csv", 4, 3, false, ".");
 
     component.run();
   }
