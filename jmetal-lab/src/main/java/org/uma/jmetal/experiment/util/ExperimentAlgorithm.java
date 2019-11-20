@@ -74,7 +74,6 @@ public class ExperimentAlgorithm<S extends Solution<?>, Result extends List<S>> 
     Result population = algorithm.getResult();
 
     new SolutionListOutput(population)
-            .setSeparator("\t")
             .setVarFileOutputContext(new DefaultFileOutputContext(varFile))
             .setFunFileOutputContext(new DefaultFileOutputContext(funFile))
             .print();

@@ -69,13 +69,12 @@ public class NSGAIIIRunner extends AbstractAlgorithmRunner {
     long computingTime = algorithmRunner.getComputingTime() ;
 
     new SolutionListOutput(population)
-            .setSeparator("\t")
-            .setVarFileOutputContext(new DefaultFileOutputContext("VAR.tsv"))
-            .setFunFileOutputContext(new DefaultFileOutputContext("FUN.tsv"))
+            .setVarFileOutputContext(new DefaultFileOutputContext("VAR.csv", ","))
+            .setFunFileOutputContext(new DefaultFileOutputContext("FUN.csv", ","))
             .print() ;
 
     JMetalLogger.logger.info("Total execution time: " + computingTime + "ms");
-    JMetalLogger.logger.info("Objectives values have been written to file FUN.tsv");
-    JMetalLogger.logger.info("Variables values have been written to file VAR.tsv");
+    JMetalLogger.logger.info("Objectives values have been written to file FUN.csv");
+    JMetalLogger.logger.info("Variables values have been written to file VAR.csv");
   }
 }

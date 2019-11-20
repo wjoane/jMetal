@@ -55,7 +55,6 @@ public class CoralReefsOptimizationRunner {
 		long computingTime = algorithmRunner.getComputingTime();
 
 		new SolutionListOutput(population)
-				.setSeparator("\t")
 				.setVarFileOutputContext(
 						new DefaultFileOutputContext("VAR.tsv"))
 				.setFunFileOutputContext(

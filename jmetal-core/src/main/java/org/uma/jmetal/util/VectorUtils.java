@@ -1,6 +1,6 @@
 package org.uma.jmetal.util;
 
-public class VectorUtil {
+public class VectorUtils {
   /**
    * Method that apply a dominance test between two vectors. It is assumed that the vectors have
    * been properly tested before calling this method to ensure that they have the same length

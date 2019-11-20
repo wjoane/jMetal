@@ -1,7 +1,7 @@
 package org.uma.jmetal.util.comparator;
 
 import org.uma.jmetal.solution.Solution;
-import org.uma.jmetal.util.VectorUtil;
+import org.uma.jmetal.util.VectorUtils;
 import org.uma.jmetal.util.checking.Check;
 
 import java.io.Serializable;
@@ -34,6 +34,6 @@ public class DominanceComparatorV2<S extends Solution<?>> implements Comparator<
             + " objectives and solution2 has "
             + solution2.getNumberOfObjectives());
 
-    return VectorUtil.dominanceTest(solution1.getObjectives(), solution2.getObjectives()) ;
+    return VectorUtils.dominanceTest(solution1.getObjectives(), solution2.getObjectives()) ;
   }
 }

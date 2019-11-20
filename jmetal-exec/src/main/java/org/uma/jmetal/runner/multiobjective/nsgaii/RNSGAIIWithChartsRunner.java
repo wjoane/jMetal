@@ -143,7 +143,6 @@ public class RNSGAIIWithChartsRunner extends AbstractAlgorithmRunner {
     JMetalLogger.logger.info("Total execution time: " + computingTime + "ms");
 
     new SolutionListOutput(population)
-            .setSeparator("\t")
             .setVarFileOutputContext(new DefaultFileOutputContext("VAR.tsv"))
             .setFunFileOutputContext(new DefaultFileOutputContext("FUN.tsv"))
             .print();
@@ -184,7 +183,6 @@ public class RNSGAIIWithChartsRunner extends AbstractAlgorithmRunner {
         this.chart.refreshCharts();
 
         new SolutionListOutput(solutionList)
-                .setSeparator("\t")
                 .setVarFileOutputContext(new DefaultFileOutputContext("VAR." + iteration + ".tsv"))
                 .setFunFileOutputContext(new DefaultFileOutputContext("FUN." + iteration + ".tsv"))
                 .print();

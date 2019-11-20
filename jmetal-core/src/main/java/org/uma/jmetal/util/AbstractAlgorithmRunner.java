@@ -28,7 +28,6 @@ public abstract class AbstractAlgorithmRunner {
   public static void printFinalSolutionSet(List<? extends Solution<?>> population) {
 
     new SolutionListOutput(population)
-        .setSeparator("\t")
         .setVarFileOutputContext(new DefaultFileOutputContext("VAR.tsv"))
         .setFunFileOutputContext(new DefaultFileOutputContext("FUN.tsv"))
         .print();

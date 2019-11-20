@@ -63,7 +63,6 @@ public class IntegerSBXCrossoverWorkingTest {
     Collections.sort(population, new VariableComparator()) ;
 
     new SolutionListOutput(population)
-        .setSeparator("\t")
         .setVarFileOutputContext(new DefaultFileOutputContext("solutionsSBX"))
         .print();
 
