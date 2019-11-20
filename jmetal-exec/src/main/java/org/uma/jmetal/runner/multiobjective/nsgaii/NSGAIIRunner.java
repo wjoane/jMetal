@@ -2,6 +2,7 @@ package org.uma.jmetal.runner.multiobjective.nsgaii;
 
 import org.uma.jmetal.algorithm.Algorithm;
 import org.uma.jmetal.algorithm.multiobjective.nsgaii.NSGAIIBuilder;
+import org.uma.jmetal.experiment.plot.PlotFront;
 import org.uma.jmetal.experiment.plot.impl.Plot2D;
 import org.uma.jmetal.operator.crossover.CrossoverOperator;
 import org.uma.jmetal.operator.crossover.impl.SBXCrossover;
@@ -85,7 +86,7 @@ public class NSGAIIRunner extends AbstractAlgorithmRunner {
       printQualityIndicators(population, referenceParetoFront);
     }
 
-    Plot2D plot2D = new Plot2D(new ArrayFront(population).getMatrix()) ;
-    plot2D.plot();
+    PlotFront plot = new Plot2D(new ArrayFront(population).getMatrix()) ;
+    plot.plot();
   }
 }

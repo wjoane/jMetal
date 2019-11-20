@@ -160,10 +160,10 @@ public class GenerateBoxplotsWithTablesaw implements ExperimentComponent {
       HistogramTrace trace2 =
               HistogramTrace.builder(y2).opacity(.75).build();
 
-      Grid grid = Grid.builder().rows(1).columns(2).build() ;
+      //Grid grid = Grid.builder().rows(1).columns(2).build() ;
 
-    layout = Layout.builder().grid(grid).build();
-      Plot.show(new Figure(layout, trace1, trace2));
+      //layout = Layout.builder().grid(grid).build();
+      //Plot.show(new Figure(layout, trace1, trace2));
 
 /*
     Table computeMedian(
