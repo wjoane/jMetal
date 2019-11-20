@@ -28,8 +28,8 @@ public abstract class AbstractAlgorithmRunner {
   public static void printFinalSolutionSet(List<? extends Solution<?>> population) {
 
     new SolutionListOutput(population)
-        .setVarFileOutputContext(new DefaultFileOutputContext("VAR.tsv"))
-        .setFunFileOutputContext(new DefaultFileOutputContext("FUN.tsv"))
+        .setVarFileOutputContext(new DefaultFileOutputContext("VAR.csv", ","))
+        .setFunFileOutputContext(new DefaultFileOutputContext("FUN.csv", ","))
         .print();
 
     JMetalLogger.logger.info("Random seed: " + JMetalRandom.getInstance().getSeed());
