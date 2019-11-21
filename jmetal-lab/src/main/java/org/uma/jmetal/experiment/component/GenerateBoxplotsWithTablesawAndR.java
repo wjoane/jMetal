@@ -27,7 +27,7 @@ import java.util.List;
  *
  * @author Antonio J. Nebro <antonio@lcc.uma.es>
  */
-public class GenerateBoxplotsWithTablesaw implements ExperimentComponent {
+public class GenerateBoxplotsWithTablesawAndR implements ExperimentComponent {
   private static final String OUTPUT_DIRECTORY = "tablesaw";
   private int numberOfRows;
   private int numberOfColumns;
@@ -35,7 +35,7 @@ public class GenerateBoxplotsWithTablesaw implements ExperimentComponent {
   private String experimentBaseDirectory;
   private String csvSummaryFile;
 
-  public GenerateBoxplotsWithTablesaw(
+  public GenerateBoxplotsWithTablesawAndR(
       String csvSummaryFile,
       int numberOfRows,
       int numberOfColumns,
@@ -76,6 +76,9 @@ public class GenerateBoxplotsWithTablesaw implements ExperimentComponent {
     int numberOfRuns = table.select("ExecutionId").dropDuplicateRows().rowCount();
     System.out.println("Number of runs: " + numberOfRuns);
 
+
+
+
     Table summary = Table.create("Summary");
     Column<String> algs = StringColumn.create("Problem", problemNames.asList());
     summary.addColumns(algs);
@@ -111,80 +114,11 @@ public class GenerateBoxplotsWithTablesaw implements ExperimentComponent {
     }
 
     System.out.println(summary);
-
-    List<String> uiAlgorithmNames = new ArrayList<String>();
-    double[] HVResults = new double[(algorithmNames.size()) * problemNames.size()];
-    int pos = 0;
-    for (int j = 0; j < problemNames.size(); j++) {
-      for (int i = 1; i < algorithmNames.size() + 1; i++) {
-        HVResults[pos] = (Double) summary.column(i).get(j);
-        pos++;
-      }
-    }
-    for (int j = 0; j < HVResults.length / 5; j++) {
-      for (int i = 0; i < algorithmNames.size(); i++) {
-        uiAlgorithmNames.add(algorithmNames.get(i));
-      }
-    }
-
-    Layout layout = Layout.builder().plotBgColor("blue").paperBgColor("red").build();
-
-    BoxTrace boxplot1 = BoxTrace.builder(uiAlgorithmNames.toArray(), HVResults).build();
-    // Plot.show(new Figure(boxplot1));
-
-    BoxTrace boxplot2 = BoxTrace.builder(uiAlgorithmNames.toArray(), HVResults).build();
-    // Plot.show(new Figure(boxplot2));
-
-    Plot.show(new Figure(layout, boxplot1));
-
-    double[] y1 = {1, 4, 9, 16, 11, 4, 0, 20, 4, 7, 9, 12, 8, 6, 28, 12};
-    double[] y2 = {3, 11, 19, 14, 11, 14, 5, 24, -4, 10, 15, 6, 5, 18};
-
-    HistogramTrace trace1 = HistogramTrace.builder(y1).opacity(.75).build();
-    HistogramTrace trace2 = HistogramTrace.builder(y2).opacity(.75).build();
-
-    // Grid grid = Grid.builder().rows(1).columns(2).build() ;
-
-    // Plot.show(new Figure(layout, trace1, trace2));
-
-    /*
-    Table computeMedian(
-            Table table, String indicatorName, StringColumn algorithmNames, StringColumn  problemNames) {
-        Table summary = Table.create(indicatorName);
-        Column<String> algs = StringColumn.create("Problem", problemNames.asList());
-
-        summary.addColumns(algs);
-
-        for (String alg : algorithmNames) {
-            List<Double> medians = new ArrayList<>();
-            List<Double> iqrs = new ArrayList<>();
-
-            for (String prob : problemNames) {
-                Table filtered =
-                        table.where(
-                                table
-                                        .stringColumn("Algorithm")
-                                        .isEqualTo(alg)
-                                        .and(table.stringColumn("Problem").isEqualTo(prob))
-                                        .and(table.stringColumn("IndicatorName").isEqualTo(indicatorName)));
-
-                Table indicatorValues = filtered.select("IndicatorValue");
-                DoubleColumn indicator = indicatorValues.doubleColumn(0);
-
-                medians.add(indicator.median());
-                iqrs.add(indicator.quartile3() - indicator.quartile1());
-            }
-            Column<Double> median =
-                    DoubleColumn.create(alg, medians.toArray(new Double[medians.size()]));
-            summary.addColumns(median);
-        }
-        return summary;
-        */
   }
 
   public static void main(String[] args) throws IOException {
     ExperimentComponent component =
-        new GenerateBoxplotsWithTablesaw(
+        new GenerateBoxplotsWithTablesawAndR(
             "jmetal-lab/src/main/resources/QualityIndicatorSummary.csv", 4, 3, false, ".");
 
     component.run();
