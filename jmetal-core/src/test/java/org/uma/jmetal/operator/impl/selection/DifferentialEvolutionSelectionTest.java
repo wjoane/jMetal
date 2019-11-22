@@ -56,7 +56,7 @@ public class DifferentialEvolutionSelectionTest {
     exception.expect(InvalidConditionException.class);
     exception.expectMessage(containsString("The population has less than 3 solutions: " + 2));
 
-    selection = new DifferentialEvolutionSelection(3);
+    selection = new DifferentialEvolutionSelection(3, false);
     selection.setIndex(0);
 
     population = Arrays.asList(mock(DoubleSolution.class),mock(DoubleSolution.class));
@@ -149,7 +149,7 @@ public class DifferentialEvolutionSelectionTest {
 
   @Test
   public void shouldExecuteReturnFiveDifferentSolutionsIfTheListHasSixElements() {
-    selection = new DifferentialEvolutionSelection(5);
+    selection = new DifferentialEvolutionSelection(5, false);
     selection.setIndex(2);
 
     population =
@@ -180,9 +180,8 @@ public class DifferentialEvolutionSelectionTest {
 
   @Test
   public void shouldExecuteReturnThreeDifferentSolutionsIncludingTheCurrentOne() {
-    selection = new DifferentialEvolutionSelection();
+    selection = new DifferentialEvolutionSelection(3, true);
     selection.setIndex(1);
-    selection.setSelectCurrentSolution();
 
     population =
             Arrays.asList(
