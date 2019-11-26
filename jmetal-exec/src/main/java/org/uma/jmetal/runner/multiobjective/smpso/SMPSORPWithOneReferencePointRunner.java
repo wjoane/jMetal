@@ -86,7 +86,6 @@ public class SMPSORPWithOneReferencePointRunner {
     JMetalLogger.logger.info("Total execution time: " + computingTime + "ms");
 
     new SolutionListOutput(population)
-            .setSeparator("\t")
             .setVarFileOutputContext(new DefaultFileOutputContext("VAR.tsv"))
             .setFunFileOutputContext(new DefaultFileOutputContext("FUN.tsv"))
             .print();

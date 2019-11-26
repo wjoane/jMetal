@@ -87,14 +87,12 @@ public class SMPSORPWithMultipleReferencePointsRunner {
     JMetalLogger.logger.info("Total execution time: " + computingTime + "ms");
 
     new SolutionListOutput(population)
-            .setSeparator("\t")
             .setVarFileOutputContext(new DefaultFileOutputContext("VAR.tsv"))
             .setFunFileOutputContext(new DefaultFileOutputContext("FUN.tsv"))
             .print();
 
     for (int i = 0; i < archivesWithReferencePoints.size(); i++) {
       new SolutionListOutput(archivesWithReferencePoints.get(i).getSolutionList())
-              .setSeparator("\t")
               .setVarFileOutputContext(new DefaultFileOutputContext("VAR" + i + ".tsv"))
               .setFunFileOutputContext(new DefaultFileOutputContext("FUN" + i + ".tsv"))
               .print();

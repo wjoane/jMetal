@@ -62,7 +62,6 @@ public class WriteSolutionsToFilesObserver implements Observer<Map<String, Objec
     if (population!=null) {
       if (counter % frequency == 0) {
         new SolutionListOutput((List<? extends Solution<?>>) population)
-            .setSeparator("\t")
             .setVarFileOutputContext(new DefaultFileOutputContext(outputDirectory + "/VAR." + counter + ".tsv"))
             .setFunFileOutputContext(new DefaultFileOutputContext(outputDirectory + "/FUN." + counter + ".tsv"))
             .print();

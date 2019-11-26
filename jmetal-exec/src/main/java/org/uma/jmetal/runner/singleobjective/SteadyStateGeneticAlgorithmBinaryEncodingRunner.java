@@ -61,7 +61,6 @@ public class SteadyStateGeneticAlgorithmBinaryEncodingRunner {
     population.add(solution) ;
 
     new SolutionListOutput(population)
-            .setSeparator("\t")
             .setVarFileOutputContext(new DefaultFileOutputContext("VAR.tsv"))
             .setFunFileOutputContext(new DefaultFileOutputContext("FUN.tsv"))
             .print();

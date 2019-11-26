@@ -15,7 +15,6 @@ public class AlgorithmDefaultOutputData {
     population.add(solution) ;
 
     new SolutionListOutput(population)
-        .setSeparator("\t")
         .setVarFileOutputContext(new DefaultFileOutputContext("VAR.tsv"))
         .setFunFileOutputContext(new DefaultFileOutputContext("FUN.tsv"))
         .print();
@@ -30,7 +29,6 @@ public class AlgorithmDefaultOutputData {
 
   public static <S extends Solution<?>> void generateMultiObjectiveAlgorithmOutputData(List<S> solutionList, long computingTime) {
     new SolutionListOutput(solutionList)
-        .setSeparator("\t")
         .setVarFileOutputContext(new DefaultFileOutputContext("VAR.tsv"))
         .setFunFileOutputContext(new DefaultFileOutputContext("FUN.tsv"))
         .print();
