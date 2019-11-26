@@ -117,7 +117,6 @@ public class NSGAII {
         algorithm.getResult(), algorithm.getTotalComputingTime());
     */
     new SolutionListOutput(algorithm.getResult())
-        .setSeparator("\t")
         .setVarFileOutputContext(new DefaultFileOutputContext("VAR.tsv"))
         .setFunFileOutputContext(new DefaultFileOutputContext("FUN.tsv"))
         .print();

@@ -61,7 +61,6 @@ public class NSGAIIWithParameters {
     System.out.println("Total computing time: " + nsgaII.getTotalComputingTime()) ;
 
     new SolutionListOutput(nsgaII.getResult())
-        .setSeparator("\t")
         .setVarFileOutputContext(new DefaultFileOutputContext("VAR.tsv"))
         .setFunFileOutputContext(new DefaultFileOutputContext("FUN.tsv"))
         .print();
