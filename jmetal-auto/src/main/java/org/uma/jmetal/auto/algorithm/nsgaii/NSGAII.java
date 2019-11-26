@@ -17,7 +17,8 @@ import org.uma.jmetal.auto.util.densityestimator.DensityEstimator;
 import org.uma.jmetal.auto.util.densityestimator.impl.CrowdingDistanceDensityEstimator;
 import org.uma.jmetal.auto.util.preference.Preference;
 import org.uma.jmetal.auto.util.ranking.Ranking;
-import org.uma.jmetal.auto.util.ranking.impl.DominanceRanking;
+import org.uma.jmetal.auto.util.ranking.impl.ExperimentalFastNonDominanceRanking;
+import org.uma.jmetal.auto.util.ranking.impl.FastNonDominanceSortRanking;
 import org.uma.jmetal.operator.crossover.CrossoverOperator;
 import org.uma.jmetal.operator.crossover.impl.SBXCrossover;
 import org.uma.jmetal.operator.mutation.MutationOperator;
@@ -32,6 +33,7 @@ import org.uma.jmetal.util.fileoutput.SolutionListOutput;
 import org.uma.jmetal.util.fileoutput.impl.DefaultFileOutputContext;
 import org.uma.jmetal.util.observer.impl.EvaluationObserver;
 import org.uma.jmetal.util.observer.impl.RunTimeChartObserver;
+import org.uma.jmetal.util.pseudorandom.JMetalRandom;
 
 /**
  * Class to configure and run the NSGA-II using the {@link EvolutionaryAlgorithm} class.
@@ -42,6 +44,8 @@ public class NSGAII {
   public static void main(String[] args) {
     DoubleProblem problem = new ZDT1();
     String referenceParetoFront = "/pareto_fronts/ZDT1.pf";
+
+    JMetalRandom.getInstance().setSeed(1);
 
     int populationSize = 100;
     int offspringPopulationSize = 100;
@@ -70,7 +74,9 @@ public class NSGAII {
 
     Termination termination = new TerminationByEvaluations(maxNumberOfEvaluations);
 
-    Ranking<DoubleSolution> ranking = new DominanceRanking<>(new DominanceComparator<>());
+    Ranking<DoubleSolution> ranking = new FastNonDominanceSortRanking<>(new DominanceComparator<>());
+    //ranking = new ExperimentalFastNonDominanceRanking<>() ;
+
     DensityEstimator<DoubleSolution> densityEstimator = new CrowdingDistanceDensityEstimator<>();
 
     Preference<DoubleSolution> preferenceForReplacement = new Preference<>(ranking, densityEstimator) ;
@@ -93,18 +99,18 @@ public class NSGAII {
             variation,
             replacement);
 
-    EvaluationObserver evaluationObserver = new EvaluationObserver(1000);
-    RunTimeChartObserver<DoubleSolution> runTimeChartObserver =
-        new RunTimeChartObserver<>("NSGA-II", 80, referenceParetoFront);
+    //EvaluationObserver evaluationObserver = new EvaluationObserver(1000);
+    //RunTimeChartObserver<DoubleSolution> runTimeChartObserver =
+        //new RunTimeChartObserver<>("NSGA-II", 80, referenceParetoFront);
     //ExternalArchiveObserver<DoubleSolution> boundedArchiveObserver =
     //    new ExternalArchiveObserver<>(new CrowdingDistanceArchive<>(archiveMaximumSize));
 
-    algorithm.getObservable().register(evaluationObserver);
-    algorithm.getObservable().register(runTimeChartObserver);
+    //algorithm.getObservable().register(evaluationObserver);
+    //algorithm.getObservable().register(runTimeChartObserver);
     //evaluation.getObservable().register(boundedArchiveObserver);
 
     algorithm.run();
-
+    System.out.println("Total computing time: " + algorithm.getTotalComputingTime()) ;
     /*
     algorithm.updatePopulation(boundedArchiveObserver.getArchive().getSolutionList());
     AlgorithmDefaultOutputData.generateMultiObjectiveAlgorithmOutputData(

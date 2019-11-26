@@ -87,9 +87,9 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>info.picocli</groupId>
-            <artifactId>picocli</artifactId>
-            <version>3.9.5</version>
+            <groupId>com.github.mbuzdalov</groupId>
+            <artifactId>non-dominated-sorting-implementations</artifactId>
+            <version>0.2.1</version>
         </dependency>
     </dependencies>
 </project>

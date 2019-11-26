@@ -13,7 +13,7 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
-public class DominanceRankingTest {
+public class FastNonDominanceSortRankingTest {
 
   @Test
   public void shouldRankingAssignZeroToAllTheSolutionsIfTheyAreNonDominated() {
@@ -47,7 +47,7 @@ public class DominanceRankingTest {
 
     List<Solution<?>> solutionList = Arrays.asList(solution1, solution2, solution3, solution4) ;
 
-    Ranking<Solution<?>> ranking = new DominanceRanking<>() ;
+    Ranking<Solution<?>> ranking = new FastNonDominanceSortRanking<>() ;
     ranking.computeRanking(solutionList);
 
     assertEquals(1, ranking.getNumberOfSubFronts());
@@ -96,7 +96,7 @@ public class DominanceRankingTest {
 
     List<DoubleSolution> solutionList = Arrays.asList(solution1, solution2, solution4, solution3, solution5);
 
-    Ranking<DoubleSolution> ranking = new DominanceRanking<>() ;
+    Ranking<DoubleSolution> ranking = new FastNonDominanceSortRanking<>() ;
     ranking.computeRanking(solutionList);
 
     assertEquals(2, ranking.getNumberOfSubFronts());
