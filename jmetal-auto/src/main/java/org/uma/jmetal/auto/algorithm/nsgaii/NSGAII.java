@@ -24,6 +24,7 @@ import org.uma.jmetal.operator.crossover.impl.SBXCrossover;
 import org.uma.jmetal.operator.mutation.MutationOperator;
 import org.uma.jmetal.operator.mutation.impl.PolynomialMutation;
 import org.uma.jmetal.problem.doubleproblem.DoubleProblem;
+import org.uma.jmetal.problem.multiobjective.Tanaka;
 import org.uma.jmetal.problem.multiobjective.zdt.ZDT1;
 import org.uma.jmetal.solution.doublesolution.DoubleSolution;
 import org.uma.jmetal.solution.util.RepairDoubleSolution;
@@ -75,7 +76,7 @@ public class NSGAII {
     Termination termination = new TerminationByEvaluations(maxNumberOfEvaluations);
 
     Ranking<DoubleSolution> ranking = new FastNonDominanceSortRanking<>(new DominanceComparator<>());
-    //ranking = new ExperimentalFastNonDominanceRanking<>() ;
+    ranking = new ExperimentalFastNonDominanceRanking<>() ;
 
     DensityEstimator<DoubleSolution> densityEstimator = new CrowdingDistanceDensityEstimator<>();
 

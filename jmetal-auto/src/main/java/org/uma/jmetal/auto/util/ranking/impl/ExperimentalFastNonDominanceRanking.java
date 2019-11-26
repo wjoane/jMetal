@@ -29,8 +29,12 @@ import java.util.List;
  */
 public class ExperimentalFastNonDominanceRanking<S extends Solution<?>> implements Ranking<S> {
   private String attributeId = getClass().getName() ;
+  private Comparator<S> solutionComparator ;
 
-  private Comparator<S> solutionComparator;
+  public ExperimentalFastNonDominanceRanking() {
+    this.solutionComparator =
+        new IntegerValueAttributeComparator<>(attributeId, AttributeComparator.Ordering.ASCENDING);
+}
 
   // Interface support: the place to store the fronts.
   private final List<List<S>> subFronts = new ArrayList<>();
@@ -42,12 +46,6 @@ public class ExperimentalFastNonDominanceRanking<S extends Solution<?>> implemen
 
   // Delegation.
   private NonDominatedSorting sortingInstance = null;
-  private double[][] points = null;
-  private int[] ranks = null;
-
-  public ExperimentalFastNonDominanceRanking() {
-    this.solutionComparator = new IntegerValueAttributeComparator<>(attributeId, AttributeComparator.Ordering.ASCENDING) ;
-  }
 
   @Override
   public Ranking<S> computeRanking(List<S> solutionList) {
@@ -85,6 +83,7 @@ public class ExperimentalFastNonDominanceRanking<S extends Solution<?>> implemen
       for (int i = 1; i < nSolutions; ++i) {
         double currConstraint = getConstraint(defensiveCopy.get(i));
         if (lastConstraint != currConstraint) {
+          lastConstraint = currConstraint;
           rankOffset = 1 + runSorting(defensiveCopy, lastSpanStart, i, nObjectives, rankOffset);
           lastSpanStart = i;
         }
@@ -97,6 +96,8 @@ public class ExperimentalFastNonDominanceRanking<S extends Solution<?>> implemen
 
   private int runSorting(List<S> solutions, int from, int until, int dimension, int rankOffset) {
     ensureEnoughSpace(until - from, dimension);
+    double[][] points = new double[until - from][];
+    int[] ranks = new int[until - from];
     for (int i = from; i < until; ++i) {
       points[i - from] = solutions.get(i).getObjectives();
     }
@@ -106,8 +107,8 @@ public class ExperimentalFastNonDominanceRanking<S extends Solution<?>> implemen
       S current = solutions.get(i);
       int rank = ranks[i - from] + rankOffset;
       maxRank = Math.max(maxRank, rank);
-      current.setAttribute(attributeId, rank);
       //setAttribute(current, rank);
+      current.setAttribute(getAttributeId(),rank);
       while (subFronts.size() <= rank) {
         subFronts.add(new ArrayList<>());
       }
@@ -126,8 +127,6 @@ public class ExperimentalFastNonDominanceRanking<S extends Solution<?>> implemen
       sortingInstance = JensenFortinBuzdalov
               .getRedBlackTreeSweepHybridENSImplementation(1)
               .getInstance(nPoints, dimension);
-      points = new double[nPoints][];
-      ranks = new int[nPoints];
     }
   }
 
@@ -147,12 +146,12 @@ public class ExperimentalFastNonDominanceRanking<S extends Solution<?>> implemen
   }
 
   @Override
-  public String getAttributeId() {
-    return attributeId ;
+  public Comparator<S> getSolutionComparator() {
+    return solutionComparator;
   }
 
   @Override
-  public Comparator getSolutionComparator() {
-    return solutionComparator ;
+  public String getAttributeId() {
+    return attributeId ;
   }
 }
