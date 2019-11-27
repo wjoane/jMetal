@@ -46,8 +46,8 @@ public class FastNonDominanceSortRanking<S extends Solution<?>> implements Ranki
   }
 
   @Override
-  public Ranking<S> computeRanking(List<S> solutionSet) {
-    List<S> population = solutionSet;
+  public Ranking<S> computeRanking(List<S> solutionList) {
+    List<S> population = solutionList;
 
     // dominateMe[i] contains the number of population dominating i
     int[] dominateMe = new int[population.size()];
@@ -77,9 +77,9 @@ public class FastNonDominanceSortRanking<S extends Solution<?>> implements Ranki
       // For all q individuals , calculate if p dominates q or vice versa
       for (int q = p + 1; q < population.size(); q++) {
         flagDominate =
-            CONSTRAINT_VIOLATION_COMPARATOR.compare(solutionSet.get(p), solutionSet.get(q));
+            CONSTRAINT_VIOLATION_COMPARATOR.compare(solutionList.get(p), solutionList.get(q));
         if (flagDominate == 0) {
-          flagDominate = dominanceComparator.compare(solutionSet.get(p), solutionSet.get(q));
+          flagDominate = dominanceComparator.compare(solutionList.get(p), solutionList.get(q));
         }
         if (flagDominate == -1) {
           iDominate.get(p).add(q);
@@ -94,7 +94,7 @@ public class FastNonDominanceSortRanking<S extends Solution<?>> implements Ranki
     for (int i = 0; i < population.size(); i++) {
       if (dominateMe[i] == 0) {
         front.get(0).add(i);
-        solutionSet.get(i).setAttribute(attributeId, 0);
+        solutionList.get(i).setAttribute(attributeId, 0);
       }
     }
 
@@ -111,8 +111,7 @@ public class FastNonDominanceSortRanking<S extends Solution<?>> implements Ranki
           dominateMe[index]--;
           if (dominateMe[index] == 0) {
             front.get(i).add(index);
-            //RankingAndCrowdingAttr.getAttributes(solutionSet.get(index)).setRank(i);
-            solutionSet.get(index).setAttribute(attributeId, i);
+            solutionList.get(index).setAttribute(attributeId, i);
           }
         }
       }
@@ -124,7 +123,7 @@ public class FastNonDominanceSortRanking<S extends Solution<?>> implements Ranki
       rankedSubPopulations.add(j, new ArrayList<S>(front.get(j).size()));
       it1 = front.get(j).iterator();
       while (it1.hasNext()) {
-        rankedSubPopulations.get(j).add(solutionSet.get(it1.next()));
+        rankedSubPopulations.get(j).add(solutionList.get(it1.next()));
       }
     }
 
