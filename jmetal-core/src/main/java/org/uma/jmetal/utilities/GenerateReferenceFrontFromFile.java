@@ -1,4 +1,4 @@
-package org.uma.jmetal.utility;
+package org.uma.jmetal.utilities;
 
 import org.uma.jmetal.util.JMetalException;
 import org.uma.jmetal.util.StoredSolutionsUtils;
