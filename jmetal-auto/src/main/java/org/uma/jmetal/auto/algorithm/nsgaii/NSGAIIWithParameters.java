@@ -5,6 +5,7 @@ import org.uma.jmetal.solution.doublesolution.DoubleSolution;
 import org.uma.jmetal.util.fileoutput.SolutionListOutput;
 import org.uma.jmetal.util.fileoutput.impl.DefaultFileOutputContext;
 import org.uma.jmetal.util.observer.impl.EvaluationObserver;
+import org.uma.jmetal.util.observer.impl.RunTimeChartObserver;
 
 /**
  * Class configuring NSGA-II using arguments in the form <key, value> and the {@link AutoNSGAII}
@@ -47,13 +48,13 @@ public class NSGAIIWithParameters {
     EvolutionaryAlgorithm<DoubleSolution> nsgaII = NSGAII.create();
 
     EvaluationObserver evaluationObserver = new EvaluationObserver(1000);
-    //RunTimeChartObserver<DoubleSolution> runTimeChartObserver =
-    //    new RunTimeChartObserver<>(
-    //        "NSGA-II", 80, "/pareto_fronts/ZDT1.pf");
+    RunTimeChartObserver<DoubleSolution> runTimeChartObserver =
+        new RunTimeChartObserver<>(
+            "NSGA-II", 80, "/pareto_fronts/ZDT1.pf");
     //WriteSolutionsToFilesObserver writeSolutionsToFilesObserver = new WriteSolutionsToFilesObserver() ;
 
     nsgaII.getObservable().register(evaluationObserver);
-    //nsgaII.getObservable().register(runTimeChartObserver);
+    nsgaII.getObservable().register(runTimeChartObserver);
     //nsgaII.getObservable().register(writeSolutionsToFilesObserver);
 
     nsgaII.run();
