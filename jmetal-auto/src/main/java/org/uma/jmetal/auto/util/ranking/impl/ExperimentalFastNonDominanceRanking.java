@@ -107,7 +107,6 @@ public class ExperimentalFastNonDominanceRanking<S extends Solution<?>> implemen
       int rank = ranks[i - from] + rankOffset;
       maxRank = Math.max(maxRank, rank);
       current.setAttribute(attributeId, rank);
-      //setAttribute(current, rank);
       while (subFronts.size() <= rank) {
         subFronts.add(new ArrayList<>());
       }
