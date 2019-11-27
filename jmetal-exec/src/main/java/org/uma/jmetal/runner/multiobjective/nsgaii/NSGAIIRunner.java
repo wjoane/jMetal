@@ -2,9 +2,8 @@ package org.uma.jmetal.runner.multiobjective.nsgaii;
 
 import org.uma.jmetal.algorithm.Algorithm;
 import org.uma.jmetal.algorithm.multiobjective.nsgaii.NSGAIIBuilder;
-import org.uma.jmetal.experiment.plot.PlotFront;
-import org.uma.jmetal.experiment.plot.impl.Plot2D;
-import org.uma.jmetal.experiment.plot.impl.Plot2DSmile;
+import org.uma.jmetal.lab.plot.PlotFront;
+import org.uma.jmetal.lab.plot.impl.Plot2DSmile;
 import org.uma.jmetal.operator.crossover.CrossoverOperator;
 import org.uma.jmetal.operator.crossover.impl.SBXCrossover;
 import org.uma.jmetal.operator.mutation.MutationOperator;
