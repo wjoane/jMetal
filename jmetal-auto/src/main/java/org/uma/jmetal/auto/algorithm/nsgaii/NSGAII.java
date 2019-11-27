@@ -76,7 +76,7 @@ public class NSGAII {
     Termination termination = new TerminationByEvaluations(maxNumberOfEvaluations);
 
     Ranking<DoubleSolution> ranking = new FastNonDominanceSortRanking<>(new DominanceComparator<>());
-    ranking = new ExperimentalFastNonDominanceRanking<>() ;
+    //ranking = new ExperimentalFastNonDominanceRanking<>() ;
 
     DensityEstimator<DoubleSolution> densityEstimator = new CrowdingDistanceDensityEstimator<>();
 
