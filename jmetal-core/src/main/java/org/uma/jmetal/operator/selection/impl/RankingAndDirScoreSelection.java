@@ -22,7 +22,7 @@ import java.util.List;
  */
 @SuppressWarnings("serial")
 public class RankingAndDirScoreSelection<S extends Solution<?>>
-    extends RankingAndCrowdingSelection<S> {
+    extends RankingAndDensityEstimatorSelection<S> {
 
   private int solutionsToSelect;
   private Comparator<S> dominanceComparator;

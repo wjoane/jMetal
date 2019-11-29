@@ -1,7 +1,7 @@
 package org.uma.jmetal.auto.component.replacement.impl;
 
 import org.uma.jmetal.auto.component.replacement.Replacement;
-import org.uma.jmetal.operator.selection.impl.RankingAndCrowdingSelection;
+import org.uma.jmetal.operator.selection.impl.RankingAndDensityEstimatorSelection;
 import org.uma.jmetal.solution.Solution;
 import org.uma.jmetal.util.checking.Check;
 import org.uma.jmetal.util.comparator.DominanceComparator;
@@ -46,8 +46,8 @@ public class PairwiseReplacement<S extends Solution<?>> implements Replacement<S
         temporaryPopulation.add(population.get(i));
       }
     }
-    RankingAndCrowdingSelection<S> rankingAndCrowdingSelection;
-    rankingAndCrowdingSelection = new RankingAndCrowdingSelection<S>(population.size(), dominanceComparator);
+    RankingAndDensityEstimatorSelection<S> rankingAndCrowdingSelection;
+    rankingAndCrowdingSelection = new RankingAndDensityEstimatorSelection<S>(population.size(), dominanceComparator);
 
     List<S> newPopulation = new ArrayList<>(
             rankingAndCrowdingSelection.execute(temporaryPopulation));

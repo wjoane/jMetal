@@ -4,7 +4,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.springframework.test.util.ReflectionTestUtils;
-import org.uma.jmetal.operator.selection.impl.RankingAndCrowdingSelection;
+import org.uma.jmetal.operator.selection.impl.RankingAndDensityEstimatorSelection;
 import org.uma.jmetal.solution.Solution;
 import org.uma.jmetal.solution.doublesolution.DoubleSolution;
 import org.uma.jmetal.util.JMetalException;
@@ -19,7 +19,7 @@ import static org.junit.Assert.assertEquals;
  * @author Antonio J. Nebro
  * @version 1.0
  */
-public class RankingAndCrowdingSelectionTest {
+public class RankingAndDensityEstimatorSelectionTest {
   @Rule
   public ExpectedException exception = ExpectedException.none();
 
@@ -28,7 +28,7 @@ public class RankingAndCrowdingSelectionTest {
     exception.expect(JMetalException.class);
     exception.expectMessage(containsString("The solution list is null"));
 
-    RankingAndCrowdingSelection<Solution<?>> selection = new RankingAndCrowdingSelection<Solution<?>>(4) ;
+    RankingAndDensityEstimatorSelection<Solution<?>> selection = new RankingAndDensityEstimatorSelection<Solution<?>>(4) ;
     selection.execute(null) ;
   }
 
@@ -37,7 +37,7 @@ public class RankingAndCrowdingSelectionTest {
     exception.expect(JMetalException.class);
     exception.expectMessage(containsString("The solution list is empty"));
 
-    RankingAndCrowdingSelection<DoubleSolution> selection = new RankingAndCrowdingSelection<DoubleSolution>(4) ;
+    RankingAndDensityEstimatorSelection<DoubleSolution> selection = new RankingAndDensityEstimatorSelection<DoubleSolution>(4) ;
     List<DoubleSolution> list = new ArrayList<>() ;
 
     selection.execute(list) ;
@@ -45,7 +45,7 @@ public class RankingAndCrowdingSelectionTest {
 
   @Test
   public void shouldDefaultConstructorReturnASingleSolution() {
-    RankingAndCrowdingSelection<Solution<?>> selection = new RankingAndCrowdingSelection<Solution<?>>(1) ;
+    RankingAndDensityEstimatorSelection<Solution<?>> selection = new RankingAndDensityEstimatorSelection<Solution<?>>(1) ;
 
     int result = (int) ReflectionTestUtils.getField(selection, "solutionsToSelect");
     int expectedResult = 1 ;
@@ -55,7 +55,7 @@ public class RankingAndCrowdingSelectionTest {
   @Test
   public void shouldNonDefaultConstructorReturnTheCorrectNumberOfSolutions() {
     int solutionsToSelect = 4 ;
-    RankingAndCrowdingSelection<Solution<?>> selection = new RankingAndCrowdingSelection<Solution<?>>(solutionsToSelect) ;
+    RankingAndDensityEstimatorSelection<Solution<?>> selection = new RankingAndDensityEstimatorSelection<Solution<?>>(solutionsToSelect) ;
 
     int result = (int)ReflectionTestUtils.getField(selection, "solutionsToSelect");
     assertEquals(solutionsToSelect, result) ;

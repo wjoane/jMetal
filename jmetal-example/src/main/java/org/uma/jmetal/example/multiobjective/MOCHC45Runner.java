@@ -9,7 +9,7 @@ import org.uma.jmetal.operator.mutation.MutationOperator;
 import org.uma.jmetal.operator.mutation.impl.BitFlipMutation;
 import org.uma.jmetal.operator.selection.SelectionOperator;
 import org.uma.jmetal.operator.selection.impl.RandomSelection;
-import org.uma.jmetal.operator.selection.impl.RankingAndCrowdingSelection;
+import org.uma.jmetal.operator.selection.impl.RankingAndDensityEstimatorSelection;
 import org.uma.jmetal.problem.binaryproblem.BinaryProblem;
 import org.uma.jmetal.solution.binarysolution.BinarySolution;
 import org.uma.jmetal.util.AbstractAlgorithmRunner;
@@ -47,7 +47,7 @@ public class MOCHC45Runner extends AbstractAlgorithmRunner {
 
     crossoverOperator = new HUXCrossover(1.0) ;
     parentsSelection = new RandomSelection<BinarySolution>() ;
-    newGenerationSelection = new RankingAndCrowdingSelection<BinarySolution>(100) ;
+    newGenerationSelection = new RankingAndDensityEstimatorSelection<BinarySolution>(100) ;
     mutationOperator = new BitFlipMutation(0.35) ;
 
     algorithm = new MOCHC45(problem, 100, 25000, 3, 0.05, 0.25, crossoverOperator, mutationOperator,

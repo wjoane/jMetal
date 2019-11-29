@@ -22,20 +22,20 @@ import java.util.List;
  * @author Antonio J. Nebro, Juan J. Durillo
  */
 @SuppressWarnings("serial")
-public class RankingAndCrowdingSelection<S extends Solution<?>>
+public class RankingAndDensityEstimatorSelection<S extends Solution<?>>
     implements SelectionOperator<List<S>,List<S>> {
   private final int solutionsToSelect ;
   private Comparator<S> dominanceComparator ;
 
 
   /** Constructor */
-  public RankingAndCrowdingSelection(int solutionsToSelect, Comparator<S> dominanceComparator) {
+  public RankingAndDensityEstimatorSelection(int solutionsToSelect, Comparator<S> dominanceComparator) {
     this.dominanceComparator = dominanceComparator ;
     this.solutionsToSelect = solutionsToSelect ;
   }
 
   /** Constructor */
-  public RankingAndCrowdingSelection(int solutionsToSelect) {
+  public RankingAndDensityEstimatorSelection(int solutionsToSelect) {
     this(solutionsToSelect, new DominanceComparator<S>()) ;
   }
 
